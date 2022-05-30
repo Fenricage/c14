@@ -1,9 +1,14 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act } from '@testing-library/react';
+import { render } from './utils/test-utils';
+
 import App from './App';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe('App tests', () => {
+  it('check that main app container is rendered', async () => {
+    const { findAllByText } = render(<App />);
+    await act(async () => {
+      await findAllByText('Select Amount');
+    });
+  });
 });

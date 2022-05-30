@@ -1,0 +1,36 @@
+image: node:latest
+
+stages:
+  - quality_check
+  - deploy_dev
+  - deploy_prod
+
+quality_check:
+  stage: quality_check
+  script:
+    - yarn
+    - yarn lint:global
+    - yarn test
+
+deploy_dev:
+  stage: deploy_dev
+  environment: dev
+  only:
+    - master
+  extends: .deploy
+
+
+deploy_prod:
+  stage: deploy_prod
+  environment: prod
+  only:
+    - master
+  extends: .deploy
+  when: manual
+
+.deploy:
+  script:
+    - npm install -g firebase-tools
+    - yarn build:$CI_ENVIRONMENT_NAME
+    - firebase use --token $FIREBASE_TOKEN $CI_ENVIRONMENT_NAME
+    - firebase deploy -m "Pipeline $CI_PIPELINE_ID, build $CI_BUILD_ID" --non-interactive --token $FIREBASE_TOKEN
