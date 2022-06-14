@@ -13,6 +13,15 @@ export const Title = styled.h1<{margin?: string}>`
   text-align: center;
 `;
 
+export const Subtitle = styled.h2<{margin?: string}>`
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  margin: ${({ margin }) => margin || '0'};
+  letter-spacing: 1px;
+  font-weight: 400;
+`;
+
 export const Button = styled.button`
   display: flex;
   cursor: pointer;
@@ -38,6 +47,12 @@ export const Button = styled.button`
   }
   
   &:disabled {
+    opacity: .5
+  }
+
+  &:disabled:hover {
+    cursor: default;
+    background: ${({ theme }) => theme.primary1};
     opacity: .5
   }
 `;
@@ -80,6 +95,25 @@ export const AnimationContainer = styled.div<{ state: TransitionStatus }>`
         return 0;
     }
   }};
+`;
+
+export const TemporaryContainer = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 46px;
+  font-style: italic;
+  opacity: .6;
+  
+  > b {
+    font-size: 22px;
+  }
+  
+  > p {
+    font-size: 18px;
+  }
 `;
 
 export function AnimatedContainer({

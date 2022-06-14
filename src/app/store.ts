@@ -6,6 +6,8 @@ import {
   Middleware,
 } from '@reduxjs/toolkit';
 import { quotesApi } from '../redux/quotesApi';
+import { cardsApi } from '../redux/cardsApi';
+import { purchaseApi } from '../redux/purchaseApi';
 import applicationSlice from '../state/applicationSlice';
 import { notify } from '../utils/toast';
 
@@ -24,6 +26,8 @@ export const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
 
 export const reducer = {
   [quotesApi.reducerPath]: quotesApi.reducer,
+  [cardsApi.reducerPath]: cardsApi.reducer,
+  [purchaseApi.reducerPath]: purchaseApi.reducer,
   [applicationSlice.name]: applicationSlice.reducer,
 };
 
@@ -38,6 +42,8 @@ export const createStoreWithMiddlewares = (
       },
     )
       .concat(quotesApi.middleware)
+      .concat(cardsApi.middleware)
+      .concat(purchaseApi.middleware)
       .concat(rtkQueryErrorLogger),
     preloadedState: initialState,
   });

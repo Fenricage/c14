@@ -5,76 +5,143 @@ import { QuoteFormValues, UserDecimalSeparator } from '../pages/HomePage/steps/Q
 import { replaceDecimalSeparator } from '../utils';
 import { RootState } from '../app/store';
 import { SECOND_MS } from '../constants';
+import { cardsApi, GetUserCardsResponse, PaymentCard } from '../redux/cardsApi';
+import { PaymentSelectFormValues } from '../pages/HomePage/steps/PaymentSelectStep/PaymentSelectStep';
+import { GetPurchaseDetailsResponse, purchaseApi } from '../redux/purchaseApi';
 
 export const CALCULATOR_FORM_NAME = 'calculator-form';
+export const PAYMENT_SELECT_FORM_NAME = 'payment-select-form';
 
-export enum Steps {
+export enum StepperSteps {
   QUOTES,
   PHONE_VERIFICATION,
-  PHONE_CONFIRMATION,
   PERSONAL_INFORMATION,
-  PAYMENT_METHOD,
+  PAYMENT_DETAILS,
   REVIEW_ORDER,
-  PROCESS,
-  COMPLETE,
 }
 
-const getNextStep = (currentStep: Steps) => {
+export enum WidgetSteps {
+  QUOTES = 0,
+  PHONE_VERIFICATION = 1,
+  PHONE_CONFIRMATION = 2,
+  PERSONAL_INFORMATION = 3,
+  PAYMENT_ADDING = 3.1,
+  PAYMENT_SELECT = 4,
+  REVIEW_ORDER = 5,
+  PROCESS = 6,
+  COMPLETE= 7,
+}
+
+const getPrevStepperStep = (currentStep: StepperSteps) => {
   switch (currentStep) {
-    case Steps.QUOTES: {
-      return Steps.PHONE_VERIFICATION;
+    case StepperSteps.REVIEW_ORDER: {
+      return StepperSteps.PAYMENT_DETAILS;
     }
-    case Steps.PHONE_VERIFICATION: {
-      return Steps.PHONE_CONFIRMATION;
+    case StepperSteps.PAYMENT_DETAILS: {
+      return StepperSteps.PERSONAL_INFORMATION;
     }
-    case Steps.PHONE_CONFIRMATION: {
-      return Steps.PERSONAL_INFORMATION;
+    case StepperSteps.PERSONAL_INFORMATION: {
+      return StepperSteps.PHONE_VERIFICATION;
     }
-    case Steps.PERSONAL_INFORMATION: {
-      return Steps.PAYMENT_METHOD;
+    case StepperSteps.PHONE_VERIFICATION: {
+      return StepperSteps.QUOTES;
     }
-    case Steps.PAYMENT_METHOD: {
-      return Steps.REVIEW_ORDER;
-    }
-    case Steps.REVIEW_ORDER: {
-      return Steps.PROCESS;
-    }
-    case Steps.PROCESS: {
-      return Steps.COMPLETE;
+    case StepperSteps.QUOTES: {
+      return StepperSteps.REVIEW_ORDER;
     }
 
     default: {
-      return Steps.QUOTES;
+      return StepperSteps.REVIEW_ORDER;
     }
   }
 };
 
-const getPrevStep = (currentStep: Steps) => {
+const getNextStepperStep = (currentStep: StepperSteps) => {
   switch (currentStep) {
-    case Steps.COMPLETE: {
-      return Steps.PROCESS;
+    case StepperSteps.QUOTES: {
+      return StepperSteps.PHONE_VERIFICATION;
     }
-    case Steps.PROCESS: {
-      return Steps.REVIEW_ORDER;
+    case StepperSteps.PHONE_VERIFICATION: {
+      return StepperSteps.PERSONAL_INFORMATION;
     }
-    case Steps.REVIEW_ORDER: {
-      return Steps.PAYMENT_METHOD;
+    case StepperSteps.PERSONAL_INFORMATION: {
+      return StepperSteps.PAYMENT_DETAILS;
     }
-    case Steps.PAYMENT_METHOD: {
-      return Steps.PERSONAL_INFORMATION;
+    case StepperSteps.PAYMENT_DETAILS: {
+      return StepperSteps.REVIEW_ORDER;
     }
-    case Steps.PERSONAL_INFORMATION: {
-      return Steps.PHONE_CONFIRMATION;
-    }
-    case Steps.PHONE_CONFIRMATION: {
-      return Steps.PHONE_VERIFICATION;
-    }
-    case Steps.PHONE_VERIFICATION: {
-      return Steps.QUOTES;
+    case StepperSteps.REVIEW_ORDER: {
+      return StepperSteps.QUOTES;
     }
 
     default: {
-      return Steps.COMPLETE;
+      return StepperSteps.QUOTES;
+    }
+  }
+};
+
+const getNextWidgetStep = (currentStep: WidgetSteps) => {
+  switch (currentStep) {
+    case WidgetSteps.QUOTES: {
+      return WidgetSteps.PHONE_VERIFICATION;
+    }
+    case WidgetSteps.PHONE_VERIFICATION: {
+      return WidgetSteps.PHONE_CONFIRMATION;
+    }
+    case WidgetSteps.PHONE_CONFIRMATION: {
+      return WidgetSteps.PERSONAL_INFORMATION;
+    }
+    case WidgetSteps.PAYMENT_ADDING: {
+      return WidgetSteps.PAYMENT_SELECT;
+    }
+    case WidgetSteps.PERSONAL_INFORMATION: {
+      return WidgetSteps.PAYMENT_SELECT;
+    }
+    case WidgetSteps.PAYMENT_SELECT: {
+      return WidgetSteps.REVIEW_ORDER;
+    }
+    case WidgetSteps.REVIEW_ORDER: {
+      return WidgetSteps.PROCESS;
+    }
+    case WidgetSteps.PROCESS: {
+      return WidgetSteps.COMPLETE;
+    }
+
+    default: {
+      return WidgetSteps.QUOTES;
+    }
+  }
+};
+
+const getPrevWidgetStep = (currentStep: WidgetSteps) => {
+  switch (currentStep) {
+    case WidgetSteps.COMPLETE: {
+      return WidgetSteps.PROCESS;
+    }
+    case WidgetSteps.PROCESS: {
+      return WidgetSteps.REVIEW_ORDER;
+    }
+    case WidgetSteps.REVIEW_ORDER: {
+      return WidgetSteps.PAYMENT_SELECT;
+    }
+    case WidgetSteps.PAYMENT_ADDING: {
+      return WidgetSteps.PAYMENT_SELECT;
+    }
+    case WidgetSteps.PAYMENT_SELECT: {
+      return WidgetSteps.PERSONAL_INFORMATION;
+    }
+    case WidgetSteps.PERSONAL_INFORMATION: {
+      return WidgetSteps.PHONE_CONFIRMATION;
+    }
+    case WidgetSteps.PHONE_CONFIRMATION: {
+      return WidgetSteps.PHONE_VERIFICATION;
+    }
+    case WidgetSteps.PHONE_VERIFICATION: {
+      return WidgetSteps.QUOTES;
+    }
+
+    default: {
+      return WidgetSteps.COMPLETE;
     }
   }
 };
@@ -83,22 +150,37 @@ export type QuoteInputName = 'quoteSourceAmount' | 'quoteTargetAmount';
 export type AppState = {
   isQuoteLoaded: boolean
   isQuoteLoading: boolean
+  isUserCardsEmpty: boolean
   requestCounter: number
   quoteError: null | string
-  quotes: QuoteResponse
+  quotes: QuoteResponse | Record<string, never>
   isQuotesAutoUpdateEnabled: boolean
   quotesUserDecimalSeparator: UserDecimalSeparator
   lastChangedQuoteInputName: QuoteInputName
   fee: FeeData
-  stepper: {
-    currentStep: Steps
+  stepperSteps: {
+    currentStep: StepperSteps
+  }
+  widgetSteps: {
+    currentStep: WidgetSteps
   }
   wizard: {
     [CALCULATOR_FORM_NAME]: {
-      initialValues: QuoteFormValues,
-      snapshot: QuoteFormValues,
+      initialValues: QuoteFormValues
+      snapshot: QuoteFormValues
+    },
+    [PAYMENT_SELECT_FORM_NAME]: {
+      initialValues: PaymentSelectFormValues | Record<string, never>
+      snapshot: PaymentSelectFormValues | Record<string, never>
     }
-  }
+  },
+  userCards: GetUserCardsResponse
+  selectedUserCard: PaymentCard | null
+  isUserCardsLoading: boolean
+  isUserCardsLoaded: boolean
+  userCardsError: string | null
+  purchaseDetails: GetPurchaseDetailsResponse | null
+  deletingCards: string[]
 }
 
 export const initialQuotesValuesForm: QuoteFormValues = {
@@ -109,6 +191,9 @@ export const initialQuotesValuesForm: QuoteFormValues = {
 type InitialFormValuesPayload = {
   formName: typeof CALCULATOR_FORM_NAME
   state: Partial<QuoteFormValues>
+} | {
+  formName: typeof PAYMENT_SELECT_FORM_NAME
+  state: Partial<PaymentSelectFormValues>
 }
 
 export const initialState = {
@@ -116,6 +201,7 @@ export const initialState = {
   quoteError: null,
   quotes: {},
   isQuoteLoading: false,
+  isUserCardsEmpty: false,
   quotesUserDecimalSeparator: undefined,
   isQuotesAutoUpdateEnabled: false,
   lastChangedQuoteInputName: 'quoteSourceAmount',
@@ -125,15 +211,31 @@ export const initialState = {
     network: undefined,
     total: undefined,
   },
-  stepper: {
-    currentStep: Steps.QUOTES,
+  stepperSteps: {
+    currentStep: StepperSteps.QUOTES,
+  },
+  widgetSteps: {
+    currentStep: WidgetSteps.QUOTES,
   },
   wizard: {
     [CALCULATOR_FORM_NAME]: {
       initialValues: initialQuotesValuesForm,
       snapshot: initialQuotesValuesForm,
     },
+    [PAYMENT_SELECT_FORM_NAME]: {
+      initialValues: {},
+      snapshot: {},
+    },
   },
+  userCards: {
+    customer_cards: [],
+  },
+  selectedUserCard: null,
+  isUserCardsLoading: true,
+  isUserCardsLoaded: false,
+  userCardsError: null,
+  purchaseDetails: null,
+  deletingCards: [],
 } as AppState;
 
 const applicationSlice = createSlice({
@@ -153,8 +255,26 @@ const applicationSlice = createSlice({
     setFee(state, action: PayloadAction<FeeData>) {
       state.fee = action.payload;
     },
-    incrementStep(state) {
-      state.stepper.currentStep = getNextStep(state.stepper.currentStep);
+    setUserCardsEmpty(state, action: PayloadAction<boolean>) {
+      state.isUserCardsEmpty = action.payload;
+    },
+    incrementWidgetStep(state) {
+      state.widgetSteps.currentStep = getNextWidgetStep(state.widgetSteps.currentStep);
+    },
+    decrementWidgetStep(state) {
+      state.widgetSteps.currentStep = getPrevWidgetStep(state.widgetSteps.currentStep);
+    },
+    goToWidgetStep(state, action: PayloadAction<WidgetSteps>) {
+      state.widgetSteps.currentStep = action.payload;
+    },
+    incrementStepperStep(state) {
+      state.stepperSteps.currentStep = getNextStepperStep(state.stepperSteps.currentStep);
+    },
+    decrementStepperStep(state) {
+      state.stepperSteps.currentStep = getPrevStepperStep(state.stepperSteps.currentStep);
+    },
+    goToStepperStep(state, action: PayloadAction<StepperSteps>) {
+      state.stepperSteps.currentStep = action.payload;
     },
     // prevent triggerGetQuotes on change form values
     setQuotesAutoUpdateEnable(state, action: PayloadAction<boolean>) {
@@ -169,23 +289,136 @@ const applicationSlice = createSlice({
     setQuotesLoading(state, action: PayloadAction<boolean>) {
       state.isQuoteLoading = action.payload;
     },
-    decrementStep(state) {
-      state.stepper.currentStep = getPrevStep(state.stepper.currentStep);
+    setQuotesLoaded(state, action: PayloadAction<boolean>) {
+      state.isQuoteLoaded = action.payload;
+    },
+    setSelectedUserCard(state, action: PayloadAction<PaymentCard>) {
+      state.selectedUserCard = action.payload;
+    },
+    clearSelectedUserCard(state) {
+      state.selectedUserCard = null;
     },
     setInitialValuesForm(state, action: PayloadAction<InitialFormValuesPayload>) {
-      state.wizard[action.payload.formName].initialValues = {
-        ...state.wizard[action.payload.formName].initialValues,
-        ...action.payload.state,
-      };
+      if (action.payload.formName === CALCULATOR_FORM_NAME) {
+        state.wizard[action.payload.formName].initialValues = {
+          ...state.wizard[action.payload.formName].initialValues,
+          ...action.payload.state,
+        };
+      }
+
+      if (action.payload.formName === PAYMENT_SELECT_FORM_NAME) {
+        state.wizard[action.payload.formName].initialValues = {
+          ...state.wizard[action.payload.formName].initialValues,
+          ...action.payload.state,
+        };
+      }
     },
     setSnapshotValuesForm(state, action: PayloadAction<InitialFormValuesPayload>) {
-      state.wizard[action.payload.formName].snapshot = {
-        ...state.wizard[action.payload.formName].snapshot,
-        ...action.payload.state,
-      };
+      if (action.payload.formName === CALCULATOR_FORM_NAME) {
+        state.wizard[action.payload.formName].snapshot = {
+          ...state.wizard[action.payload.formName].snapshot,
+          ...action.payload.state,
+        };
+      }
+
+      if (action.payload.formName === PAYMENT_SELECT_FORM_NAME) {
+        state.wizard[action.payload.formName].snapshot = {
+          ...state.wizard[action.payload.formName].snapshot,
+          ...action.payload.state,
+        };
+      }
     },
+    resetUserCards(state) {
+      state.userCards = {
+        customer_cards: [],
+      };
+      state.isUserCardsLoading = true;
+      state.isUserCardsLoaded = false;
+      state.userCardsError = null;
+    },
+    resetApplication: () => initialState,
   },
   extraReducers: (builder) => {
+    builder.addMatcher(
+      applicationSlice.actions.incrementWidgetStep.match,
+      (state) => {
+        switch (state.widgetSteps.currentStep) {
+          case WidgetSteps.PHONE_VERIFICATION: {
+            state.stepperSteps.currentStep = StepperSteps.PHONE_VERIFICATION;
+            break;
+          }
+          case WidgetSteps.PERSONAL_INFORMATION: {
+            state.stepperSteps.currentStep = StepperSteps.PERSONAL_INFORMATION;
+            break;
+          }
+
+          case WidgetSteps.PAYMENT_SELECT: {
+            state.stepperSteps.currentStep = StepperSteps.PAYMENT_DETAILS;
+            break;
+          }
+
+          case WidgetSteps.REVIEW_ORDER: {
+            state.stepperSteps.currentStep = StepperSteps.REVIEW_ORDER;
+            break;
+          }
+
+          default: {
+            break;
+          }
+        }
+      },
+    );
+
+    builder.addMatcher(
+      applicationSlice.actions.decrementWidgetStep.match,
+      (state) => {
+        switch (state.widgetSteps.currentStep) {
+          case WidgetSteps.PAYMENT_SELECT: {
+            state.stepperSteps.currentStep = StepperSteps.PAYMENT_DETAILS;
+            break;
+          }
+
+          case WidgetSteps.PERSONAL_INFORMATION: {
+            state.stepperSteps.currentStep = StepperSteps.PERSONAL_INFORMATION;
+            break;
+          }
+
+          case WidgetSteps.PHONE_CONFIRMATION: {
+            state.stepperSteps.currentStep = StepperSteps.PHONE_VERIFICATION;
+            break;
+          }
+
+          case WidgetSteps.QUOTES: {
+            state.stepperSteps.currentStep = StepperSteps.QUOTES;
+            break;
+          }
+
+          default: {
+            break;
+          }
+        }
+      },
+    );
+
+    builder.addMatcher(
+      applicationSlice.actions.goToWidgetStep.match,
+      (state) => {
+        switch (state.widgetSteps.currentStep) {
+          case WidgetSteps.PERSONAL_INFORMATION: {
+            if (!state.isUserCardsEmpty) {
+              return;
+            }
+            state.stepperSteps.currentStep = StepperSteps.PERSONAL_INFORMATION;
+            break;
+          }
+
+          default: {
+            break;
+          }
+        }
+      },
+    );
+
     builder.addMatcher(
       quotesApi.endpoints.getQuote.matchPending,
       (state) => {
@@ -215,6 +448,57 @@ const applicationSlice = createSlice({
         };
       },
     );
+
+    builder.addMatcher(
+      cardsApi.endpoints.getUserCards.matchPending,
+      (state) => {
+        state.isUserCardsLoading = true;
+      },
+    );
+
+    builder.addMatcher(
+      cardsApi.endpoints.getUserCards.matchRejected,
+      (state) => {
+        state.isUserCardsLoading = false;
+        state.isUserCardsLoaded = true;
+        state.userCardsError = 'Request is failed';
+      },
+    );
+
+    builder.addMatcher(
+      cardsApi.endpoints.getUserCards.matchFulfilled,
+      (state, { payload }) => {
+        state.isUserCardsLoading = false;
+        state.isUserCardsLoaded = true;
+        state.userCardsError = '';
+        state.userCards = payload;
+      },
+    );
+
+    builder.addMatcher(
+      cardsApi.endpoints.deleteUserCard.matchPending,
+      (state, { meta }) => {
+        const toDeleteCardId = meta.arg.originalArgs;
+        state.deletingCards = [...state.deletingCards, toDeleteCardId];
+      },
+    );
+
+    builder.addMatcher(
+      cardsApi.endpoints.deleteUserCard.matchFulfilled,
+      (state, { meta }) => {
+        const toDeleteCardId = meta.arg.originalArgs;
+        state.userCards.customer_cards = state.userCards.customer_cards
+          .filter((c) => c.card_id !== toDeleteCardId);
+        state.deletingCards = state.deletingCards.filter((c) => c !== toDeleteCardId);
+      },
+    );
+
+    builder.addMatcher(
+      purchaseApi.endpoints.getPurchaseDetails.matchFulfilled,
+      (state, { payload }) => {
+        state.purchaseDetails = payload;
+      },
+    );
   },
 });
 
@@ -224,14 +508,24 @@ export const {
   setRequestCounter,
   decrementCounter,
   setFee,
-  decrementStep,
-  incrementStep,
+  decrementWidgetStep,
+  incrementWidgetStep,
+  goToWidgetStep,
+  incrementStepperStep,
+  decrementStepperStep,
+  goToStepperStep,
   setInitialValuesForm,
+  setSelectedUserCard,
+  clearSelectedUserCard,
   setQuotesLoading,
   setQuotesAutoUpdateEnable,
   setLastChangedQuoteInputName,
+  setUserCardsEmpty,
+  setQuotesLoaded,
   setSnapshotValuesForm,
   setQuotesUserDecimalSeparator,
+  resetUserCards,
+  resetApplication,
 } = applicationSlice.actions;
 
 export default applicationSlice;

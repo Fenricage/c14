@@ -38,7 +38,7 @@ const SidebarText = styled.p`
 `;
 
 const StepperContainer = styled.div`
-  width: 371px;
+  width: 390px;
   height: 380px;
 `;
 
@@ -53,7 +53,6 @@ const Sidebar: FC = () => (
       <SidebarTitle>BUY CRYPTO</SidebarTitle>
       <SidebarText>
         Purchase crypto with your credit or debit card.
-        Complete these simple steps to trade USD for USDC on EVMOS.
       </SidebarText>
       <StepperContainer>
         <Stepper />

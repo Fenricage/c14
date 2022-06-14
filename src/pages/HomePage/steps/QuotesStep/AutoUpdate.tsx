@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useFormikContext } from 'formik';
 import { QueryStatus } from '@reduxjs/toolkit/query';
 import {
@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { SECOND_MS } from '../../../../constants';
 import { QuoteFormValues } from './QuotesStep';
 import usePrevious from '../../../../hooks/usePrevious';
+import useCallOnExpireTimer from '../../../../hooks/useCallOnExpireTimer';
 
 function AutoUpdate({
   onChangeFormValues,
@@ -92,25 +93,11 @@ function AutoUpdate({
     onExpireTimer,
   ]);
 
-  useEffect(() => {
-    if (!expires_at) {
-      return;
-    }
+  const onExpireTimerHandler = useCallback(async () => {
+    await onExpireTimer(formik.values);
+  }, [formik.values, onExpireTimer]);
 
-    const currentTimeMs = Date.now();
-
-    const expiresMs = Date.parse(expires_at);
-    const spareTimeBeforeNextReq = 5 * SECOND_MS;
-    const diffTime = expiresMs - currentTimeMs - spareTimeBeforeNextReq;
-
-    const timerMark = setTimeout(async () => {
-      await onExpireTimer(formik.values);
-    }, diffTime);
-
-    return () => {
-      clearTimeout(timerMark);
-    };
-  }, [expires_at, formik.values, onExpireTimer]);
+  useCallOnExpireTimer(expires_at, onExpireTimerHandler);
 
   // call update quotes data on change form values
   useEffect(() => {

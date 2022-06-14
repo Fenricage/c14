@@ -15,7 +15,7 @@ import {
   useField, useFormikContext,
 } from 'formik';
 import _merge from 'lodash/merge';
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
 import { InputLabel } from '../../theme/components';
 import { SHOULD_VALIDATE } from '../../constants';
 
@@ -40,7 +40,7 @@ export const InputInner = styled.div`
   width: 100%;
 `;
 
-export const Input = styled.input`
+export const sharedInputStyle = css`
   width: 100%;
   background-color: transparent;
   border: 0 solid transparent;
@@ -48,6 +48,10 @@ export const Input = styled.input`
   font-style: normal;
   font-family: "Inter",serif;
   font-weight: 600;
+`;
+
+export const Input = styled.input`
+  ${sharedInputStyle}
 `;
 
 export type OnChangeInputField = ({

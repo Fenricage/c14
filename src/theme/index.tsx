@@ -23,8 +23,8 @@ export const device = {
   medium: `(min-width: ${sizePx.medium})`,
 };
 
-const white = '#FFFFFF';
-const black = '#000000';
+export const white = '#FFFFFF';
+export const black = '#000000';
 export const bg = white;
 
 export const MEDIA_WIDTHS = {
@@ -47,28 +47,45 @@ const mediaWidthTemplates: {
   {},
 ) as any;
 
+export const alt4 = 'rgb(104,146,169)';
+export const lgray = '#EDEDED';
+export const violet = '#783AFF';
+export const dviolet = '#33334B';
+export const bviolet = '#8047fa';
+export const red = '#E23737';
+export const beige = '#ECD2D2';
+export const primary1 = '#fd7f3a';
+export const primary1o = 'rgba(255,128,64,0.2)';
+export const primary2 = '#ffe23c';
+export const alt1 = '#fcb913';
+export const alt2 = '#9cbccd';
+export const alt3 = 'rgba(42,57,68,1)';
+export const alt3o1 = 'rgba(42,57,68,.42)';
+export const alt3o2 = 'rgba(42,57,68,.26)';
+export const alt5 = 'rgba(104,146,169,.75)';
+
 export function colors(): Colors {
   return {
     // base
     white,
     black,
-    lgray: '#EDEDED',
     bg,
-    violet: '#783AFF',
-    dviolet: '#33334B',
-    bviolet: '#8047fa',
-    red: '#E23737',
-    beige: '#ECD2D2',
-    primary1: '#fd7f3a',
-    primary1o: 'rgba(255,128,64,0.2)',
-    primary2: '#ffe23c',
-    alt1: '#fcb913',
-    alt2: '#9cbccd',
-    alt3: 'rgba(42,57,68,1)',
-    alt3o1: 'rgba(42,57,68,.42)',
-    alt3o2: 'rgba(42,57,68,.26)',
-    alt4: 'rgb(104,146,169)',
-    alt5: 'rgba(104,146,169,.75)',
+    alt4,
+    lgray,
+    violet,
+    dviolet,
+    bviolet,
+    red,
+    beige,
+    primary1,
+    primary1o,
+    primary2,
+    alt1,
+    alt2,
+    alt3,
+    alt3o1,
+    alt3o2,
+    alt5,
   };
 }
 

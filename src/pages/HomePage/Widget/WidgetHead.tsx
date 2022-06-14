@@ -2,11 +2,12 @@ import React, { FC } from 'react';
 import styled from 'styled-components/macro';
 import { Title } from '../../../theme/components';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { decrementStep, selectApp } from '../../../state/applicationSlice';
+import { decrementWidgetStep, selectApp } from '../../../state/applicationSlice';
 import NavigateBack from './NavigateBack';
 
 type WidgetHeadProps = {
   text: string;
+  customBackCallback?: () => void;
 }
 
 const WidgetHeadContainer = styled.div`
@@ -14,23 +15,32 @@ const WidgetHeadContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 0 34px 0;
+  margin: 0 0 20px 0;
 `;
 
 const WidgetHead: FC<WidgetHeadProps> = ({
   text,
+  customBackCallback,
 }) => {
   const dispatch = useAppDispatch();
   const {
-    stepper: {
+    widgetSteps: {
       currentStep,
     },
   } = useAppSelector(selectApp);
 
+  const handleClickBack = () => {
+    if (customBackCallback) {
+      customBackCallback();
+    } else {
+      dispatch(decrementWidgetStep());
+    }
+  };
+
   return (
     <WidgetHeadContainer>
-      {currentStep ? <NavigateBack onClick={() => dispatch(decrementStep())} /> : null}
-      <Title>{text}</Title>
+      {currentStep ? <NavigateBack onClick={handleClickBack} /> : null}
+      <Title data-testid="WidgetHeadTitle">{text}</Title>
     </WidgetHeadContainer>
   );
 };

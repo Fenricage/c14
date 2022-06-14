@@ -26,7 +26,7 @@ const Name = styled.span`
   margin-right: 12px;
 `;
 
-const CurrencyIcon = styled.div`
+export const CurrencyIcon = styled.div`
   min-width: 24px;
   min-height: 24px;
   width: 24px;
@@ -39,7 +39,7 @@ const CurrencyIcon = styled.div`
   border-radius: 50%;
 `;
 
-const StyledArrowIcon = styled(ArrowIcon)`
+export const StyledArrowIcon = styled(ArrowIcon)`
   display: block;
   position: absolute;
   transform: scale(.6);

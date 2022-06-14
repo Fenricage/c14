@@ -3,7 +3,10 @@ import React from 'react';
 import 'jest-styled-components';
 import Stepper from './Stepper';
 import { colors } from '../../../../theme';
-import applicationSlice, { incrementStep, Steps, initialState } from '../../../../state/applicationSlice';
+import applicationSlice, {
+  initialState,
+  incrementStepperStep, StepperSteps,
+} from '../../../../state/applicationSlice';
 import { render } from '../../../../utils/test-utils';
 
 describe('Stepper tests', () => {
@@ -17,18 +20,18 @@ describe('Stepper tests', () => {
   });
 
   it('set another step and check Stepper active color style', () => {
-    const storeAfterIncrementStep = applicationSlice.reducer(initialState, incrementStep());
+    const storeAfterIncrementStepperStep = applicationSlice.reducer(initialState, incrementStepperStep());
 
-    expect(storeAfterIncrementStep).toEqual({
+    expect(storeAfterIncrementStepperStep).toEqual({
       ...initialState,
-      stepper: {
-        currentStep: Steps.PHONE_VERIFICATION,
+      stepperSteps: {
+        currentStep: StepperSteps.PHONE_VERIFICATION,
       },
     });
 
     const { getByTestId } = render(<Stepper />, {
       preloadedState: {
-        [applicationSlice.name]: storeAfterIncrementStep,
+        [applicationSlice.name]: storeAfterIncrementStepperStep,
       },
     });
 

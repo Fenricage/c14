@@ -1,24 +1,24 @@
 import { waitFor } from '@testing-library/react';
 import slice, {
   decrementCounter,
-  decrementStep,
-  incrementStep,
+  // decrementWidgetStep,
+  // incrementWidgetStep,
   initialState,
   setFee,
   setLastChangedQuoteInputName,
   setQuotesAutoUpdateEnable,
   setQuotesUserDecimalSeparator,
   setRequestCounter,
-  Steps,
+  // Steps,
   selectApp,
 } from './applicationSlice';
 import { quotesApi } from '../redux/quotesApi';
+import { server } from '../testHandlers/utils';
 import { createStoreWithMiddlewares, store as rootStore } from '../app/store';
 import {
-  server,
-  serverQuoteRequestMock,
   setupServerQuoteRequest,
 } from '../testHandlers/setupServerQuoteRequest';
+import { serverQuoteRequestMock } from '../testHandlers/mocks';
 
 beforeAll(() => server.listen({
   onUnhandledRequest: 'bypass',
@@ -41,14 +41,14 @@ describe('application slice testing', () => {
     ).toEqual(initialState);
   });
 
-  it('should be able to increment/decrements step', () => {
-    store.dispatch(incrementStep());
-    expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_VERIFICATION);
-    store.dispatch(incrementStep());
-    expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_CONFIRMATION);
-    store.dispatch(decrementStep());
-    expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_VERIFICATION);
-  });
+  // it('should be able to increment/decrements step', () => {
+  //   store.dispatch(incrementWidgetStep());
+  //   expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_VERIFICATION);
+  //   store.dispatch(incrementWidgetStep());
+  //   expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_CONFIRMATION);
+  //   store.dispatch(decrementWidgetStep());
+  //   expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_VERIFICATION);
+  // });
 
   it('test counter', () => {
     store.dispatch(setRequestCounter(3000));

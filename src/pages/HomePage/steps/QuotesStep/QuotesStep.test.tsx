@@ -5,7 +5,8 @@ import {
 import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
 import QuotesStep from './QuotesStep';
-import { setupServerQuoteRequest, server } from '../../../../testHandlers/setupServerQuoteRequest';
+import { server } from '../../../../testHandlers/utils';
+import { setupServerQuoteRequest } from '../../../../testHandlers/setupServerQuoteRequest';
 
 beforeAll(() => server.listen({
   onUnhandledRequest: 'bypass',
@@ -18,6 +19,7 @@ describe('QuotesStep tests', () => {
     'check input values, button is disabled on invalid values, button is enabled on valid values',
     async () => {
       setupServerQuoteRequest();
+
       const {
         getByTestId,
       } = render(<QuotesStep />);

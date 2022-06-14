@@ -5,6 +5,8 @@ import styled from 'styled-components/macro';
 import { Form, Formik } from 'formik';
 import { Flex } from 'rebass';
 import debounce from 'just-debounce-it';
+import { parse } from 'query-string';
+import { toast } from 'react-toastify';
 import AutoUpdate from './AutoUpdate';
 import { Button, FormRow } from '../../../../theme/components';
 import QuoteInputField from '../../../../components/QuoteInputField/QuoteInputField';
@@ -19,15 +21,15 @@ import Fee from './Fee';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
   CALCULATOR_FORM_NAME,
-  incrementStep,
   QuoteInputName,
+  incrementWidgetStep,
   selectApp,
   setFee,
   setInitialValuesForm,
   setLastChangedQuoteInputName,
   setQuotesAutoUpdateEnable,
   setQuotesLoading,
-  setQuotesUserDecimalSeparator,
+  setQuotesUserDecimalSeparator, setQuotesLoaded,
 } from '../../../../state/applicationSlice';
 import WidgetHead from '../../Widget/WidgetHead';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
@@ -66,7 +68,17 @@ const TreeContainerItem = styled.div<{ margin: string }>`
   margin: ${({ margin }) => margin || '0'};
 `;
 
-const QuoteInputBox = styled.div<{ hasError: boolean }>`
+const QuotesFeeBox = styled.div`
+  padding: 12px 10px;
+  display: flex;
+  overflow: auto;
+  background: ${({ theme }) => theme.alt5};
+  align-items: center;
+  border: 1px solid ${({ theme }) => theme.alt4};
+  border-radius: 16px;
+`;
+
+export const QuoteInputBox = styled.div<{ hasError?: boolean }>`
   display: flex;
   width: 100%;
   overflow: hidden;
@@ -84,7 +96,7 @@ const QuoteInputBox = styled.div<{ hasError: boolean }>`
   ${FormFieldErrorMessageWrapper} {
     height: 20px;
     font-size: 14px;
-    padding: 2px 36px;
+    padding: 2px 36px 0px 36px;
     display: flex;
     align-items: center;
     letter-spacing: 0.5px;
@@ -100,7 +112,7 @@ const QuoteInputBox = styled.div<{ hasError: boolean }>`
   }
 `;
 
-const QuoteInputRow = styled.div`
+export const QuoteInputRow = styled.div`
   display: flex;
   align-items: center;
 `;
@@ -129,7 +141,7 @@ const TreeTitle = styled.h2`
 `;
 
 const replaceCommaWithDot = (value: string) => value.replace(',', '.');
-
+const MAX_AMOUNT = 5000;
 const validQuoteInputValueRegEx = /^(?:\d{1,3}(?:\d{3})*|\d+)(?:[.|,]\d{0,2})?$/;
 
 const validate = (values: QuoteFormValues) => {
@@ -144,8 +156,8 @@ const validate = (values: QuoteFormValues) => {
       errors[key as keyof QuoteFormValues] = 'Must be at least 20$';
     }
 
-    if (+(replaceCommaWithDot(value)) > 1000000000000) {
-      errors[key as keyof QuoteFormValues] = 'The most you can send is 1000000000000$';
+    if (+(replaceCommaWithDot(value)) > MAX_AMOUNT) {
+      errors[key as keyof QuoteFormValues] = `The most you can send is ${MAX_AMOUNT}`;
     }
   });
 
@@ -168,6 +180,19 @@ const QuotesStep: FC = () => {
   const dispatch = useAppDispatch();
 
   const application = useAppSelector(selectApp);
+
+  const [targetAddress, setTargetAddress] = useState('');
+
+  useEffect(() => {
+    const queryStringParsed = parse(window.location.search);
+
+    if (!queryStringParsed.targetAddress) {
+      toast.error('targetAddress is missing from URI query params.');
+      return;
+    }
+
+    setTargetAddress((queryStringParsed as {targetAddress: string}).targetAddress);
+  }, []);
 
   const {
     quotes: {
@@ -207,6 +232,10 @@ const QuotesStep: FC = () => {
   //   target_currency: targetCurrency,
   //   source_amount: initialQuotesValuesForm.quoteSourceAmount,
   // });
+
+  useEffect(() => () => {
+    dispatch(setQuotesLoaded(false));
+  }, [dispatch]);
 
   const [triggerGetQuotes, {
     fulfilledTimeStamp,
@@ -359,12 +388,17 @@ const QuotesStep: FC = () => {
     dispatch(setLastChangedQuoteInputName(type));
   }, [dispatch, updateUserDecimalSeparator]);
 
-  const handleClickNext: MouseEventHandler<HTMLButtonElement> = () => {
-    dispatch(incrementStep());
+  const handleClickNextStep: MouseEventHandler<HTMLButtonElement> = () => {
+    dispatch(incrementWidgetStep());
   };
 
   return (
-    <Flex flexDirection="column" flexWrap="nowrap" data-testid="QuoteStep">
+    <Flex
+      flexDirection="column"
+      flexWrap="nowrap"
+      flex={1}
+      data-testid="QuoteStep"
+    >
       <WidgetHead text="Select Amount" />
       <Formik
         initialValues={initialQuotesValuesForm}
@@ -417,12 +451,14 @@ const QuotesStep: FC = () => {
               <TreeContainerInner>
                 <TreeTitle>Fees</TreeTitle>
                 <TreeContainerItem margin="0 0 0 0">
-                  <Fee
-                    c14Fee={c14 || '0'}
-                    networkFee={network || '0'}
-                    currencyCode={sourceCurrency}
-                    totalFee={total || '0'}
-                  />
+                  <QuotesFeeBox>
+                    <Fee
+                      c14Fee={c14 || '0'}
+                      networkFee={network || '0'}
+                      currencyCode={sourceCurrency}
+                      totalFee={total || '0'}
+                    />
+                  </QuotesFeeBox>
                 </TreeContainerItem>
               </TreeContainerInner>
             </TreeContainer>
@@ -449,11 +485,17 @@ const QuotesStep: FC = () => {
                 />
               </QuoteInputBox>
             </FormRow>
-            <FormRow>
+            <FormRow margin="auto 0 0 0">
               <ButtonBox>
                 <Button
-                  onClick={handleClickNext}
-                  disabled={isSubmitting || !isValid || isQuoteLoading || isQuoteRequestError}
+                  onClick={handleClickNextStep}
+                  disabled={
+                    isSubmitting
+                    || !isValid
+                    || isQuoteLoading
+                    || isQuoteRequestError
+                    || !targetAddress
+                }
                   data-testid="submitButton"
                   type="submit"
                 >

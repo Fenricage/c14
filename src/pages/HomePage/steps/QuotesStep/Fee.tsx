@@ -9,13 +9,7 @@ type FeeProps = {
 }
 
 const FeeContainer = styled.div`
-  padding: 12px 10px;
   display: flex;
-  overflow: auto;
-  background: ${({ theme }) => theme.alt5};
-  align-items: center;
-  border: 1px solid ${({ theme }) => theme.alt4};
-  border-radius: 16px;
 `;
 
 const FeeItem = styled.div<{ fontWeight?: number }>`
@@ -64,17 +58,17 @@ const Fee: FC<FeeProps> = ({
   <FeeContainer>
     <FeeItem>
       <FeeLabel>Network Fee</FeeLabel>
-      <FeeText>{`${networkFee} ${currencyCode}`}</FeeText>
+      <FeeText data-testid="NetworkFee">{`${networkFee} ${currencyCode}`}</FeeText>
     </FeeItem>
     <MathOperator margin="0 28px">+</MathOperator>
     <FeeItem>
       <FeeLabel>C14 Fee</FeeLabel>
-      <FeeText>{`${c14Fee} ${currencyCode}`}</FeeText>
+      <FeeText data-testid="C14Fee">{`${c14Fee} ${currencyCode}`}</FeeText>
     </FeeItem>
     <MathOperator margin="0 14px">=</MathOperator>
     <FeeItem fontWeight={700}>
       <FeeLabel>Total Fee</FeeLabel>
-      <FeeText>{`${totalFee} ${currencyCode}`}</FeeText>
+      <FeeText data-testid="TotalFee">{`${totalFee} ${currencyCode}`}</FeeText>
     </FeeItem>
   </FeeContainer>
 );

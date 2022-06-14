@@ -156,7 +156,7 @@ const StepperLine = styled.div`
 
 const Stepper: FC = () => {
   const {
-    stepper: {
+    stepperSteps: {
       currentStep,
     },
   } = useAppSelector(selectApp);
