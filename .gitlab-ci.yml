@@ -15,8 +15,8 @@ quality_check:
 deploy_dev:
   stage: deploy_dev
   environment: dev
-#  only:
-#    - master
+  only:
+    - master
   extends: .deploy
 
 

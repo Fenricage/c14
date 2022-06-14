@@ -45,8 +45,8 @@
   },
   "scripts": {
     "start": "env-cmd -f .env react-scripts start",
-    "build:dev": "env-cmd -f .env.development react-scripts build",
-    "build:prod": "env-cmd -f .env.production react-scripts build",
+    "build:dev": "env-cmd -f .env.dev react-scripts build",
+    "build:prod": "env-cmd -f .env.prod react-scripts build",
     "lint:global": "eslint --fix --ext .ts,.tsx ./src",
     "lint-staged": "lint-staged --debug --config lint-staged.js",
     "husky-install": "husky install",
