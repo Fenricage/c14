@@ -39,6 +39,7 @@ const PurchaseInProgressStep: FC = () => {
     }
 
     if (purchaseDetails?.status === GetPurchaseDetailsResponseStatus.BLOCKCHAIN_TRANSFER_PENDING
+      || purchaseDetails?.status === GetPurchaseDetailsResponseStatus.BLOCKCHAIN_TRANSFER_COMPLETE
       || purchaseDetails?.status === GetPurchaseDetailsResponseStatus.CUSTOMER_CHARGE_DECLINED
     ) {
       dispatch(incrementWidgetStep());

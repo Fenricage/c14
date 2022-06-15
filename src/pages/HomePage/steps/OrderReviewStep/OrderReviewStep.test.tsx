@@ -24,6 +24,7 @@ describe('OrderReviewStep tests', () => {
 
       const {
         getByTestId,
+        queryByTestId,
         unmount,
       } = render(<OrderReviewStep />, { preloadedState: store.getState(), store });
 
@@ -51,7 +52,7 @@ describe('OrderReviewStep tests', () => {
         expect(getByTestId('ReviewOrderLoader')).toBeInTheDocument();
       });
 
-      await waitForElementToBeRemoved(() => getByTestId('ReviewOrderLoader'));
+      await waitForElementToBeRemoved(() => queryByTestId('ReviewOrderLoader'));
 
       const payItem = getByTestId('ReviewOrderItemPay');
       const feeItem = getByTestId('ReviewOrderItemFee');
