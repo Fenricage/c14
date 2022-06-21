@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  act, waitForElementToBeRemoved, within,
+  act, waitForElementToBeRemoved, within, waitFor,
 } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
@@ -24,6 +24,7 @@ describe('OrderReviewStep tests', () => {
 
       const {
         getByTestId,
+        queryByTestId,
         unmount,
       } = render(<OrderReviewStep />, { preloadedState: store.getState(), store });
 
@@ -51,7 +52,9 @@ describe('OrderReviewStep tests', () => {
         expect(getByTestId('ReviewOrderLoader')).toBeInTheDocument();
       });
 
-      await waitForElementToBeRemoved(() => getByTestId('ReviewOrderLoader'));
+      await waitFor(() => {
+        expect(queryByTestId('ReviewOrderLoader')).not.toBeInTheDocument();
+      });
 
       const payItem = getByTestId('ReviewOrderItemPay');
       const feeItem = getByTestId('ReviewOrderItemFee');
