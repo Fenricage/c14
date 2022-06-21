@@ -4,10 +4,11 @@ import { Flex } from 'rebass';
 import { QuoteInputBox } from '../QuotesStep/QuotesStep';
 import { sharedInputStyle } from '../../../../components/InputField/InputField';
 import CurrencySelect, {
-  Currency, CurrencyIcon,
-  CurrencySelectContainer, StyledArrowIcon,
+  CurrencyIcon,
+  CurrencySelectContainer,
 } from '../../../../components/CurrencySelect/CurrencySelect';
 import { InputLabel } from '../../../../theme/components';
+import { Currency } from '../../../../components/CurrencySelectField/CurrencySelectField';
 import { sharedInputStyles, sharedLabelStyles } from '../../../../components/QuoteInputField/QuoteInputField';
 
 type AmountBadgeProps = {
@@ -44,10 +45,6 @@ const AmountBadgeContainer = styled.div`
   
   ${CurrencyIcon} {
     margin: 0;
-  }
-  
-  ${StyledArrowIcon} {
-    display: none;
   }
 `;
 

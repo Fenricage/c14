@@ -10,9 +10,10 @@ import { toast } from 'react-toastify';
 import AutoUpdate from './AutoUpdate';
 import { Button, FormRow } from '../../../../theme/components';
 import QuoteInputField from '../../../../components/QuoteInputField/QuoteInputField';
-import CurrencySelect, {
-  CurrencySelectContainer,
-} from '../../../../components/CurrencySelect/CurrencySelect';
+import CurrencySelectField, {
+  Currency,
+  CurrencySelectContainer, SelectOption,
+} from '../../../../components/CurrencySelectField/CurrencySelectField';
 import FormFieldErrorMessage, {
   FormFieldErrorMessageText,
   FormFieldErrorMessageWrapper,
@@ -34,12 +35,15 @@ import {
 import WidgetHead from '../../Widget/WidgetHead';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
 // import { useGetQuote } from '../../../../redux/quotesHooks';
+import { useUpdateQuotes } from './hooks';
 
 export type UserDecimalSeparator = ',' | '.' | undefined
 
 export type QuoteFormValues = {
   quoteSourceAmount: string;
   quoteTargetAmount: string;
+  sourceCurrency: Currency;
+  targetCurrency: Currency;
 }
 
 const ButtonBox = styled.div`
@@ -89,14 +93,14 @@ export const QuoteInputBox = styled.div<{ hasError?: boolean }>`
   padding: 14px 20px ${({ hasError }) => (hasError ? '14px' : '0')} 26px;
 
   ${CurrencySelectContainer} {
-    transform: translateY(13px);
-    padding-left: 8px;
+    //transform: translateY(13px);
+    padding: 14px 24px 14px 14px;
   }
 
   ${FormFieldErrorMessageWrapper} {
     height: 20px;
     font-size: 14px;
-    padding: 2px 36px 0px 36px;
+    padding: 2px 36px 0 36px;
     display: flex;
     align-items: center;
     letter-spacing: 0.5px;
@@ -140,24 +144,31 @@ const TreeTitle = styled.h2`
   }
 `;
 
-const replaceCommaWithDot = (value: string) => value.replace(',', '.');
+export const replaceCommaWithDot = (value: string) => value.replace(',', '.');
 const MAX_AMOUNT = 5000;
 const validQuoteInputValueRegEx = /^(?:\d{1,3}(?:\d{3})*|\d+)(?:[.|,]\d{0,2})?$/;
+
+type FormAmounts = Pick<QuoteFormValues, 'quoteTargetAmount' | 'quoteSourceAmount'>
 
 const validate = (values: QuoteFormValues) => {
   const errors: Partial<QuoteFormValues> = {};
 
-  Object.entries(values).forEach(([key, value]) => {
+  const amounts: FormAmounts = {
+    quoteSourceAmount: values.quoteSourceAmount,
+    quoteTargetAmount: values.quoteTargetAmount,
+  };
+
+  Object.entries(amounts).forEach(([key, value]) => {
     if (+(replaceCommaWithDot(value)) === 0 || !value) {
-      errors[key as keyof QuoteFormValues] = 'Type non zero value';
+      errors[key as keyof FormAmounts] = 'Type non zero value';
     }
 
     if (+(replaceCommaWithDot(value)) < 20) {
-      errors[key as keyof QuoteFormValues] = 'Must be at least 20$';
+      errors[key as keyof FormAmounts] = 'Must be at least 20$';
     }
 
     if (+(replaceCommaWithDot(value)) > MAX_AMOUNT) {
-      errors[key as keyof QuoteFormValues] = `The most you can send is ${MAX_AMOUNT}`;
+      errors[key as keyof FormAmounts] = `The most you can send is ${MAX_AMOUNT}`;
     }
   });
 
@@ -175,6 +186,27 @@ const validateDependsLastChanged = (values: QuoteFormValues, lastChanged: QuoteI
 
   return errors;
 };
+
+export const sourceOptions: SelectOption[] = [
+  {
+    value: 'USD',
+    label: 'USD',
+    description: 'USD',
+  },
+];
+
+export const targetOptions: SelectOption[] = [
+  {
+    value: 'b2384bf2-b14d-4916-aa97-85633ef05742',
+    label: 'USDC',
+    description: 'USDC (on Evmos)',
+  },
+  {
+    value: 'c00b9be1-9472-44cc-b384-7f549274de3b',
+    label: 'USDC',
+    description: 'USDC (on HARMONY)',
+  },
+];
 
 const QuotesStep: FC = () => {
   const dispatch = useAppDispatch();
@@ -199,6 +231,7 @@ const QuotesStep: FC = () => {
       target_amount,
       absolute_internal_fee,
       source_amount,
+      target_crypto_asset_id,
       fiat_blockchain_fee,
       total_fee,
     },
@@ -219,17 +252,13 @@ const QuotesStep: FC = () => {
 
   const request = useRef<any>(null);
 
-  // mock dropdowns TODO(@ruslan): move to formik selectors
-  const [sourceCurrency] = useState('USD');
-  const [targetCurrency] = useState('USDC_EVMOS');
-
   // const {
   //   quotes,
   //   isLoading,
   //   isLoaded,
   // } = useGetQuote({
   //   source_currency: sourceCurrency,
-  //   target_currency: targetCurrency,
+  //   target_crypto_asset_id: targetCurrency,
   //   source_amount: initialQuotesValuesForm.quoteSourceAmount,
   // });
 
@@ -247,16 +276,14 @@ const QuotesStep: FC = () => {
   useEffect(() => {
     if (!isQuotesLoaded) {
       triggerGetQuotes({
-        source_currency: sourceCurrency,
-        target_currency: targetCurrency,
+        source_currency: sourceOptions[0].value,
+        target_crypto_asset_id: targetOptions[0].value,
         source_amount: initialQuotesValuesForm.quoteSourceAmount,
       });
     }
   }, [
     initialQuotesValuesForm.quoteSourceAmount,
     isQuotesLoaded,
-    sourceCurrency,
-    targetCurrency,
     triggerGetQuotes,
   ]);
 
@@ -271,20 +298,20 @@ const QuotesStep: FC = () => {
 
     if (lastChangedQuoteInputName === 'quoteTargetAmount') {
       request.current = triggerGetQuotes({
-        source_currency: sourceCurrency,
-        target_currency: targetCurrency,
+        source_currency: values.sourceCurrency,
+        target_crypto_asset_id: values.targetCurrency,
         target_amount: values.quoteTargetAmount,
       });
       await request.current;
     } else {
       request.current = triggerGetQuotes({
-        source_currency: sourceCurrency,
-        target_currency: targetCurrency,
+        source_currency: values.sourceCurrency,
+        target_crypto_asset_id: values.targetCurrency,
         source_amount: values.quoteSourceAmount,
       });
       await request.current;
     }
-  }, [lastChangedQuoteInputName, sourceCurrency, targetCurrency, triggerGetQuotes]);
+  }, [lastChangedQuoteInputName, triggerGetQuotes]);
 
   useEffect(() => {
     dispatch(setFee({
@@ -311,38 +338,14 @@ const QuotesStep: FC = () => {
     dispatch(setInitialValuesForm({
       formName: CALCULATOR_FORM_NAME,
       state: {
+        targetCurrency: target_crypto_asset_id,
         quoteTargetAmount: target_amount,
         quoteSourceAmount: source_amount,
       },
     }));
-  }, [
-    dispatch,
-    isQuotesLoaded,
-    source_amount,
-    target_amount,
-    fulfilledTimeStamp,
-  ]);
+  }, [dispatch, isQuotesLoaded, source_amount, target_amount, fulfilledTimeStamp, target_crypto_asset_id]);
 
-  const updateQuotes = useCallback(async (values: QuoteFormValues) => {
-    try {
-      // replace comma to dot and trim comma/dot in the end of string
-      const regexReplacer = (match: string, numberPart: string) => numberPart;
-      const endWithDotOrCommaRegex = /(^[0-9]+)([,|.])$/i;
-      const finalSourceValue = replaceCommaWithDot(values.quoteSourceAmount)
-        .replace(endWithDotOrCommaRegex, regexReplacer);
-      const finalTargetValue = replaceCommaWithDot(values.quoteTargetAmount)
-        .replace(endWithDotOrCommaRegex, regexReplacer);
-      await handleTriggerUpdateQuotes({
-        ...values,
-        quoteSourceAmount: finalSourceValue,
-        quoteTargetAmount: finalTargetValue,
-      });
-      dispatch(setQuotesLoading(false));
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    }
-  }, [dispatch, handleTriggerUpdateQuotes]);
+  const updateQuotes = useUpdateQuotes(handleTriggerUpdateQuotes);
 
   const debouncedUpdateQuotes = useMemo(
     () => debounce(
@@ -392,6 +395,11 @@ const QuotesStep: FC = () => {
     dispatch(incrementWidgetStep());
   };
 
+  const handleChangeCurrency = () => {
+    dispatch(setQuotesLoading(true));
+    dispatch(setQuotesAutoUpdateEnable(true));
+  };
+
   return (
     <Flex
       flexDirection="column"
@@ -412,6 +420,7 @@ const QuotesStep: FC = () => {
           isValid,
           errors,
           touched,
+          values,
         }) => (
           <StyledForm
             autoComplete="off"
@@ -440,7 +449,11 @@ const QuotesStep: FC = () => {
                     type="string"
                     placeholder="You Pay..."
                   />
-                  <CurrencySelect text="USD" type="usd" />
+                  <CurrencySelectField
+                    name="sourceCurrency"
+                    options={sourceOptions}
+                    onHandleChange={() => handleChangeCurrency()}
+                  />
                 </QuoteInputRow>
                 <FormFieldErrorMessage
                   name="quoteSourceAmount"
@@ -455,7 +468,9 @@ const QuotesStep: FC = () => {
                     <Fee
                       c14Fee={c14 || '0'}
                       networkFee={network || '0'}
-                      currencyCode={sourceCurrency}
+                      currencyCode={
+                        (sourceOptions.find((o) => o.value === values.sourceCurrency) as SelectOption).value
+                      }
                       totalFee={total || '0'}
                     />
                   </QuotesFeeBox>
@@ -478,7 +493,11 @@ const QuotesStep: FC = () => {
                     type="string"
                     placeholder="You Receive..."
                   />
-                  <CurrencySelect text="USDC_EVMOS" type="evmos" />
+                  <CurrencySelectField
+                    onHandleChange={() => handleChangeCurrency()}
+                    name="targetCurrency"
+                    options={targetOptions}
+                  />
                 </QuoteInputRow>
                 <FormFieldErrorMessage
                   name="quoteTargetAmount"

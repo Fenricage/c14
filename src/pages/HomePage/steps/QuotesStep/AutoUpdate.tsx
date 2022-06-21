@@ -99,7 +99,7 @@ function AutoUpdate({
 
   useCallOnExpireTimer(expires_at, onExpireTimerHandler);
 
-  // call update quotes data on change form values
+  // call update quotes data on change  form values
   useEffect(() => {
     if (!isQuotesAutoUpdateEnabled) {
       return;

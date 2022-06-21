@@ -2,12 +2,13 @@ import styled, { createGlobalStyle } from 'styled-components/macro';
 import React, { ReactNode } from 'react';
 import { Transition, TransitionStatus } from 'react-transition-group';
 
-export const Title = styled.h1<{margin?: string}>`
+export const Title = styled.h1<{margin?: string; color?: string}>`
   font-family: 'Pragmatica Extended',serif;
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
   line-height: 40px;
+  color: ${({ color }) => color || 'inherit'};
   width: 100%;
   margin: ${({ margin }) => margin || '0'};
   text-align: center;

@@ -186,6 +186,8 @@ export type AppState = {
 export const initialQuotesValuesForm: QuoteFormValues = {
   quoteSourceAmount: '100',
   quoteTargetAmount: '',
+  sourceCurrency: 'USD',
+  targetCurrency: 'b2384bf2-b14d-4916-aa97-85633ef05742',
 };
 
 type InitialFormValuesPayload = {

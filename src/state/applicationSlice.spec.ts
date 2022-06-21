@@ -88,13 +88,13 @@ describe('application slice testing', () => {
       source_currency: 'USD',
       source_amount: '50',
       target_amount: '60',
-      target_currency: 'USDC_EVMOS',
+      target_crypto_asset_id: 'b2384bf2-b14d-4916-aa97-85633ef05742',
     });
 
     store.dispatch(quotesApi.endpoints.getQuote.initiate({
       source_currency: 'USD',
       source_amount: '50',
-      target_currency: 'USDC_EVMOS',
+      target_crypto_asset_id: 'b2384bf2-b14d-4916-aa97-85633ef05742',
     }));
 
     await waitFor(() => {
@@ -107,7 +107,7 @@ describe('application slice testing', () => {
         source_amount: '50',
         target_amount: '60',
         source_currency: 'USD',
-        target_currency: 'USDC_EVMOS',
+        target_crypto_asset_id: 'b2384bf2-b14d-4916-aa97-85633ef05742',
       });
     });
 

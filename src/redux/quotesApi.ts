@@ -2,18 +2,19 @@ import {
   createApi,
 } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from './utils';
+import { Currency } from '../components/CurrencySelectField/CurrencySelectField';
 
 export type QuoteRequestBody = {
-  source_currency: string;
-  target_currency: string;
+  source_currency: Currency;
+  target_crypto_asset_id: Currency;
   source_amount?: string;
   target_amount?: string;
 }
 
 export type QuoteResponse = {
   id: string;
-  source_currency: string;
-  target_currency: string;
+  source_currency: Currency;
+  target_crypto_asset_id: Currency;
   source_amount: string;
   target_amount: string;
   fiat_blockchain_fee: string;

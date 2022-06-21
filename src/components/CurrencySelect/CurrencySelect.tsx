@@ -1,10 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
-import { ReactComponent as ArrowIcon } from '../../assets/arrow.svg';
-import { ReactComponent as USDIcon } from '../../assets/usd_icon.svg';
-import { ReactComponent as EVMOSIcon } from '../../assets/evmos_icon.svg';
-
-export type Currency = 'usd' | 'evmos'
+import CurrencySelectIcon, { CurrencySelectIconContainer } from '../CurrencySelectIcon/CurrencySelectIcon';
+import { Currency } from '../CurrencySelectField/CurrencySelectField';
 
 type CurrencySelectProps = {
   type: Currency;
@@ -15,6 +12,10 @@ export const CurrencySelectContainer = styled.div`
   display: flex;
   position: relative;
   align-items: center;
+  
+  ${CurrencySelectIconContainer} {
+    margin-right: 0;
+  }
 `;
 
 const Name = styled.span`
@@ -39,58 +40,14 @@ export const CurrencyIcon = styled.div`
   border-radius: 50%;
 `;
 
-export const StyledArrowIcon = styled(ArrowIcon)`
-  display: block;
-  position: absolute;
-  transform: scale(.6);
-  top: calc(50% - 6px);
-  right: -12px;
-`;
-
-const StyledUSDIcon = styled(USDIcon)`
-
-`;
-
-const StyledEVMOSIcon = styled(EVMOSIcon)`
-
-`;
-
 const CurrencySelect: FC<CurrencySelectProps> = ({
   type,
   text,
-}) => {
-  const renderIcon = (): JSX.Element => {
-    let IconComponent;
-    switch (type) {
-      case 'usd': {
-        IconComponent = StyledUSDIcon;
-        break;
-      }
-
-      case 'evmos': {
-        IconComponent = StyledEVMOSIcon;
-        break;
-      }
-
-      default: {
-        IconComponent = StyledEVMOSIcon;
-      }
-    }
-
-    return (
-      <CurrencyIcon>
-        <IconComponent />
-      </CurrencyIcon>
-    );
-  };
-
-  return (
-    <CurrencySelectContainer>
-      <Name>{text}</Name>
-      {renderIcon()}
-      <StyledArrowIcon />
-    </CurrencySelectContainer>
-  );
-};
+}) => (
+  <CurrencySelectContainer>
+    <Name>{text}</Name>
+    <CurrencySelectIcon optionValue={type} />
+  </CurrencySelectContainer>
+);
 
 export default CurrencySelect;

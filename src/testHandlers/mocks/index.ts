@@ -3,7 +3,7 @@ import { GetUserCardsResponse } from '../../redux/cardsApi';
 export const serverQuoteRequestMock = {
   id: 'uuid534-23423423-234234-4343',
   source_currency: 'USD',
-  target_currency: 'USDC_EVMOS',
+  target_crypto_asset_id: 'b2384bf2-b14d-4916-aa97-85633ef05742',
   source_amount: '100',
   target_amount: '110',
   fiat_blockchain_fee: '30',

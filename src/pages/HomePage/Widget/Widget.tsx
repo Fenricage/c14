@@ -14,6 +14,8 @@ import CompleteStep from '../steps/CompleteStep/CompleteStep';
 
 const WidgetContainer = styled.div`
   display: flex;
+  position: relative;
+  overflow: auto;
   flex-flow: column nowrap;
   width: 465px;
   min-height: 517px;
@@ -80,7 +82,10 @@ const Widget: FC = () => {
   }, [currentStep]);
 
   return (
-    <WidgetContainer data-testid="Widget">
+    <WidgetContainer
+      data-testid="Widget"
+      id="widget"
+    >
       {renderStep()}
     </WidgetContainer>
   );

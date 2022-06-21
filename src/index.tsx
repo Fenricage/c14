@@ -2,6 +2,7 @@ import './fonts/index';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
+import ReactModal from 'react-modal';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ThemeProvider from './theme';
@@ -11,6 +12,8 @@ import { ThemedGlobalStyle } from './theme/components';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
+
+ReactModal.setAppElement('#root');
 
 root.render(
   <Provider store={store}>
