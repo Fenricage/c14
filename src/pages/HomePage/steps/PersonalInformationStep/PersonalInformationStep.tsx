@@ -6,7 +6,7 @@ import {
 } from '../../../../theme/components';
 import { useAppDispatch } from '../../../../app/hooks';
 import {
-  incrementWidgetStep,
+  incrementWidgetStep, logout,
 } from '../../../../state/applicationSlice';
 
 const PersonalInformationStep: FC = () => {
@@ -25,6 +25,9 @@ const PersonalInformationStep: FC = () => {
     <Flex flexDirection="column" flexWrap="nowrap" flex={1}>
       <WidgetHead
         text="Enter the Personal Informations"
+        customBackCallback={() => {
+          dispatch(logout());
+        }}
       />
       <AnimatedContainer animate={animate}>
         <TemporaryContainer>

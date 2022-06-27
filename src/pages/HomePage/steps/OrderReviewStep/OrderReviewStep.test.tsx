@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  act, waitForElementToBeRemoved, within, waitFor,
+  act, within, waitFor,
 } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';

@@ -47,7 +47,6 @@ const mediaWidthTemplates: {
   {},
 ) as any;
 
-export const alt4 = 'rgb(104,146,169)';
 export const lgray = '#EDEDED';
 export const violet = '#783AFF';
 export const dviolet = '#33334B';
@@ -62,6 +61,7 @@ export const alt2 = '#9cbccd';
 export const alt3 = 'rgba(42,57,68,1)';
 export const alt3o1 = 'rgba(42,57,68,.42)';
 export const alt3o2 = 'rgba(42,57,68,.26)';
+export const alt4 = 'rgb(104,146,169)';
 export const alt5 = 'rgba(104,146,169,.75)';
 
 export function colors(): Colors {

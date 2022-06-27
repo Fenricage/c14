@@ -8,3 +8,5 @@ export const SHOULD_VALIDATE = {
 /* extra */
 
 export const SECOND_MS = 1000;
+
+export const TOKEN = 'token';

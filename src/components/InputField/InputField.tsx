@@ -65,7 +65,7 @@ export type OnChangeInputField = ({
 }) => unknown;
 
 export type InputFieldProps<FormValues = unknown> = {
-  label: string;
+  label?: string;
   onHandleChange?: OnChangeInputField;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 } &

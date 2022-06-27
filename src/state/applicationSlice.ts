@@ -8,6 +8,7 @@ import { SECOND_MS } from '../constants';
 import { cardsApi, GetUserCardsResponse, PaymentCard } from '../redux/cardsApi';
 import { PaymentSelectFormValues } from '../pages/HomePage/steps/PaymentSelectStep/PaymentSelectStep';
 import { GetPurchaseDetailsResponse, purchaseApi } from '../redux/purchaseApi';
+import { LoginResponse, userApi } from '../redux/userApi';
 
 export const CALCULATOR_FORM_NAME = 'calculator-form';
 export const PAYMENT_SELECT_FORM_NAME = 'payment-select-form';
@@ -181,6 +182,12 @@ export type AppState = {
   userCardsError: string | null
   purchaseDetails: GetPurchaseDetailsResponse | null
   deletingCards: string[]
+  jwtToken: LoginResponse | null;
+  isSMSSended: boolean;
+  isSMSSending: boolean;
+  isAuthenticated: boolean;
+  isAuthenticating: boolean;
+  phoneNumber: string | null;
 }
 
 export const initialQuotesValuesForm: QuoteFormValues = {
@@ -238,6 +245,14 @@ export const initialState = {
   userCardsError: null,
   purchaseDetails: null,
   deletingCards: [],
+  isSMSSended: false,
+  // jwtToken: localStorage.getItem(TOKEN) ? JSON.parse(localStorage.getItem(TOKEN) as string) : null,
+  jwtToken: null,
+  isSMSSending: false,
+  // isAuthenticated: localStorage.getItem(TOKEN) !== null,
+  isAuthenticated: false,
+  isAuthenticating: false,
+  phoneNumber: null,
 } as AppState;
 
 const applicationSlice = createSlice({
@@ -339,6 +354,13 @@ const applicationSlice = createSlice({
       state.userCardsError = null;
     },
     resetApplication: () => initialState,
+    logout: (state) => {
+      state.isAuthenticated = false;
+      state.jwtToken = null;
+      state.isAuthenticating = false;
+      state.isSMSSended = false;
+      state.isSMSSending = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -501,6 +523,58 @@ const applicationSlice = createSlice({
         state.purchaseDetails = payload;
       },
     );
+
+    builder.addMatcher(
+      userApi.endpoints.verifyPhoneNumber.matchPending,
+      (state) => {
+        state.isSMSSending = true;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.verifyPhoneNumber.matchFulfilled,
+      (state, { meta }) => {
+        state.isSMSSending = false;
+        state.phoneNumber = meta.arg.originalArgs.phone_number;
+
+        state.isSMSSended = true;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.verifyPhoneNumber.matchRejected,
+      (state) => {
+        state.isSMSSending = false;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.login.matchPending,
+      (state) => {
+        state.isAuthenticating = true;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.login.matchFulfilled,
+      (state, { payload }) => {
+        state.jwtToken = payload;
+        state.isAuthenticated = true;
+        state.isAuthenticating = false;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.login.matchRejected,
+      (state) => {
+        state.isAuthenticating = false;
+      },
+    );
+
+    builder.addMatcher(applicationSlice.actions.logout.match, (state) => {
+      state.widgetSteps.currentStep = WidgetSteps.QUOTES;
+      state.stepperSteps.currentStep = StepperSteps.QUOTES;
+    });
   },
 });
 
@@ -514,11 +588,10 @@ export const {
   incrementWidgetStep,
   goToWidgetStep,
   incrementStepperStep,
-  decrementStepperStep,
+  logout,
   goToStepperStep,
   setInitialValuesForm,
   setSelectedUserCard,
-  clearSelectedUserCard,
   setQuotesLoading,
   setQuotesAutoUpdateEnable,
   setLastChangedQuoteInputName,
