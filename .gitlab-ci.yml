@@ -1,6 +1,7 @@
 image: node:latest
 
 stages:
+  - manual_deploy_dev
   - quality_check
   - deploy_dev
   - deploy_prod
@@ -19,6 +20,11 @@ deploy_dev:
     - master
   extends: .deploy
 
+manual_deploy_dev:
+  stage: manual_deploy_dev
+  extends: .deploy
+  environment: dev
+  when: manual
 
 deploy_prod:
   stage: deploy_prod
