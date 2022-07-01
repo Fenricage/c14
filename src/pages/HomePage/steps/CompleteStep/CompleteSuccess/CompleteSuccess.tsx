@@ -78,14 +78,14 @@ const CompleteSuccess: FC<CompleteSuccessProps> = ({
         <RowLabel>Amount sent</RowLabel>
         <AmountContainer>
           <CurrencyAmountValue>{purchaseDetails.source_amount}</CurrencyAmountValue>
-          <CurrencyKind>USDC EVMOS</CurrencyKind>
+          <CurrencyKind>{purchaseDetails.source_currency}</CurrencyKind>
         </AmountContainer>
       </Row>
       <Row>
         <RowLabel>Amount charged</RowLabel>
         <AmountContainer>
           <CurrencyAmountValue>{purchaseDetails.target_amount}</CurrencyAmountValue>
-          <CurrencyKind>USD</CurrencyKind>
+          <CurrencyKind>{purchaseDetails.target_crypto_asset.symbol}</CurrencyKind>
         </AmountContainer>
       </Row>
       <Row>

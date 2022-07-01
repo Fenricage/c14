@@ -19,7 +19,12 @@ import Flag, { FlagContainer } from './Flag';
 import { SHOULD_VALIDATE } from '../../constants';
 import { PRIMARY_BORDER_RADIUS } from '../../pages/HomePage/steps/SMSConfirmationStep/PrimaryInputField';
 
-const finalLabels = Object.fromEntries(Object.entries(en).filter((i) => i[0] !== 'ZZ'));
+const labelEntries = Object.entries(en)
+  .filter((i) => i[0] !== 'ZZ');
+
+const finalLabels = Object.fromEntries(
+  labelEntries,
+);
 
 type PhoneInputFieldProps = {
   name: string;

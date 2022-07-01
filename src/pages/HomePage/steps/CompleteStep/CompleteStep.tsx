@@ -14,7 +14,8 @@ const CompleteStep: FC = () => {
   const selectedCard = application.selectedUserCard as PaymentCard;
 
   const renderComplete = () => {
-    if (purchaseDetails.status === GetPurchaseDetailsResponseStatus.BLOCKCHAIN_TRANSFER_PENDING) {
+    if (purchaseDetails.status === GetPurchaseDetailsResponseStatus.BLOCKCHAIN_TRANSFER_PENDING
+      || purchaseDetails.status === GetPurchaseDetailsResponseStatus.BLOCKCHAIN_TRANSFER_COMPLETE) {
       return (
         <CompleteSuccess
           purchaseDetails={application.purchaseDetails as GetPurchaseDetailsResponse}

@@ -1,8 +1,9 @@
 import React, { ChangeEvent, FC } from 'react';
 import {
-  Country, getCountries, getCountryCallingCode, Labels,
+  Country, getCountryCallingCode, Labels,
 } from 'react-phone-number-input';
 import styled from 'styled-components/macro';
+import countries from './countries';
 
 type PhoneSelectProps = {
   value: Country;
@@ -33,7 +34,7 @@ const CountrySelect: FC<PhoneSelectProps> = ({
       <option value="">
         {labels.ZZ}
       </option>
-      {getCountries().map((country) => (
+      {countries.map((country) => (
         <option key={country} value={country}>
           {labels[country]}
           {' '}

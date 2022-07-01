@@ -21,11 +21,20 @@ export enum GetPurchaseDetailsResponseStatus {
   BLOCKCHAIN_TRANSFER_COMPLETE = 'BLOCKCHAIN_TRANSFER_COMPLETE'
 }
 
+export type CryptoAsset = {
+  id: string;
+  name: string;
+  symbol: string;
+  blockchain_name: string;
+}
+
 export type GetPurchaseDetailsResponse = {
   source_amount: string;
   target_amount: string;
   target_blockchain_address: string;
   fiat_blockchain_fee: string;
+  source_currency: string;
+  target_crypto_asset: CryptoAsset;
   absolute_internal_fee: string;
   card_type: string;
   card_last4: string;

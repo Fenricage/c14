@@ -5,6 +5,7 @@ import { Form, Formik } from 'formik';
 import WidgetHead from '../../Widget/WidgetHead';
 import {
   Button, FormRow,
+  Subtitle,
 } from '../../../../theme/components';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
@@ -109,7 +110,7 @@ const SMSConfirmationStep: FC = () => {
       <Flex marginTop="12px" width="100%" justifyContent="center">
         <PhoneIcon />
       </Flex>
-      <Flex flex={1} alignItems="center">
+      <Flex flex={1}>
         <Formik
           initialValues={initialFormValues}
           onSubmit={submitForm}
@@ -125,6 +126,7 @@ const SMSConfirmationStep: FC = () => {
           }) => (
             <StyledForm name="confirm-form">
               <Flex flexDirection="column" flex={1} justifyContent="center">
+                <Subtitle margin="0 0 24px 0">Insert Code Sent by SMS</Subtitle>
                 <PrimaryInputBox hasError={!!errors.code && !!touched.code}>
                   <PrimaryInputField name="code" type="tel" />
                   <FormFieldErrorMessage name="code" />

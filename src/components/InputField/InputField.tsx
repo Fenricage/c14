@@ -126,7 +126,7 @@ const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>
       }
 
       if (!e.defaultPrevented) {
-        setTouched(true, SHOULD_VALIDATE.FALSE);
+        // setTouched(true, SHOULD_VALIDATE.FALSE);
         setValue(newValue, SHOULD_VALIDATE.TRUE);
       }
     };
