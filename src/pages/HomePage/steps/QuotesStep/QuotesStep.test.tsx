@@ -8,15 +8,20 @@ import QuotesStep from './QuotesStep';
 import { server } from '../../../../testHandlers/utils';
 import { setupServerQuoteRequest } from '../../../../testHandlers/setupServerQuoteRequest';
 
-beforeAll(() => server.listen({
-  onUnhandledRequest: 'bypass',
-}));
-afterEach(() => server.resetHandlers());
+beforeAll(() => server.listen());
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+afterEach(() => {
+  server.resetHandlers();
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
 afterAll(() => server.close());
 
-// const invalidValues = ['0', '19', '19.9', '1000000000000,3', '1000000000001'];
-// const invalidValues = ['0'];
-// const validValues = ['20', '200,9', '300.3', '1000000000000'];
+const invalidValues = ['0', '19', '19.9', '1000000000000,3', '1000000000001'];
+// const validValues = ['20'];
+const validValues = ['20', '200,9', '300.3', '5000'];
 
 describe('QuotesStep tests', () => {
   it(
@@ -104,6 +109,10 @@ describe('QuotesStep tests', () => {
       await user.type(quoteSourceInput, '30,3');
     });
 
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
     await waitFor(() => {
       expect((quoteSourceInput as HTMLInputElement).value).toBe('30,3');
     });
@@ -117,116 +126,106 @@ describe('QuotesStep tests', () => {
     });
   });
 
-  // it.each(invalidValues)(
-  //   'test invalid values validation',
-  //   async (invalidValue) => {
-  //     setupServerQuoteRequest();
-  //     const {
-  //       getByTestId, getByLabelText, queryByTestId, debug, container,
-  //     } = render(<QuotesStep />);
-  //
-  //     await act(() => {
-  //       expect(getByTestId('QuoteStep')).toBeInTheDocument();
-  //     });
-  //
-  //     const quoteSourceInputLabelText = 'You Pay';
-  //     const quoteTargetInputLabelText = 'You Receive';
-  //     const submitButtonTestId = 'submitButton';
-  //
-  //     const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
-  //     const quoteTargetErrorFieldTestId = 'ErrorMessage-quoteTargetAmount';
-  //     await act(async () => {
-  //       (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement)
-  //  .setSelectionRange(0, (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value.length);
-  //     });
-  //
-  //     await act(async () => {
-  //       await user.type(getByLabelText(quoteSourceInputLabelText), invalidValue);
-  //       // user.tab();
-  //     });
-  //
-  //     await act(async () => {
-  //       (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement)
-  //  .setSelectionRange(0, (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value.length);
-  //     });
-  //
-  //     await act(async () => {
-  //       await user.type(getByLabelText(quoteTargetInputLabelText), invalidValue);
-  //       // user.tab();
-  //     });
-  //
-  //     debug(container);
-  //     // eslint-disable-next-line no-loop-func
-  //     await waitFor(() => {
-  //       expect((getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value).toBe(invalidValue);
-  //       expect((getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value).toBe(invalidValue);
-  //     });
-  //
-  //     // eslint-disable-next-line no-loop-func
-  //     await waitFor(() => {
-  //       expect(getByTestId(quoteSourceErrorFieldTestId)).toBeInTheDocument();
-  //       expect(getByTestId(quoteTargetErrorFieldTestId)).toBeInTheDocument();
-  //     });
-  //
-  //     // eslint-disable-next-line no-loop-func
-  //     await waitFor(() => {
-  //       expect(getByTestId(submitButtonTestId)).toBeDisabled();
-  //     });
-  //
-  //     await server.close();
-  //   },
-  // );
+  it.each(invalidValues)(
+    'test invalid values validation',
+    async (invalidValue) => {
+      setupServerQuoteRequest();
+      const {
+        getByTestId, getByLabelText,
+      } = render(<QuotesStep />);
 
-  // it.each(validValues)(
-  //   'test valid values validation',
-  //   async (validValue) => {
-  //     setupServerQuoteRequest();
-  //
-  //     const {
-  //       getByTestId, getByLabelText, queryByTestId, debug, container,
-  //     } = render(<QuotesStep />);
-  //
-  //     await act(() => {
-  //       expect(getByTestId('QuoteStep')).toBeInTheDocument();
-  //     });
-  //
-  //     const quoteSourceInputLabelText = 'You Pay';
-  //     const quoteTargetInputLabelText = 'You Receive';
-  //     const submitButtonTestId = 'submitButton';
-  //
-  //     const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
-  //     const quoteTargetErrorFieldTestId = 'ErrorMessage-quoteTargetAmount';
-  //
-  //     await act(async () => {
-  //       // eslint-disable-next-line no-restricted-syntax
-  //       (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement)
-  //   .setSelectionRange(0, (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value.length);
-  //       await user.type(getByLabelText(quoteSourceInputLabelText), validValue);
-  //       // user.tab();
-  //       (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement)
-  //   .setSelectionRange(0, (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value.length);
-  //       await user.type(getByLabelText(quoteTargetInputLabelText), validValue);
-  //       // user.tab();
-  //     });
-  //
-  //     // eslint-disable-next-line no-loop-func
-  //     await waitFor(() => {
-  //       expect((getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value).toBe(validValue);
-  //       expect((getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value).toBe(validValue);
-  //     });
-  //
-  //     // eslint-disable-next-line no-loop-func
-  //     await waitFor(() => {
-  //       expect(queryByTestId(quoteSourceErrorFieldTestId)).not.toBeInTheDocument();
-  //       expect(queryByTestId(quoteTargetErrorFieldTestId)).not.toBeInTheDocument();
-  //     });
-  //
-  //     // eslint-disable-next-line no-loop-func
-  //     await waitFor(() => {
-  //       expect(getByTestId(submitButtonTestId)).not.toBeDisabled();
-  //     });
-  //
-  //     await server.close();
-  //   },
-  // );
+      await act(() => {
+        expect(getByTestId('QuoteStep')).toBeInTheDocument();
+      });
+
+      const quoteSourceInputLabelText = 'You Pay';
+      const quoteTargetInputLabelText = 'You Receive';
+      const submitButtonTestId = 'submitButton';
+
+      const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
+      const quoteTargetErrorFieldTestId = 'ErrorMessage-quoteTargetAmount';
+      (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement)
+        .setSelectionRange(0, (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value.length);
+
+      (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement)
+        .setSelectionRange(0, (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value.length);
+
+      await act(async () => {
+        await user.type(getByLabelText(quoteSourceInputLabelText), invalidValue);
+        user.tab();
+        await user.type(getByLabelText(quoteTargetInputLabelText), invalidValue);
+        user.tab();
+      });
+
+      await waitFor(() => {
+        expect((getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value).toBe(invalidValue);
+        expect((getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value).toBe(invalidValue);
+      });
+
+      await waitFor(() => {
+        expect(getByTestId(quoteSourceErrorFieldTestId)).toBeInTheDocument();
+        expect(getByTestId(quoteTargetErrorFieldTestId)).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(getByTestId(submitButtonTestId)).toBeDisabled();
+      });
+    },
+  );
+
+  it.each(validValues)(
+    'test valid values validation',
+    async (validValue) => {
+      setupServerQuoteRequest();
+
+      const {
+        getByTestId, getByLabelText, queryByTestId,
+      } = render(<QuotesStep />);
+
+      await act(() => {
+        expect(getByTestId('QuoteStep')).toBeInTheDocument();
+      });
+
+      const quoteSourceInputLabelText = 'You Pay';
+      const quoteTargetInputLabelText = 'You Receive';
+      const submitButtonTestId = 'submitButton';
+
+      const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
+      const quoteTargetErrorFieldTestId = 'ErrorMessage-quoteTargetAmount';
+      (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement)
+        .setSelectionRange(0, (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value.length);
+
+      (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement)
+        .setSelectionRange(0, (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value.length);
+
+      await act(async () => {
+        await user.type(getByLabelText(quoteSourceInputLabelText), validValue);
+        user.tab();
+        await user.type(getByLabelText(quoteTargetInputLabelText), validValue);
+        user.tab();
+      });
+
+      await waitFor(() => {
+        expect((getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value).toBe(validValue);
+        expect((getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value).toBe(validValue);
+      });
+
+      await waitFor(() => {
+        expect(queryByTestId(quoteSourceErrorFieldTestId)).not.toBeInTheDocument();
+        expect(queryByTestId(quoteTargetErrorFieldTestId)).not.toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(getByTestId(submitButtonTestId)).toBeDisabled();
+      });
+
+      await act(() => {
+        jest.runAllTimers();
+      });
+
+      await waitFor(() => {
+        expect(getByTestId(submitButtonTestId)).not.toBeDisabled();
+      });
+    },
+  );
 });

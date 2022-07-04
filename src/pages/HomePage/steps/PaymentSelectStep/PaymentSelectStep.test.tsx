@@ -6,7 +6,7 @@ import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
 import PaymentSelectStep from './PaymentSelectStep';
 import { server } from '../../../../testHandlers/utils';
-import { setupServerGetUserCardsRequest } from '../../../../testHandlers/setupServerGetUserCardsRequest';
+import { setupUserCardsRequestServer } from '../../../../testHandlers/setupUserCardsRequestServer';
 import { serverGetUserCardsMock } from '../../../../testHandlers/mocks';
 import { createStoreWithMiddlewares } from '../../../../app/store';
 import { WidgetSteps } from '../../../../state/applicationSlice';
@@ -14,9 +14,7 @@ import { WidgetSteps } from '../../../../state/applicationSlice';
 const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS);
 
-beforeAll(() => server.listen({
-  onUnhandledRequest: 'bypass',
-}));
+beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -24,7 +22,7 @@ describe('PaymentSelectStep tests', () => {
   it(
     'check add cards button is rendered',
     async () => {
-      setupServerGetUserCardsRequest(serverGetUserCardsMock);
+      setupUserCardsRequestServer(serverGetUserCardsMock);
       const {
         getByTestId,
       } = render(<PaymentSelectStep />);
@@ -38,7 +36,7 @@ describe('PaymentSelectStep tests', () => {
   it(
     'check loader is rendered',
     async () => {
-      setupServerGetUserCardsRequest(serverGetUserCardsMock);
+      setupUserCardsRequestServer(serverGetUserCardsMock);
       const {
         getByTestId,
       } = render(<PaymentSelectStep />);
@@ -52,7 +50,7 @@ describe('PaymentSelectStep tests', () => {
   it(
     'check cards is rendered correctly',
     async () => {
-      setupServerGetUserCardsRequest(serverGetUserCardsMock);
+      setupUserCardsRequestServer(serverGetUserCardsMock);
       const {
         getByTestId,
         queryByTestId,
@@ -91,7 +89,7 @@ describe('PaymentSelectStep tests', () => {
   it(
     'check initial value is set',
     async () => {
-      setupServerGetUserCardsRequest(serverGetUserCardsMock);
+      setupUserCardsRequestServer(serverGetUserCardsMock);
       const {
         getByTestId,
         queryByTestId,
@@ -131,7 +129,7 @@ describe('PaymentSelectStep tests', () => {
   it(
     'check delete card and autoset to first element after deleting',
     async () => {
-      setupServerGetUserCardsRequest(serverGetUserCardsMock);
+      setupUserCardsRequestServer(serverGetUserCardsMock);
       const {
         getByTestId,
         queryByTestId,
@@ -218,7 +216,7 @@ describe('PaymentSelectStep tests', () => {
   it(
     'check that redirected on empty card list',
     async () => {
-      setupServerGetUserCardsRequest({ customer_cards: [] });
+      setupUserCardsRequestServer({ customer_cards: [] });
       const store = createStoreWithMiddlewares();
       const {
         getByTestId,
@@ -240,7 +238,7 @@ describe('PaymentSelectStep tests', () => {
   it(
     'check that redirected on delete last card',
     async () => {
-      setupServerGetUserCardsRequest({
+      setupUserCardsRequestServer({
         customer_cards: [{
           card_id: 'id1',
           expiry_month: '10',

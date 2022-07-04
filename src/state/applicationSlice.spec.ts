@@ -20,9 +20,7 @@ import {
 } from '../testHandlers/setupServerQuoteRequest';
 import { serverQuoteRequestMock } from '../testHandlers/mocks';
 
-beforeAll(() => server.listen({
-  onUnhandledRequest: 'bypass',
-}));
+beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 

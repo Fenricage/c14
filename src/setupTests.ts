@@ -5,6 +5,10 @@
 import '@testing-library/jest-dom';
 import { configure } from '@testing-library/react';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
 configure({
   asyncUtilTimeout: 20000,
 });
