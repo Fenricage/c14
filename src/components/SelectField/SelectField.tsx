@@ -1,9 +1,7 @@
 import React, {
   ChangeEventHandler,
-  FocusEventHandler,
   forwardRef,
   PropsWithChildren,
-  KeyboardEvent,
   useRef,
   ChangeEvent,
 } from 'react';
@@ -15,98 +13,79 @@ import {
   useField,
   useFormikContext,
 } from 'formik';
-import styled, { css } from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import { InputLabel } from '../../theme/components';
 import { SHOULD_VALIDATE } from '../../constants';
+import { sharedInputStyle } from '../InputField/InputField';
 
-export const InputContainer = styled.div`
+export const SelectContainer = styled.div`
   width: 100%;
   display: flex;
   flex-flow: column;
   align-items: flex-start;
 `;
 
-export const InputBox = styled.div`
+export const SelectBox = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: baseline;
   width: 100%;
 `;
 
-export const InputInner = styled.div`
+export const SelectInner = styled.div`
   display: flex;
   flex-flow: column;
   align-items: flex-start;
   width: 100%;
 `;
 
-export const sharedInputStyle = css`
-  width: 100%;
-  background-color: transparent;
-  border: 0 solid transparent;
-  outline: none;
-  font-style: normal;
-  font-family: "Inter",serif;
-  font-weight: 600;
-  
-  &:disabled {
-    opacity: .75;
-  }
+export const Select = styled.select`
+  ${sharedInputStyle};
 `;
 
-export const Input = styled.input`
-  ${sharedInputStyle}
-`;
+export type SelectOption = {
+  label: string;
+  value: string;
+}
 
-export type OnChangeInputField = ({
+export type OnChangeSelectField = ({
   context,
   value,
   event,
 }: {
   context: FormikContextType<any>;
   value: string;
-  event: ChangeEvent<HTMLInputElement>
+  event: ChangeEvent<HTMLSelectElement>
 }) => unknown;
 
-export type InputFieldProps<FormValues = unknown> = {
+export type SelectFieldProps<FormValues = unknown> = {
   label?: string;
-  min?: string;
-  max?: string;
-  onHandleChange?: OnChangeInputField;
-  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
+  options: SelectOption[];
+  onHandleChange?: OnChangeSelectField;
 } &
   /* from Field HOC, if wrapped. */
   Partial<FieldProps<string, FormValues>> &
   /* Any extra props. */
   FieldHookConfig<string>;
 
-const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>>(
+const SelectField = forwardRef<HTMLDivElement, PropsWithChildren<SelectFieldProps>>(
   ({
     label,
     autoComplete,
-    autoFocus = false,
     /* from Field HOC. */
     onHandleChange,
-    onKeyDown,
-    min,
-    max,
+    options,
     /* Any extra props. */
     ...fieldHookConfig
   }, ref) => {
     const {
-      type,
       placeholder,
       tabIndex,
       style,
-      onBlur,
       disabled,
     } = fieldHookConfig;
 
     const formikContext = useFormikContext();
-
-    const {
-      validateOnBlur,
-    } = formikContext;
 
     const { current: htmlId } = useRef(uuidv4());
 
@@ -121,11 +100,10 @@ const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>
     } = fieldInputProps;
 
     const {
-      setTouched,
       setValue,
     } = fieldHelpers;
 
-    const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const handleSelectChange: ChangeEventHandler<HTMLSelectElement> = (e) => {
       const { value: newValue } = e.target;
       // control changing value in formik
       if (onHandleChange) {
@@ -137,44 +115,41 @@ const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>
       }
     };
 
-    const handleBlur = (e: any) => {
-      if (onBlur) {
-        onBlur(e);
-      }
-      setTouched(true, validateOnBlur);
-    };
-
     return (
-      <InputContainer ref={ref}>
+      <SelectContainer ref={ref}>
         {label && (
         <InputLabel htmlFor={htmlId}>
           {label}
         </InputLabel>
         )}
-        <InputBox>
-          <InputInner>
-            <Input
+        <SelectBox>
+          <SelectInner>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+            <Select
               id={htmlId}
               name={name}
-              type={type}
-              min={min}
-              max={max}
-              autoFocus={autoFocus}
               autoComplete={autoComplete}
               placeholder={placeholder}
               tabIndex={tabIndex}
-              onKeyDown={onKeyDown}
               value={value}
               style={style}
-              onBlur={handleBlur as FocusEventHandler<HTMLInputElement>}
-              onChange={handleInputChange}
+              onChange={handleSelectChange}
               disabled={disabled}
-            />
-          </InputInner>
-        </InputBox>
-      </InputContainer>
+            >
+              {options.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </SelectInner>
+        </SelectBox>
+      </SelectContainer>
     );
   },
 );
 
-export default InputField;
+export default SelectField;

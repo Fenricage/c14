@@ -6,7 +6,7 @@ import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
 import QuotesStep from './QuotesStep';
 import { server } from '../../../../testHandlers/utils';
-import { setupServerQuoteRequest } from '../../../../testHandlers/setupServerQuoteRequest';
+import { setupServerQuoteRequest } from '../../../../testHandlers/quotes/setupServerQuotes';
 
 beforeAll(() => server.listen());
 beforeEach(() => {
@@ -20,7 +20,6 @@ afterEach(() => {
 afterAll(() => server.close());
 
 const invalidValues = ['0', '19', '19.9', '1000000000000,3', '1000000000001'];
-// const validValues = ['20'];
 const validValues = ['20', '200,9', '300.3', '5000'];
 
 describe('QuotesStep tests', () => {

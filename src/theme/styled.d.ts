@@ -21,6 +21,7 @@ export interface Colors {
   alt3o2: Color
   alt4: Color
   alt5: Color
+  alt6: Color
 }
 
 export interface Grids {

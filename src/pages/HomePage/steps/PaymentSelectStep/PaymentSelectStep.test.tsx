@@ -6,10 +6,10 @@ import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
 import PaymentSelectStep from './PaymentSelectStep';
 import { server } from '../../../../testHandlers/utils';
-import { setupUserCardsRequestServer } from '../../../../testHandlers/setupUserCardsRequestServer';
-import { serverGetUserCardsMock } from '../../../../testHandlers/mocks';
+import { setupUserCardsRequestServer } from '../../../../testHandlers/userCards/setupUserCardsServer';
 import { createStoreWithMiddlewares } from '../../../../app/store';
 import { WidgetSteps } from '../../../../state/applicationSlice';
+import { serverGetUserCardsMock } from '../../../../testHandlers/userCards/mocks';
 
 const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS);

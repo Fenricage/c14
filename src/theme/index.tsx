@@ -63,6 +63,7 @@ export const alt3o1 = 'rgba(42,57,68,.42)';
 export const alt3o2 = 'rgba(42,57,68,.26)';
 export const alt4 = 'rgb(104,146,169)';
 export const alt5 = 'rgba(104,146,169,.75)';
+export const alt6 = 'rgb(78,118,140)';
 
 export function colors(): Colors {
   return {
@@ -86,6 +87,7 @@ export function colors(): Colors {
     alt3o1,
     alt3o2,
     alt5,
+    alt6,
   };
 }
 

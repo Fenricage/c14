@@ -1,6 +1,6 @@
 import { rest } from 'msw';
-import { GetUserCardsResponse } from '../redux/cardsApi';
-import { server } from './utils';
+import { GetUserCardsResponse } from '../../redux/cardsApi';
+import { server } from '../utils';
 
 export const setupUserCardsRequestServer = (responseBody: Partial<GetUserCardsResponse>) => {
   server.use(

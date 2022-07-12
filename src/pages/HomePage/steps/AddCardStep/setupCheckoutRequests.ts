@@ -1,7 +1,7 @@
 import { rest } from 'msw';
 import { QuoteResponse } from '../../../../redux/quotesApi';
 import { server } from '../../../../testHandlers/utils';
-import { serverQuoteRequestMock } from '../../../../testHandlers/mocks';
+import { serverQuoteRequestMock } from '../../../../testHandlers/quotes/mocks';
 
 export const setupCheckoutRequests = (responseBody?: Partial<QuoteResponse>) => {
   server.use(

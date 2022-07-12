@@ -3,23 +3,20 @@ import { Flex } from 'rebass';
 import styled from 'styled-components/macro';
 import { Form, Formik } from 'formik';
 import WidgetHead from '../../Widget/WidgetHead';
-import {
-  Button, FormRow,
-  Subtitle,
-} from '../../../../theme/components';
+import { Button, FormRow, Subtitle } from '../../../../theme/components';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
-  incrementWidgetStep, selectApp,
+  incrementWidgetStep,
+  selectApp,
 } from '../../../../state/applicationSlice';
-import PrimaryInputField, { PRIMARY_BORDER_RADIUS } from './PrimaryInputField';
+import PrimaryInputField, {
+  PrimaryInputBox,
+} from '../../../../components/PrimaryInputField/PrimaryInputField';
 import { useLoginMutation } from '../../../../redux/userApi';
-import { notify } from '../../../../utils/toast';
-import { Input, InputContainer } from '../../../../components/InputField/InputField';
-import FormFieldErrorMessage, {
-  FormFieldErrorMessageText,
-  FormFieldErrorMessageWrapper,
-} from '../../../../components/FormFieldErrorMessage/FormFieldErrorMessage';
+import FormFieldErrorMessage from '../../../../components/FormFieldErrorMessage/FormFieldErrorMessage';
 import { ReactComponent as PhoneIcon } from '../../../../assets/phone_icon.svg';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 
 const StyledForm = styled(Form)`
   flex: 1;
@@ -30,43 +27,6 @@ const StyledForm = styled(Form)`
 type ConfirmationFormValues = {
   code: string;
 }
-
-const PrimaryInputBox = styled.div<{hasError: boolean}>`
-  display: flex;
-  width: 100%;
-  overflow: hidden;
-  flex-direction: column;
-  box-shadow: 0 0 0 1px ${({ theme, hasError }) => (hasError ? theme.red : 'transparent')};
-  border-radius: ${PRIMARY_BORDER_RADIUS};
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  
-  ${InputContainer} {
-    margin-bottom: 0;
-  }
-
-  ${Input} {
-    border-radius: ${({ hasError }) => (hasError ? '0' : '10px')};
-  }
-  
-  ${FormFieldErrorMessageWrapper} {
-    height: 20px;
-    font-size: 14px;
-    padding: 2px 36px 0 36px;
-    display: flex;
-    align-items: center;
-    letter-spacing: 0.5px;
-    font-weight: 400;
-    color: ${({ theme }) => theme.red};
-    margin: 0 -29px -14px -29px;
-    width: auto;
-    background: ${({ theme, hasError }) => (hasError ? theme.beige : 'transparent')};
-  }
-
-  ${FormFieldErrorMessageText} {
-    font-size: 14px;
-  }
-`;
 
 const validate = (values: ConfirmationFormValues) => {
   const errors: Partial<ConfirmationFormValues> = {};
@@ -79,10 +39,12 @@ const validate = (values: ConfirmationFormValues) => {
 };
 
 const SMSConfirmationStep: FC = () => {
-  const dispatch = useAppDispatch();
-
   const [triggerLogin] = useLoginMutation();
-  const { phoneNumber, isAuthenticated } = useAppSelector(selectApp);
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector(selectApp);
+  const {
+    phoneNumber,
+  } = useAppSelector(selectApp);
 
   const submitForm = async (values: ConfirmationFormValues) => {
     await triggerLogin({
@@ -95,12 +57,18 @@ const SMSConfirmationStep: FC = () => {
     code: '',
   };
 
+  useClearGeneralError();
+
   useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(incrementWidgetStep());
-      notify.success('Authentication success');
+    if (!isAuthenticated) {
+      return;
     }
-  }, [dispatch, isAuthenticated]);
+
+    dispatch(incrementWidgetStep());
+  }, [
+    dispatch,
+    isAuthenticated,
+  ]);
 
   return (
     <Flex flexDirection="column" flexWrap="nowrap" flex={1}>
@@ -126,7 +94,7 @@ const SMSConfirmationStep: FC = () => {
           }) => (
             <StyledForm name="confirm-form">
               <Flex flexDirection="column" flex={1} justifyContent="center">
-                <Subtitle margin="0 0 24px 0">Insert Code Sent by SMS</Subtitle>
+                <Subtitle margin="0 0 24px 0">Enter SMS verification code</Subtitle>
                 <PrimaryInputBox hasError={!!errors.code && !!touched.code}>
                   <PrimaryInputField name="code" type="tel" />
                   <FormFieldErrorMessage name="code" />
@@ -138,7 +106,8 @@ const SMSConfirmationStep: FC = () => {
                   data-testid="submitButton"
                   type="submit"
                 >
-                  Verify
+
+                  {isSubmitting ? <ButtonLoader /> : 'Verify'}
                 </Button>
               </FormRow>
             </StyledForm>

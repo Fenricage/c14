@@ -6,12 +6,14 @@ import { GetPurchaseDetailsResponse, GetPurchaseDetailsResponseStatus } from '..
 import CompleteSuccess from './CompleteSuccess/CompleteSuccess';
 import { PaymentCard } from '../../../../redux/cardsApi';
 import CompleteFailed from './CompleteFailed/CompleteFailed';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 
 const CompleteStep: FC = () => {
   const application = useAppSelector(selectApp);
 
   const purchaseDetails = application.purchaseDetails as GetPurchaseDetailsResponse;
   const selectedCard = application.selectedUserCard as PaymentCard;
+  useClearGeneralError();
 
   const renderComplete = () => {
     if (purchaseDetails.status === GetPurchaseDetailsResponseStatus.BLOCKCHAIN_TRANSFER_PENDING

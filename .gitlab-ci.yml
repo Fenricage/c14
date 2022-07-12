@@ -2,6 +2,7 @@ image: node:latest
 
 stages:
   - manual_deploy_dev
+  - manual_deploy_prod
   - quality_check
   - deploy_dev
   - deploy_prod
@@ -24,6 +25,12 @@ manual_deploy_dev:
   stage: manual_deploy_dev
   extends: .deploy
   environment: dev
+  when: manual
+
+manual_deploy_prod:
+  stage: manual_deploy_prod
+  extends: .deploy
+  environment: prod
   when: manual
 
 deploy_prod:

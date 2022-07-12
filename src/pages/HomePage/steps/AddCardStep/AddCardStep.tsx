@@ -15,8 +15,10 @@ import { alt4, red, white } from '../../../../theme';
 import { useAddUserCardMutation } from '../../../../redux/cardsApi';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
-  goToWidgetStep, incrementWidgetStep, selectApp, WidgetSteps,
+  incrementWidgetStep, logout, selectApp,
 } from '../../../../state/applicationSlice';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 
 const FramesContainer = styled.div<{isVisible: boolean}>`
   display: flex;
@@ -118,7 +120,9 @@ const AddCardStep: FC = () => {
     isUserCardsEmpty,
   } = useAppSelector(selectApp);
 
-  const [triggerAddCard, { status, error }] = useAddUserCardMutation();
+  const [triggerAddCard, {
+    status, error,
+  }] = useAddUserCardMutation();
 
   const scriptLoaded = useSetCheckoutScript();
 
@@ -142,6 +146,8 @@ const AddCardStep: FC = () => {
 
     fetchAddCard();
   }, [tokenizedEvent?.token, triggerAddCard]);
+
+  useClearGeneralError();
 
   useEffect(() => {
     if (status === QueryStatus.fulfilled) {
@@ -178,7 +184,7 @@ const AddCardStep: FC = () => {
         customBackCallback={
         isUserCardsEmpty
           ? (() => {
-            dispatch(goToWidgetStep(WidgetSteps.PERSONAL_INFORMATION));
+            dispatch(logout());
           }) : undefined
       }
       />
@@ -238,18 +244,11 @@ const AddCardStep: FC = () => {
                   },
                 }}
                 ready={() => setReady(true)}
-                // frameActivated={(e) => console.log('e frame activated:', e)}
-                // frameFocus={(e) => {}}
-                // frameBlur={(e) => {}}
                 frameValidationChanged={handleFrameValidationChanged}
-                // paymentMethodChanged={(e) => {}}
-                // cardValidationChanged={(e) => {}}
                 cardSubmitted={() => setCardSubmitted(true)}
                 cardTokenized={(e) => {
                   setTokenizedEvent(e);
                 }}
-                // cardTokenizationFailed={(e) => console.log('e tokenization failed: ', e)}
-                // cardBinChanged={(e) => {}}
               >
                 <FrameElementContainer>
                   <FrameLabel>Card Number</FrameLabel>
@@ -275,7 +274,7 @@ const AddCardStep: FC = () => {
               data-testid="submitButton"
               type="submit"
             >
-              Continue
+              {cardSubmitted ? <ButtonLoader /> : 'Continue'}
             </Button>
           </FormRow>
         </Flex>

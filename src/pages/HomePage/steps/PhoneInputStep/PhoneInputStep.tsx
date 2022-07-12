@@ -23,7 +23,9 @@ import FormFieldErrorMessage, {
   FormFieldErrorMessageText,
 } from '../../../../components/FormFieldErrorMessage/FormFieldErrorMessage';
 import { ReactComponent as PhoneIcon } from '../../../../assets/phone_icon.svg';
-import { PRIMARY_BORDER_RADIUS } from '../SMSConfirmationStep/PrimaryInputField';
+import { PRIMARY_BORDER_RADIUS } from '../../../../components/PrimaryInputField/PrimaryInputField';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 
 type PhoneFormValues = {
   phone?: string;
@@ -97,6 +99,7 @@ const PhoneInputStep: FC = () => {
     await triggerVerifyNumber({ phone_number: values.phone });
   };
 
+  useClearGeneralError();
   useEffect(() => {
     if (status === QueryStatus.fulfilled) {
       dispatch(incrementWidgetStep());
@@ -135,7 +138,7 @@ const PhoneInputStep: FC = () => {
                   data-testid="submitButton"
                   type="submit"
                 >
-                  Verify
+                  {isSubmitting ? <ButtonLoader /> : 'Verify'}
                 </Button>
               </FormRow>
             </StyledForm>

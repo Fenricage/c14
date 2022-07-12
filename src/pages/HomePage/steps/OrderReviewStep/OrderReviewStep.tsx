@@ -7,13 +7,35 @@ import WidgetHead from '../../Widget/WidgetHead';
 import PreviewBadge from './PreviewBadge';
 import Fee from '../QuotesStep/Fee';
 import AmountBadge from './AmountBadge';
-import { Card } from '../PaymentSelectStep/Card';
 import { Button, FormRow } from '../../../../theme/components';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import { incrementWidgetStep, selectApp, setQuotesLoaded } from '../../../../state/applicationSlice';
+import {
+  decrementWidgetStep,
+  goToWidgetStep,
+  incrementWidgetStep,
+  selectApp,
+  setQuotesLoaded,
+  setSkipPaymentStep, setSkipPersonalInfoStep,
+  WidgetSteps,
+} from '../../../../state/applicationSlice';
 import useCallOnExpireTimer from '../../../../hooks/useCallOnExpireTimer';
 import { targetOptions } from '../QuotesStep/QuotesStep';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import CardBadge from './CardBadge';
+import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
+
+const ChangeButton = styled.button`
+  font-size: 12px;
+  padding: 0;
+  color: #fff;
+  border-bottom: 1px dotted rgba(255, 255, 255, .5);
+  margin-top: 6px;
+  
+  &:hover {
+    border-bottom: 1px dotted rgba(255, 255, 255, 1);
+  }
+`;
 
 const ReviewOrderItem = styled.div`
   display: flex;
@@ -51,6 +73,7 @@ const OrderReviewStep: FC = () => {
     },
     isQuoteLoaded,
     isQuoteLoading,
+    user,
     ...application
   } = useAppSelector(selectApp);
 
@@ -89,12 +112,23 @@ const OrderReviewStep: FC = () => {
   }, [source_amount, source_currency, target_crypto_asset_id, triggerGetQuotes]);
 
   useCallOnExpireTimer(expires_at, onExpire);
+  useClearGeneralError();
 
   const handleClickBuy = () => {
     dispatch(incrementWidgetStep());
   };
 
   const targetCurrencyLabel = targetOptions.find((o) => o.value === target_crypto_asset_id);
+
+  const handleClickChangePayment = () => {
+    dispatch(setSkipPaymentStep(false));
+    dispatch(decrementWidgetStep());
+  };
+
+  const handleClickChangePersonal = () => {
+    dispatch(setSkipPersonalInfoStep(false));
+    dispatch(goToWidgetStep(WidgetSteps.PERSONAL_INFORMATION));
+  };
 
   return (
     <Flex
@@ -104,6 +138,10 @@ const OrderReviewStep: FC = () => {
     >
       <WidgetHead
         text="Review Your Order"
+        customBackCallback={() => {
+          dispatch(setSkipPaymentStep(false));
+          dispatch(decrementWidgetStep());
+        }}
       />
       <Flex
         flexDirection="column"
@@ -145,12 +183,29 @@ const OrderReviewStep: FC = () => {
             </ReviewOrderItem>
             <ReviewOrderItem data-testid="ReviewOrderItemPaymentMethod">
               <PreviewBadge label="Using Payment Method">
-                <Card
-                  expired={`${selectedUserCard.expiry_month}/${selectedUserCard.expiry_year}`}
-                  paymentMethod={selectedUserCard.type}
-                  owner="John Doe"
-                  lastNumbers={selectedUserCard.last4}
-                />
+                <Flex justifyContent="space-between" alignItems="flex-end">
+                  <CardBadge
+                    paymentMethod={selectedUserCard.type}
+                    city={user?.city as string}
+                    postalCode={user?.postal_code as string}
+                    owner={`${user?.first_names as string} ${user?.last_names as string}`}
+                    lastNumbers={selectedUserCard.last4}
+                  />
+                  <Flex flexDirection="column">
+                    <ChangeButton
+                      type="button"
+                      onClick={handleClickChangePayment}
+                    >
+                      Change
+                    </ChangeButton>
+                    <ChangeButton
+                      type="button"
+                      onClick={handleClickChangePersonal}
+                    >
+                      Change
+                    </ChangeButton>
+                  </Flex>
+                </Flex>
               </PreviewBadge>
             </ReviewOrderItem>
             <ReviewOrderItem data-testid="ReviewOrderItemReceive">
@@ -171,7 +226,7 @@ const OrderReviewStep: FC = () => {
           data-testid="submitButton"
           type="submit"
         >
-          Buy Now
+          {isQuoteLoading ? <ButtonLoader /> : 'Buy Now'}
         </Button>
       </FormRow>
     </Flex>

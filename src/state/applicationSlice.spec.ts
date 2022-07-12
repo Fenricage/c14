@@ -17,8 +17,8 @@ import { server } from '../testHandlers/utils';
 import { createStoreWithMiddlewares, store as rootStore } from '../app/store';
 import {
   setupServerQuoteRequest,
-} from '../testHandlers/setupServerQuoteRequest';
-import { serverQuoteRequestMock } from '../testHandlers/mocks';
+} from '../testHandlers/quotes/setupServerQuotes';
+import { serverQuoteRequestMock } from '../testHandlers/quotes/mocks';
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -38,15 +38,6 @@ describe('application slice testing', () => {
       }),
     ).toEqual(initialState);
   });
-
-  // it('should be able to increment/decrements step', () => {
-  //   store.dispatch(incrementWidgetStep());
-  //   expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_VERIFICATION);
-  //   store.dispatch(incrementWidgetStep());
-  //   expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_CONFIRMATION);
-  //   store.dispatch(decrementWidgetStep());
-  //   expect(selectApp(store.getState()).stepper.currentStep).toBe(Steps.PHONE_VERIFICATION);
-  // });
 
   it('test counter', () => {
     store.dispatch(setRequestCounter(3000));

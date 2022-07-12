@@ -29,13 +29,11 @@ const CountrySelect: FC<PhoneSelectProps> = ({
     <CountrySelectElement
       {...rest}
       value={value}
+      data-testid="CountrySelect"
       onChange={handleChangeSelect}
     >
-      <option value="">
-        {labels.ZZ}
-      </option>
       {countries.map((country) => (
-        <option key={country} value={country}>
+        <option data-testid="CountrySelectOption" key={country} value={country}>
           {labels[country]}
           {' '}
           +

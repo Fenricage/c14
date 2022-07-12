@@ -34,8 +34,9 @@ import {
 } from '../../../../state/applicationSlice';
 import WidgetHead from '../../Widget/WidgetHead';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
-// import { useGetQuote } from '../../../../redux/quotesHooks';
 import { useUpdateQuotes } from './hooks';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 
 export type UserDecimalSeparator = ',' | '.' | undefined
 
@@ -252,15 +253,7 @@ const QuotesStep: FC = () => {
 
   const request = useRef<any>(null);
 
-  // const {
-  //   quotes,
-  //   isLoading,
-  //   isLoaded,
-  // } = useGetQuote({
-  //   source_currency: sourceCurrency,
-  //   target_crypto_asset_id: targetCurrency,
-  //   source_amount: initialQuotesValuesForm.quoteSourceAmount,
-  // });
+  useClearGeneralError();
 
   useEffect(() => () => {
     dispatch(setQuotesLoaded(false));
@@ -518,7 +511,7 @@ const QuotesStep: FC = () => {
                   data-testid="submitButton"
                   type="submit"
                 >
-                  Buy Now
+                  {isSubmitting ? (<ButtonLoader />) : 'Buy Now'}
                 </Button>
               </ButtonBox>
             </FormRow>

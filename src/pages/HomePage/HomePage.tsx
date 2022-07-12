@@ -4,6 +4,7 @@ import { Flex } from 'rebass';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import Sidebar from './Sidebar/Sidebar';
 import Widget from './Widget/Widget';
+import GeneralError from './GeneralError';
 
 const SidebarContainer = styled.div`
   height: 100%;
@@ -16,6 +17,8 @@ const SidebarContainer = styled.div`
 
 const WidgetContainer = styled.div`
   display: flex;
+  position: relative;
+  flex-flow: column;
   align-items: center;
   justify-content: center;
   height: 100%;
@@ -28,6 +31,7 @@ const HomePage: FC = () => (
         <Sidebar />
       </SidebarContainer>
       <WidgetContainer>
+        <GeneralError />
         <Widget />
       </WidgetContainer>
     </Flex>

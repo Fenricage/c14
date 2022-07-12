@@ -10,12 +10,33 @@ import { quotesApi } from '../redux/quotesApi';
 import { cardsApi } from '../redux/cardsApi';
 import { purchaseApi } from '../redux/purchaseApi';
 import { userApi } from '../redux/userApi';
-import applicationSlice from '../state/applicationSlice';
+import applicationSlice, { setGeneralError } from '../state/applicationSlice';
 import { notify } from '../utils/toast';
+
+const errors: {[p: string]: string} = {
+  EMAIL_ALREADY_REGISTERED: 'Email already registered',
+  CARD_DECLINED: 'Card declined',
+  INVALID_PHONE_NUMBER_FORMAT: 'Invalid phone number format',
+  INVALID_VERIFICATION_CODE: 'Invalid verification code',
+  VERIFICATION_NOT_STARTED: 'Verification not started',
+  COUNTRY_BLACKLISTED: 'Country blaclister',
+  JWT_TOKEN_EXPIRED: 'Token expired',
+  USER_PURCHASE_LIMIT_EXCEEDED: 'Purchase limit exceeded',
+  INVALID_PHONE_NUMBER: 'Invalid phone number',
+  USER_IDENTITY_NOT_VERIFIED: 'User identity not verified',
+  USER_EMAIL_NOT_VERIFIED: 'Email not verified',
+};
+
+const getGeneralErrorMessage = (errorCode: string) => {
+  if (errors[errorCode]) {
+    return errors[errorCode];
+  }
+  return 'Unexpected error';
+};
 
 // macro logginng errors middleware
 // api: MiddlewareAPI
-export const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
+export const rtkQueryErrorLogger: Middleware = ({ dispatch }) => (next) => (action) => {
   // RTK Query uses `createAsyncThunk` from redux-toolkit under the hood,
   // so we're able to utilize these matchers!
 
@@ -27,13 +48,15 @@ export const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
     if (action?.error?.message && action.payload) {
       if (action.payload.data.detail) {
         notify.error(action.payload.data.detail);
-        return;
       }
     }
 
     if (action?.payload?.data?.error_code) {
-      notify.error(action.payload.data.error_code);
-      return;
+      const generalErrorMessage = getGeneralErrorMessage(action.payload.data.error_code);
+      dispatch(setGeneralError({
+        type: 'error',
+        message: generalErrorMessage,
+      }));
     }
   }
 

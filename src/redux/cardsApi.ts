@@ -27,7 +27,6 @@ export const cardsApi = createApi({
   keepUnusedDataFor: 0,
   reducerPath: 'cardsApi',
   baseQuery,
-  tagTypes: ['Cards'],
   // add types
   endpoints: (build) => ({
     addUserCard: build.mutation<AddUserCardResponse, AddUserCardRequestBody>({
@@ -45,7 +44,6 @@ export const cardsApi = createApi({
         url: `/cards/${cardId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Cards'],
     }),
   }),
 });

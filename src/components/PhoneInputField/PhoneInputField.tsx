@@ -17,7 +17,7 @@ import { useField } from 'formik';
 import CountrySelect, { CountrySelectElement } from './CountrySelect';
 import Flag, { FlagContainer } from './Flag';
 import { SHOULD_VALIDATE } from '../../constants';
-import { PRIMARY_BORDER_RADIUS } from '../../pages/HomePage/steps/SMSConfirmationStep/PrimaryInputField';
+import { PRIMARY_BORDER_RADIUS } from '../PrimaryInputField/PrimaryInputField';
 
 const labelEntries = Object.entries(en)
   .filter((i) => i[0] !== 'ZZ');
@@ -125,7 +125,7 @@ const PhoneInputField: FC<PhoneInputFieldProps> = ({
   };
 
   return (
-    <PhoneInputFieldContainer>
+    <PhoneInputFieldContainer data-testid="PhoneInputFieldContainer">
       <Flex height="100%">
         <CountryBox>
           <Flag country={selectValue} />
@@ -141,6 +141,7 @@ const PhoneInputField: FC<PhoneInputFieldProps> = ({
           <LineSeparator />
         </CountryBox>
         <Input
+          data-testid="PhoneInput"
           country={selectValue}
           placeholder="Enter phone number"
           onBlur={handleBlur}

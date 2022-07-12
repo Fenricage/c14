@@ -16,6 +16,29 @@ export type LoginRequestBody = {
   verification_code: string;
 }
 
+export type UserDetails = {
+  email: string;
+  first_names: string;
+  last_names: string;
+  building: string;
+  street_name: string;
+  unit_number: string;
+  city: string;
+  state_code: string;
+  postal_code: string;
+  date_of_birth: string;
+}
+
+export type GetUserResponse = UserDetails & {
+  identity_verified: boolean;
+}
+
+export type UpdateUserResponse = {
+  identity_verified: boolean;
+}
+
+export type UpdateUserRequest = UserDetails
+
 export const userApi = createApi({
   keepUnusedDataFor: 0,
   reducerPath: 'userApi',
@@ -36,10 +59,23 @@ export const userApi = createApi({
         body,
       }),
     }),
+    getUser: build.query<GetUserResponse, void>({
+      query: () => '/user-details',
+    }),
+    updateUser: build.mutation<UpdateUserResponse, UpdateUserRequest>({
+      query: (body) => ({
+        url: '/user-details',
+        method: 'PUT',
+        body,
+      }),
+    }),
   }),
 });
 
 export const {
   useVerifyPhoneNumberMutation,
+  useLazyGetUserQuery,
+  useUpdateUserMutation,
+  useGetUserQuery,
   useLoginMutation,
 } = userApi;

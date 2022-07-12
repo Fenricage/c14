@@ -11,6 +11,7 @@ import {
   useLazyGetPurchaseDetailsQuery,
 } from '../../../../redux/purchaseApi';
 import { Subtitle, Title } from '../../../../theme/components';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 
 const PurchaseInProgressStep: FC = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +25,8 @@ const PurchaseInProgressStep: FC = () => {
 
   const queryStringParsed = parse(window.location.search);
   const { targetAddress } = queryStringParsed as {targetAddress: string};
+
+  useClearGeneralError();
 
   const [triggerExecutePurchase, {
     isLoading: isPurchaseExecuting,

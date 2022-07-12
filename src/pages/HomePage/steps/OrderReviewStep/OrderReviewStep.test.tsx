@@ -2,14 +2,13 @@ import React from 'react';
 import {
   act, within, waitFor,
 } from '@testing-library/react';
-import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
 import OrderReviewStep from './OrderReviewStep';
-import { setupServerQuoteRequest } from '../../../../testHandlers/setupServerQuoteRequest';
+import { setupServerQuoteRequest } from '../../../../testHandlers/quotes/setupServerQuotes';
 import { server } from '../../../../testHandlers/utils';
 import { createStoreWithMiddlewares } from '../../../../app/store';
-import { serverQuoteRequestMock } from '../../../../testHandlers/mocks';
 import { goToWidgetStep, setSelectedUserCard, WidgetSteps } from '../../../../state/applicationSlice';
+import { serverQuoteRequestMock } from '../../../../testHandlers/quotes/mocks';
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -25,7 +24,6 @@ describe('OrderReviewStep tests', () => {
       const {
         getByTestId,
         queryByTestId,
-        unmount,
       } = render(<OrderReviewStep />, { preloadedState: store.getState(), store });
 
       const cardToSelect = {
@@ -35,6 +33,7 @@ describe('OrderReviewStep tests', () => {
         expiry_year: '2034',
         expiry_month: '10',
       };
+
       await act(async () => {
         await store.dispatch(setSelectedUserCard(cardToSelect));
       });
@@ -75,24 +74,15 @@ describe('OrderReviewStep tests', () => {
       expect(within(feeItem).getByTestId('TotalFee'))
         .toHaveTextContent(serverQuoteRequestMock.total_fee);
 
-      expect(within(paymentMethodItem).getByTestId('CardPaymentMethod'))
+      expect(within(paymentMethodItem).getByTestId('BadgeCardPaymentMethod'))
         .toHaveTextContent(cardToSelect.type);
-      expect(within(paymentMethodItem).getByTestId('CardLastNumbers'))
+      expect(within(paymentMethodItem).getByTestId('BadgeCardLastNumbers'))
         .toHaveTextContent(cardToSelect.last4);
-      expect(within(paymentMethodItem)
-        .getByTestId('CardExpiry'))
-        .toHaveTextContent(`${cardToSelect.expiry_month}/${cardToSelect.expiry_year}`);
 
       expect(within(receiveItem).getByTestId('AmountBadgeValue'))
         .toHaveTextContent(serverQuoteRequestMock.target_amount);
 
       expect(submitButton).not.toBeDisabled();
-
-      await act(async () => {
-        await user.click(submitButton);
-      });
-
-      unmount();
     },
   );
 });

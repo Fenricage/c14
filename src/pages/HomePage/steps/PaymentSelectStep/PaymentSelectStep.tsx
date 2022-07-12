@@ -16,10 +16,12 @@ import {
   resetUserCards,
   WidgetSteps,
   setSnapshotValuesForm,
-  PAYMENT_SELECT_FORM_NAME, setSelectedUserCard,
+  PAYMENT_SELECT_FORM_NAME, setSelectedUserCard, logout,
 } from '../../../../state/applicationSlice';
 import CardRadioField from './CardRadioField';
 import { useDeleteUserCardMutation, useGetUserCardsQuery } from '../../../../redux/cardsApi';
+import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 
 const RadioGroupItem = styled.div`
   
@@ -91,8 +93,20 @@ const PaymentSelectStep: FC = () => {
       customer_cards,
     },
     isUserCardsLoaded,
+    skipPaymentStep,
     deletingCards,
   } = useAppSelector(selectApp);
+
+  useEffect(() => {
+    if (!isUserCardsLoaded || !skipPaymentStep) {
+      return;
+    }
+
+    if (customer_cards.length) {
+      dispatch(setSelectedUserCard(customer_cards[0]));
+      dispatch(incrementWidgetStep());
+    }
+  }, [customer_cards, dispatch, isUserCardsLoaded, skipPaymentStep]);
 
   useEffect(() => {
     if (!isUserCardsLoaded) {
@@ -119,6 +133,7 @@ const PaymentSelectStep: FC = () => {
     getFieldProps,
     values,
     resetForm,
+    isSubmitting,
     isValid,
   } = useFormik<PaymentSelectFormValues>({
     initialValues: {
@@ -161,6 +176,8 @@ const PaymentSelectStep: FC = () => {
     }));
   }, [dispatch, values.card]);
 
+  useClearGeneralError();
+
   const handleClickAddNewCard = () => {
     dispatch(goToWidgetStep(WidgetSteps.PAYMENT_ADDING));
   };
@@ -174,6 +191,7 @@ const PaymentSelectStep: FC = () => {
     >
       <WidgetHead
         text="Select or Add a Credit Card"
+        customBackCallback={() => dispatch(logout())}
       />
       <RadioGroupContainer>
         {!isUserCardsLoaded ? (
@@ -230,7 +248,7 @@ const PaymentSelectStep: FC = () => {
           data-testid="submitButton"
           type="submit"
         >
-          Continue
+          {isSubmitting ? <ButtonLoader /> : 'Continue'}
         </Button>
       </FormRow>
     </Flex>

@@ -26,7 +26,7 @@ const WidgetContainer = styled.div`
   box-shadow: 0 4px 31px 25px rgba(0, 0, 0, 0.03);
   border-radius: 24px;
   flex-flow: column;
-  flex: 1;
+  //flex: 1;
   padding: 19px 30px 30px 30px;
 `;
 

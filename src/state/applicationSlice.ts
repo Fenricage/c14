@@ -8,10 +8,15 @@ import { SECOND_MS } from '../constants';
 import { cardsApi, GetUserCardsResponse, PaymentCard } from '../redux/cardsApi';
 import { PaymentSelectFormValues } from '../pages/HomePage/steps/PaymentSelectStep/PaymentSelectStep';
 import { GetPurchaseDetailsResponse, purchaseApi } from '../redux/purchaseApi';
-import { LoginResponse, userApi } from '../redux/userApi';
+import { LoginResponse, userApi, UserDetails } from '../redux/userApi';
 
 export const CALCULATOR_FORM_NAME = 'calculator-form';
 export const PAYMENT_SELECT_FORM_NAME = 'payment-select-form';
+
+export type ServerError = {
+  error_code: string;
+  message: null;
+}
 
 export enum StepperSteps {
   QUOTES,
@@ -147,12 +152,28 @@ const getPrevWidgetStep = (currentStep: WidgetSteps) => {
   }
 };
 
+export type GeneralErrorKind = 'warn' | 'success' | 'error';
+
+export type GeneralError = {
+  type: GeneralErrorKind
+  message: string
+} | null
+
 export type QuoteInputName = 'quoteSourceAmount' | 'quoteTargetAmount';
 export type AppState = {
   isQuoteLoaded: boolean
   isQuoteLoading: boolean
   isUserCardsEmpty: boolean
+  generalError: GeneralError
   requestCounter: number
+  user: null | UserDetails
+  isUserLoading: boolean
+  skipPaymentStep: boolean
+  skipPersonalInfoStep: boolean
+  isUserLoaded: boolean
+  isUserUpdating: boolean
+  isUserUpdated: boolean
+  isUserVerified: boolean;
   quoteError: null | string
   quotes: QuoteResponse | Record<string, never>
   isQuotesAutoUpdateEnabled: boolean
@@ -209,6 +230,15 @@ export const initialState = {
   isQuoteLoaded: false,
   quoteError: null,
   quotes: {},
+  user: null,
+  generalError: null,
+  skipPaymentStep: true,
+  skipPersonalInfoStep: true,
+  isUserLoading: false,
+  isUserLoaded: false,
+  isUserUpdating: false,
+  isUserUpdated: false,
+  isUserVerified: false,
   isQuoteLoading: false,
   isUserCardsEmpty: false,
   quotesUserDecimalSeparator: undefined,
@@ -350,16 +380,23 @@ const applicationSlice = createSlice({
         customer_cards: [],
       };
       state.isUserCardsLoading = true;
+      // state.isUserCardsEmpty = false;
       state.isUserCardsLoaded = false;
       state.userCardsError = null;
     },
     resetApplication: () => initialState,
-    logout: (state) => {
-      state.isAuthenticated = false;
-      state.jwtToken = null;
-      state.isAuthenticating = false;
-      state.isSMSSended = false;
-      state.isSMSSending = false;
+    logout: () => initialState,
+    setUserUpdated: (state, action: PayloadAction<boolean>) => {
+      state.isUserUpdated = action.payload;
+    },
+    setGeneralError: (state, action: PayloadAction<GeneralError>) => {
+      state.generalError = action.payload;
+    },
+    setSkipPaymentStep: (state, { payload }: PayloadAction<boolean>) => {
+      state.skipPaymentStep = payload;
+    },
+    setSkipPersonalInfoStep: (state, { payload }: PayloadAction<boolean>) => {
+      state.skipPersonalInfoStep = payload;
     },
   },
   extraReducers: (builder) => {
@@ -575,6 +612,54 @@ const applicationSlice = createSlice({
       state.widgetSteps.currentStep = WidgetSteps.QUOTES;
       state.stepperSteps.currentStep = StepperSteps.QUOTES;
     });
+
+    builder.addMatcher(
+      userApi.endpoints.getUser.matchPending,
+      (state) => {
+        state.isUserLoading = true;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.getUser.matchFulfilled,
+      (state, { payload }) => {
+        state.user = payload;
+        state.isUserVerified = payload.identity_verified;
+        state.isUserLoaded = true;
+        state.isUserLoading = false;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.getUser.matchRejected,
+      (state) => {
+        state.isUserLoading = false;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.updateUser.matchPending,
+      (state) => {
+        state.isUserUpdating = true;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.updateUser.matchFulfilled,
+      (state, { meta, payload }) => {
+        state.user = meta.arg.originalArgs;
+        state.isUserVerified = payload.identity_verified;
+        state.isUserUpdated = true;
+        state.isUserUpdating = false;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.updateUser.matchRejected,
+      (state) => {
+        state.isUserUpdating = false;
+      },
+    );
   },
 });
 
@@ -601,6 +686,10 @@ export const {
   setQuotesUserDecimalSeparator,
   resetUserCards,
   resetApplication,
+  setUserUpdated,
+  setSkipPaymentStep,
+  setGeneralError,
+  setSkipPersonalInfoStep,
 } = applicationSlice.actions;
 
 export default applicationSlice;
