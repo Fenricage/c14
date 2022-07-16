@@ -1,5 +1,12 @@
 import React, {
-  ChangeEvent, FC, MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState,
+  ChangeEvent,
+  FC,
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
 import styled from 'styled-components/macro';
 import { Form, Formik } from 'formik';
@@ -37,6 +44,8 @@ import { useGetQuoteMutation } from '../../../../redux/quotesApi';
 import { useUpdateQuotes } from './hooks';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
+import { useGetUserLimitsQuery } from '../../../../redux/limitsApi';
+import { selectLimits, setLimitsLoaded } from '../../../../state/limitsSlice';
 
 export type UserDecimalSeparator = ',' | '.' | undefined
 
@@ -146,47 +155,9 @@ const TreeTitle = styled.h2`
 `;
 
 export const replaceCommaWithDot = (value: string) => value.replace(',', '.');
-const MAX_AMOUNT = 5000;
 const validQuoteInputValueRegEx = /^(?:\d{1,3}(?:\d{3})*|\d+)(?:[.|,]\d{0,2})?$/;
 
-type FormAmounts = Pick<QuoteFormValues, 'quoteTargetAmount' | 'quoteSourceAmount'>
-
-const validate = (values: QuoteFormValues) => {
-  const errors: Partial<QuoteFormValues> = {};
-
-  const amounts: FormAmounts = {
-    quoteSourceAmount: values.quoteSourceAmount,
-    quoteTargetAmount: values.quoteTargetAmount,
-  };
-
-  Object.entries(amounts).forEach(([key, value]) => {
-    if (+(replaceCommaWithDot(value)) === 0 || !value) {
-      errors[key as keyof FormAmounts] = 'Type non zero value';
-    }
-
-    if (+(replaceCommaWithDot(value)) < 20) {
-      errors[key as keyof FormAmounts] = 'Must be at least 20$';
-    }
-
-    if (+(replaceCommaWithDot(value)) > MAX_AMOUNT) {
-      errors[key as keyof FormAmounts] = `The most you can send is ${MAX_AMOUNT}`;
-    }
-  });
-
-  return errors;
-};
-
-const validateDependsLastChanged = (values: QuoteFormValues, lastChanged: QuoteInputName) => {
-  const errors = validate(values);
-
-  if (lastChanged === 'quoteSourceAmount') {
-    delete errors.quoteTargetAmount;
-  } else {
-    delete errors.quoteSourceAmount;
-  }
-
-  return errors;
-};
+type FormAmounts = Pick<QuoteFormValues, 'quoteSourceAmount'>
 
 export const sourceOptions: SelectOption[] = [
   {
@@ -212,20 +183,10 @@ export const targetOptions: SelectOption[] = [
 const QuotesStep: FC = () => {
   const dispatch = useAppDispatch();
 
-  const application = useAppSelector(selectApp);
-
-  const [targetAddress, setTargetAddress] = useState('');
-
-  useEffect(() => {
-    const queryStringParsed = parse(window.location.search);
-
-    if (!queryStringParsed.targetAddress) {
-      toast.error('targetAddress is missing from URI query params.');
-      return;
-    }
-
-    setTargetAddress((queryStringParsed as {targetAddress: string}).targetAddress);
-  }, []);
+  const {
+    limits,
+    isLimitsLoading,
+  } = useAppSelector(selectLimits);
 
   const {
     quotes: {
@@ -249,11 +210,30 @@ const QuotesStep: FC = () => {
         initialValues: initialQuotesValuesForm,
       },
     },
-  } = application;
+  } = useAppSelector(selectApp);
+
+  useGetUserLimitsQuery();
+
+  const [targetAddress, setTargetAddress] = useState('');
+
+  useEffect(() => {
+    const queryStringParsed = parse(window.location.search);
+
+    if (!queryStringParsed.targetAddress) {
+      toast.error('targetAddress is missing from URI query params.');
+      return;
+    }
+
+    setTargetAddress((queryStringParsed as { targetAddress: string }).targetAddress);
+  }, []);
 
   const request = useRef<any>(null);
 
   useClearGeneralError();
+
+  useEffect(() => () => {
+    dispatch(setLimitsLoaded(false));
+  }, [dispatch]);
 
   useEffect(() => () => {
     dispatch(setQuotesLoaded(false));
@@ -280,12 +260,39 @@ const QuotesStep: FC = () => {
     triggerGetQuotes,
   ]);
 
+  const validate = useCallback((values: QuoteFormValues) => {
+    const errors: Partial<QuoteFormValues> = {};
+
+    const amounts: FormAmounts = {
+      quoteSourceAmount: values.quoteSourceAmount,
+    };
+
+    Object.entries(amounts).forEach(([key, value]) => {
+      if (+(replaceCommaWithDot(value)) === 0 || !value) {
+        errors[key as keyof FormAmounts] = 'Type non zero value';
+      }
+
+      if (+(replaceCommaWithDot(value)) < 20) {
+        errors[key as keyof FormAmounts] = 'Must be at least 20$';
+      }
+
+      if (limits?.weekly_limit_usd) {
+        if (+(replaceCommaWithDot(value)) > +limits.weekly_limit_usd) {
+          errors[key as keyof FormAmounts] = `The most you can buy is ${limits.weekly_limit_usd}`;
+        }
+      }
+    });
+
+    return errors;
+  }, [limits?.weekly_limit_usd]);
+
   const submitForm = useCallback(() => Promise.resolve(true), []);
 
   const handleTriggerUpdateQuotes = useCallback(async (values: QuoteFormValues) => {
-    const isValidInput = !Object.keys(validateDependsLastChanged(values, lastChangedQuoteInputName)).length;
+    const isValidInput = !Object.keys(validate(values)).length;
 
-    if (!isValidInput) {
+    // deny request only on invalid form and last changed source input
+    if (!isValidInput && lastChangedQuoteInputName === 'quoteSourceAmount') {
       return;
     }
 
@@ -304,7 +311,11 @@ const QuotesStep: FC = () => {
       });
       await request.current;
     }
-  }, [lastChangedQuoteInputName, triggerGetQuotes]);
+  }, [
+    lastChangedQuoteInputName,
+    triggerGetQuotes,
+    validate,
+  ]);
 
   useEffect(() => {
     dispatch(setFee({
@@ -336,7 +347,14 @@ const QuotesStep: FC = () => {
         quoteSourceAmount: source_amount,
       },
     }));
-  }, [dispatch, isQuotesLoaded, source_amount, target_amount, fulfilledTimeStamp, target_crypto_asset_id]);
+  }, [
+    dispatch,
+    isQuotesLoaded,
+    source_amount,
+    target_amount,
+    fulfilledTimeStamp,
+    target_crypto_asset_id,
+  ]);
 
   const updateQuotes = useUpdateQuotes(handleTriggerUpdateQuotes);
 
@@ -393,6 +411,13 @@ const QuotesStep: FC = () => {
     dispatch(setQuotesAutoUpdateEnable(true));
   };
 
+  const initialTouched = useMemo(() => ({
+    quoteSourceAmount: true,
+    quoteTargetAmount: true,
+  }), []);
+
+  const isQuoteInputDisabled = isLimitsLoading || !targetAddress;
+
   return (
     <Flex
       flexDirection="column"
@@ -405,6 +430,7 @@ const QuotesStep: FC = () => {
         initialValues={initialQuotesValuesForm}
         onSubmit={submitForm}
         validate={validate}
+        initialTouched={initialTouched}
         validateOnMount
         enableReinitialize
       >
@@ -431,6 +457,7 @@ const QuotesStep: FC = () => {
                   <QuoteInputField
                     label="You Pay"
                     name="quoteSourceAmount"
+                    disabled={isQuoteInputDisabled}
                     onHandleChange={({
                       value,
                       event,
@@ -476,6 +503,7 @@ const QuotesStep: FC = () => {
                   <QuoteInputField
                     label="You Receive"
                     name="quoteTargetAmount"
+                    disabled={isQuoteInputDisabled}
                     onHandleChange={
                       ({ value, event }) => handleSetLastChanged(
                         'quoteTargetAmount',
@@ -504,10 +532,11 @@ const QuotesStep: FC = () => {
                   disabled={
                     isSubmitting
                     || !isValid
+                    || isLimitsLoading
                     || isQuoteLoading
                     || isQuoteRequestError
                     || !targetAddress
-                }
+                  }
                   data-testid="submitButton"
                   type="submit"
                 >

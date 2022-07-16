@@ -14,7 +14,7 @@ import {
   decrementWidgetStep,
   goToWidgetStep,
   incrementWidgetStep,
-  selectApp,
+  selectApp, setGeneralError,
   setQuotesLoaded,
   setSkipPaymentStep, setSkipPersonalInfoStep,
   WidgetSteps,
@@ -24,6 +24,8 @@ import { targetOptions } from '../QuotesStep/QuotesStep';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import CardBadge from './CardBadge';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
+import { useGetUserLimitsQuery } from '../../../../redux/limitsApi';
+import { selectLimits } from '../../../../state/limitsSlice';
 
 const ChangeButton = styled.button`
   font-size: 12px;
@@ -77,9 +79,36 @@ const OrderReviewStep: FC = () => {
     ...application
   } = useAppSelector(selectApp);
 
-  const selectedUserCard = application.selectedUserCard as PaymentCard;
+  const {
+    limits,
+    isLimitsLoaded,
+  } = useAppSelector(selectLimits);
 
+  const selectedUserCard = application.selectedUserCard as PaymentCard;
+  useGetUserLimitsQuery();
   const [triggerGetQuotes] = useGetQuoteMutation();
+
+  let isLimitsExceeded = false;
+
+  if (isLimitsLoaded) {
+    isLimitsExceeded = (limits?.remaining_weekly_limit_usd as string) < source_amount;
+  }
+
+  useEffect(() => {
+    if (isLimitsExceeded) {
+      dispatch(setGeneralError({
+        type: 'error',
+        message: `You have exceeded the purchase limit. 
+        Total weekly limit ${limits?.weekly_limit_usd as string}.
+        Remaining limit: ${limits?.remaining_weekly_limit_usd}`,
+      }));
+    }
+  }, [
+    dispatch,
+    isLimitsExceeded,
+    limits?.remaining_weekly_limit_usd,
+    limits?.weekly_limit_usd,
+  ]);
 
   useEffect(() => {
     if (isQuoteLoaded) {
@@ -109,7 +138,12 @@ const OrderReviewStep: FC = () => {
       target_crypto_asset_id,
       source_amount,
     });
-  }, [source_amount, source_currency, target_crypto_asset_id, triggerGetQuotes]);
+  }, [
+    source_amount,
+    source_currency,
+    target_crypto_asset_id,
+    triggerGetQuotes,
+  ]);
 
   useCallOnExpireTimer(expires_at, onExpire);
   useClearGeneralError();
@@ -222,11 +256,11 @@ const OrderReviewStep: FC = () => {
       <FormRow margin="auto 0 0 0">
         <Button
           onClick={handleClickBuy}
-          disabled={isQuoteLoading}
+          disabled={isQuoteLoading || isLimitsExceeded || !isLimitsLoaded}
           data-testid="submitButton"
           type="submit"
         >
-          {isQuoteLoading ? <ButtonLoader /> : 'Buy Now'}
+          {(isQuoteLoading || !isLimitsLoaded) ? <ButtonLoader /> : 'Buy Now'}
         </Button>
       </FormRow>
     </Flex>

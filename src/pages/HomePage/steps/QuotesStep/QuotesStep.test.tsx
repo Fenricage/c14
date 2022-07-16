@@ -7,6 +7,7 @@ import { render } from '../../../../utils/test-utils';
 import QuotesStep from './QuotesStep';
 import { server } from '../../../../testHandlers/utils';
 import { setupServerQuoteRequest } from '../../../../testHandlers/quotes/setupServerQuotes';
+import { setupServerLimits } from '../../../../testHandlers/limits/setupServerLimits';
 
 beforeAll(() => server.listen());
 beforeEach(() => {
@@ -19,14 +20,15 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-const invalidValues = ['0', '19', '19.9', '1000000000000,3', '1000000000001'];
-const validValues = ['20', '200,9', '300.3', '5000'];
+const invalidValues = ['0', '19', '19.9', '500,3', '501'];
+const validValues = ['20', '200,9', '300.3', '500'];
 
 describe('QuotesStep tests', () => {
   it(
     'check input values, button is disabled on invalid values, button is enabled on valid values',
     async () => {
       setupServerQuoteRequest();
+      setupServerLimits();
 
       const {
         getByTestId,
@@ -40,6 +42,8 @@ describe('QuotesStep tests', () => {
       const quoteTargetInput = screen.getByLabelText('You Receive');
       const submitButton = screen.getByTestId('submitButton');
 
+      expect(submitButton).toBeDisabled();
+
       await waitFor(() => {
         expect((quoteTargetInput as HTMLInputElement).value).toBe('110');
       });
@@ -49,11 +53,15 @@ describe('QuotesStep tests', () => {
         target_amount: '210',
       });
 
+      await waitFor(() => {
+        expect(quoteSourceInput).not.toBeDisabled();
+        expect(quoteTargetInput).not.toBeDisabled();
+      });
+
       await act(() => {
         fireEvent.input(quoteTargetInput, { target: { value: '' } });
         fireEvent.input(quoteSourceInput, { target: { value: '' } });
       });
-      expect(submitButton).toBeDisabled();
 
       await act(async () => {
         await user.type(quoteSourceInput, '2');
@@ -87,6 +95,8 @@ describe('QuotesStep tests', () => {
       target_amount: '40.3',
     });
 
+    setupServerLimits();
+
     const {
       getByTestId,
     } = render(<QuotesStep />);
@@ -99,6 +109,11 @@ describe('QuotesStep tests', () => {
     const quoteTargetInput = screen.getByLabelText('You Receive');
     const submitButton = screen.getByTestId('submitButton');
 
+    await waitFor(() => {
+      expect(quoteSourceInput).not.toBeDisabled();
+      expect(quoteTargetInput).not.toBeDisabled();
+    });
+
     await act(() => {
       fireEvent.input(quoteTargetInput, { target: { value: '' } });
       fireEvent.input(quoteSourceInput, { target: { value: '' } });
@@ -109,7 +124,7 @@ describe('QuotesStep tests', () => {
     });
 
     await act(async () => {
-      jest.runAllTimers();
+      jest.runOnlyPendingTimers();
     });
 
     await waitFor(() => {
@@ -129,6 +144,8 @@ describe('QuotesStep tests', () => {
     'test invalid values validation',
     async (invalidValue) => {
       setupServerQuoteRequest();
+      setupServerLimits();
+
       const {
         getByTestId, getByLabelText,
       } = render(<QuotesStep />);
@@ -142,28 +159,26 @@ describe('QuotesStep tests', () => {
       const submitButtonTestId = 'submitButton';
 
       const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
-      const quoteTargetErrorFieldTestId = 'ErrorMessage-quoteTargetAmount';
+
+      await waitFor(() => {
+        expect(getByLabelText(quoteSourceInputLabelText)).not.toBeDisabled();
+        expect(getByLabelText(quoteTargetInputLabelText)).not.toBeDisabled();
+      });
+
       (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement)
         .setSelectionRange(0, (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value.length);
 
-      (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement)
-        .setSelectionRange(0, (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value.length);
-
       await act(async () => {
         await user.type(getByLabelText(quoteSourceInputLabelText), invalidValue);
-        user.tab();
-        await user.type(getByLabelText(quoteTargetInputLabelText), invalidValue);
         user.tab();
       });
 
       await waitFor(() => {
         expect((getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value).toBe(invalidValue);
-        expect((getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value).toBe(invalidValue);
       });
 
       await waitFor(() => {
         expect(getByTestId(quoteSourceErrorFieldTestId)).toBeInTheDocument();
-        expect(getByTestId(quoteTargetErrorFieldTestId)).toBeInTheDocument();
       });
 
       await waitFor(() => {
@@ -176,6 +191,7 @@ describe('QuotesStep tests', () => {
     'test valid values validation',
     async (validValue) => {
       setupServerQuoteRequest();
+      setupServerLimits();
 
       const {
         getByTestId, getByLabelText, queryByTestId,
@@ -190,28 +206,26 @@ describe('QuotesStep tests', () => {
       const submitButtonTestId = 'submitButton';
 
       const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
-      const quoteTargetErrorFieldTestId = 'ErrorMessage-quoteTargetAmount';
+
+      await waitFor(() => {
+        expect(getByLabelText(quoteSourceInputLabelText)).not.toBeDisabled();
+        expect(getByLabelText(quoteTargetInputLabelText)).not.toBeDisabled();
+      });
+
       (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement)
         .setSelectionRange(0, (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value.length);
 
-      (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement)
-        .setSelectionRange(0, (getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value.length);
-
       await act(async () => {
         await user.type(getByLabelText(quoteSourceInputLabelText), validValue);
-        user.tab();
-        await user.type(getByLabelText(quoteTargetInputLabelText), validValue);
         user.tab();
       });
 
       await waitFor(() => {
         expect((getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value).toBe(validValue);
-        expect((getByLabelText(quoteTargetInputLabelText) as HTMLInputElement).value).toBe(validValue);
       });
 
       await waitFor(() => {
         expect(queryByTestId(quoteSourceErrorFieldTestId)).not.toBeInTheDocument();
-        expect(queryByTestId(quoteTargetErrorFieldTestId)).not.toBeInTheDocument();
       });
 
       await waitFor(() => {
@@ -219,7 +233,7 @@ describe('QuotesStep tests', () => {
       });
 
       await act(() => {
-        jest.runAllTimers();
+        jest.runOnlyPendingTimers();
       });
 
       await waitFor(() => {

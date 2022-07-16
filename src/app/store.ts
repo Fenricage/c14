@@ -9,8 +9,10 @@ import {
 import { quotesApi } from '../redux/quotesApi';
 import { cardsApi } from '../redux/cardsApi';
 import { purchaseApi } from '../redux/purchaseApi';
+import { limitsApi } from '../redux/limitsApi';
 import { userApi } from '../redux/userApi';
 import applicationSlice, { setGeneralError } from '../state/applicationSlice';
+import limitsSlice from '../state/limitsSlice';
 import { notify } from '../utils/toast';
 
 const errors: {[p: string]: string} = {
@@ -66,9 +68,11 @@ export const rtkQueryErrorLogger: Middleware = ({ dispatch }) => (next) => (acti
 export const reducer = {
   [quotesApi.reducerPath]: quotesApi.reducer,
   [cardsApi.reducerPath]: cardsApi.reducer,
+  [limitsApi.reducerPath]: limitsApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [purchaseApi.reducerPath]: purchaseApi.reducer,
   [applicationSlice.name]: applicationSlice.reducer,
+  [limitsSlice.name]: limitsSlice.reducer,
 };
 
 export const createStoreWithMiddlewares = (
@@ -83,8 +87,9 @@ export const createStoreWithMiddlewares = (
     )
       .concat(quotesApi.middleware)
       .concat(cardsApi.middleware)
-      .concat(purchaseApi.middleware)
+      .concat(limitsApi.middleware)
       .concat(userApi.middleware)
+      .concat(purchaseApi.middleware)
       .concat(rtkQueryErrorLogger),
     preloadedState: initialState,
   });
