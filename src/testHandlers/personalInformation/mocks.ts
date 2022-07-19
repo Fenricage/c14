@@ -7,6 +7,7 @@ export const GET_PERSONAL_INFORMATION_VERIFIED: GetUserResponse = {
   email: 'email@gmail.com',
   first_names: 'John',
   last_names: 'Doe',
+  email_verified: true,
   identity_verified: true,
   postal_code: '163000',
   state_code: 'Alabama',

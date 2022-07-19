@@ -29,8 +29,11 @@ export type UserDetails = {
   date_of_birth: string;
 }
 
+export type EmailVerificationCodeResponse = Record<string, never>
+
 export type GetUserResponse = UserDetails & {
   identity_verified: boolean;
+  email_verified: boolean;
 }
 
 export type UpdateUserResponse = {
@@ -69,13 +72,20 @@ export const userApi = createApi({
         body,
       }),
     }),
+    sendEmailVerification: build.mutation<EmailVerificationCodeResponse, void>({
+      query: () => ({
+        url: '/send-verification-email',
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
 export const {
   useVerifyPhoneNumberMutation,
-  useLazyGetUserQuery,
+  useSendEmailVerificationMutation,
   useUpdateUserMutation,
+  useLazyGetUserQuery,
   useGetUserQuery,
   useLoginMutation,
 } = userApi;

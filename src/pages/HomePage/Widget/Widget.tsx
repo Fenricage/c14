@@ -11,6 +11,7 @@ import OrderReviewStep from '../steps/OrderReviewStep/OrderReviewStep';
 import SMSConfirmationStep from '../steps/SMSConfirmationStep/SMSConfirmationStep';
 import PurchaseInProgressStep from '../steps/PurchaseInProgressStep/PurchaseInProgressStep';
 import CompleteStep from '../steps/CompleteStep/CompleteStep';
+import EmailVerificationStep from '../steps/EmailVerificationStep/EmailVerificationStep';
 
 const WidgetContainer = styled.div`
   display: flex;
@@ -59,6 +60,9 @@ const Widget: FC = () => {
       }
       case WidgetSteps.PERSONAL_INFORMATION: {
         return <PersonalInformationStep />;
+      }
+      case WidgetSteps.EMAIL_VERIFICATION: {
+        return <EmailVerificationStep />;
       }
       case WidgetSteps.PAYMENT_ADDING: {
         return <AddCardStep />;

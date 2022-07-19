@@ -14,7 +14,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe('PhoneInputStep tests', () => {
+describe('EmailVerificationStep tests', () => {
   it(
     'check form is rendered correct',
     async () => {

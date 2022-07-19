@@ -20,7 +20,8 @@ const CompleteFailed: FC = () => {
       </Flex>
       <Flex justifyContent="center">
         <Subtitle margin="28px 0">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Odio nunc amet enim velit at sapien.
+          Unfortunately, we were unable to charge your card.
+          Please ensure you have sufficient balance or try another card.
         </Subtitle>
       </Flex>
       <Button onClick={handleClickTryAgain}>Try again</Button>

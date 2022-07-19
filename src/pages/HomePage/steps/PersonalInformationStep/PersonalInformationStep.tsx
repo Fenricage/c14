@@ -11,19 +11,24 @@ import formatDate from 'date-fns/format';
 import subDate from 'date-fns/sub';
 import ReactLoading from 'react-loading';
 import WidgetHead from '../../Widget/WidgetHead';
-import {
-  Button, FormRow,
-} from '../../../../theme/components';
+import { Button, FormRow } from '../../../../theme/components';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
-  incrementWidgetStep, logout, selectApp, setGeneralError, setSkipPersonalInfoStep, setUserUpdated,
+  goToWidgetStep,
+  incrementWidgetStep,
+  logout,
+  selectApp,
+  setGeneralError,
+  setSkipPersonalInfoStep,
+  setUserUpdated,
+  WidgetSteps,
 } from '../../../../state/applicationSlice';
 import PrimaryInputField, {
   PrimaryInputBox,
 } from '../../../../components/PrimaryInputField/PrimaryInputField';
 import { Input } from '../../../../components/InputField/InputField';
 import FormFieldErrorMessage from '../../../../components/FormFieldErrorMessage/FormFieldErrorMessage';
-import { useGetUserQuery, useUpdateUserMutation } from '../../../../redux/userApi';
+import { useGetUserQuery, useLazyGetUserQuery, useUpdateUserMutation } from '../../../../redux/userApi';
 import PrimarySelectField from '../../../../components/PrimarySelectField/PrimarySelectField';
 import { emailRegEx } from '../../../../constants/regex';
 import { Select } from '../../../../components/SelectField/SelectField';
@@ -87,9 +92,17 @@ const PersonalInformationStep: FC = () => {
   const dispatch = useAppDispatch();
 
   const {
-    isUserUpdated, isUserVerified, isUserLoaded, user, skipPersonalInfoStep,
+    isUserUpdated,
+    isUserVerified,
+    isEmailVerified,
+    isUserLoaded,
+    user,
+    skipPersonalInfoStep,
   } = useAppSelector(selectApp);
+
   const { isLoading: isUserLoading, isFetching: isUserFetching } = useGetUserQuery();
+  const [triggerLazyGetUser] = useLazyGetUserQuery();
+  const [triggerUpdateUser] = useUpdateUserMutation();
 
   const initialFormValues: PersonalFormValues = {
     firstNames: user?.first_names || '',
@@ -105,21 +118,25 @@ const PersonalInformationStep: FC = () => {
     unitNumber: user?.unit_number || '',
   };
 
-  const [triggerUpdateUser] = useUpdateUserMutation();
-
   const submitForm = async (values: PersonalFormValues) => {
-    await triggerUpdateUser({
-      city: values.city,
-      email: values.email,
-      building: values.building,
-      date_of_birth: values.dob,
-      first_names: values.firstNames,
-      last_names: values.lastNames,
-      postal_code: values.postalCode,
-      state_code: values.stateCode,
-      street_name: values.streetName,
-      unit_number: values.unitNumber,
-    });
+    try {
+      await triggerUpdateUser({
+        city: values.city,
+        email: values.email,
+        building: values.building,
+        date_of_birth: values.dob,
+        first_names: values.firstNames,
+        last_names: values.lastNames,
+        postal_code: values.postalCode,
+        state_code: values.stateCode,
+        street_name: values.streetName,
+        unit_number: values.unitNumber,
+      }).unwrap();
+    } catch {
+      return;
+    }
+
+    await triggerLazyGetUser();
     dispatch(setSkipPersonalInfoStep(true));
   };
 
@@ -132,20 +149,30 @@ const PersonalInformationStep: FC = () => {
     }
   }, [dispatch, isUserUpdated, isUserVerified]);
 
+  /* NAVIGATION */
   useEffect(() => {
     if (!skipPersonalInfoStep) {
       return;
     }
 
-    // user updated and verified
-    if (isUserUpdated && isUserVerified) {
+    const isUserNotEmpty = isUserLoaded && user && Object.values(user).length;
+
+    // form submitted, user updated and email verified
+    if (isUserUpdated && isUserVerified && isEmailVerified) {
       dispatch(incrementWidgetStep());
+      // form is submitted but user is not verified
+    } else if (isUserUpdated && !isUserVerified) {
+      dispatch(goToWidgetStep(WidgetSteps.EMAIL_VERIFICATION));
     // user already exists
-    } else if (isUserLoaded && user && Object.values(user).length && isUserVerified) {
+    } else if (isUserNotEmpty && isUserVerified && isEmailVerified) {
       dispatch(incrementWidgetStep());
+    //  user exists and verified, but email is not confirmed
+    } else if (isUserNotEmpty && !isEmailVerified && isUserVerified) {
+      dispatch(goToWidgetStep(WidgetSteps.EMAIL_VERIFICATION));
     }
   }, [
     dispatch,
+    isEmailVerified,
     isUserLoaded,
     isUserUpdated,
     isUserVerified,

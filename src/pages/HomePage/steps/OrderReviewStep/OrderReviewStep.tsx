@@ -7,7 +7,7 @@ import WidgetHead from '../../Widget/WidgetHead';
 import PreviewBadge from './PreviewBadge';
 import Fee from '../QuotesStep/Fee';
 import AmountBadge from './AmountBadge';
-import { Button, FormRow } from '../../../../theme/components';
+import { Button, FormRow, BorderButton } from '../../../../theme/components';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
@@ -26,18 +26,6 @@ import CardBadge from './CardBadge';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 import { useGetUserLimitsQuery } from '../../../../redux/limitsApi';
 import { selectLimits } from '../../../../state/limitsSlice';
-
-const ChangeButton = styled.button`
-  font-size: 12px;
-  padding: 0;
-  color: #fff;
-  border-bottom: 1px dotted rgba(255, 255, 255, .5);
-  margin-top: 6px;
-  
-  &:hover {
-    border-bottom: 1px dotted rgba(255, 255, 255, 1);
-  }
-`;
 
 const ReviewOrderItem = styled.div`
   display: flex;
@@ -99,8 +87,8 @@ const OrderReviewStep: FC = () => {
       dispatch(setGeneralError({
         type: 'error',
         message: `You have exceeded the purchase limit. 
-        Total weekly limit ${limits?.weekly_limit_usd as string}.
-        Remaining limit: ${limits?.remaining_weekly_limit_usd}`,
+        Total weekly limit $${limits?.weekly_limit_usd as string}.
+        Remaining limit: $${limits?.remaining_weekly_limit_usd}`,
       }));
     }
   }, [
@@ -226,18 +214,18 @@ const OrderReviewStep: FC = () => {
                     lastNumbers={selectedUserCard.last4}
                   />
                   <Flex flexDirection="column">
-                    <ChangeButton
+                    <BorderButton
                       type="button"
                       onClick={handleClickChangePayment}
                     >
                       Change
-                    </ChangeButton>
-                    <ChangeButton
+                    </BorderButton>
+                    <BorderButton
                       type="button"
                       onClick={handleClickChangePersonal}
                     >
                       Change
-                    </ChangeButton>
+                    </BorderButton>
                   </Flex>
                 </Flex>
               </PreviewBadge>

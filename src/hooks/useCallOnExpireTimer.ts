@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { SECOND_MS } from '../constants';
 
+// expires at - ISO
 const useCallOnExpireTimer = (expires_at: string, onExpireTimer: () => void) => {
   useEffect(() => {
     if (!expires_at) {

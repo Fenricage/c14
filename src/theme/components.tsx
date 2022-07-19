@@ -14,6 +14,22 @@ export const Title = styled.h1<{margin?: string; color?: string}>`
   text-align: center;
 `;
 
+export const BorderButton = styled.button`
+  font-size: 12px;
+  padding: 0;
+  color: #fff;
+  border-bottom: 1px dotted rgba(255, 255, 255, .5);
+  margin-top: 6px;
+  
+  &:hover {
+    border-bottom: 1px dotted rgba(255, 255, 255, 1);
+  }
+  
+  &:disabled {
+    opacity: .5;
+  }
+`;
+
 export const Subtitle = styled.h2<{margin?: string}>`
   font-size: 14px;
   line-height: 24px;

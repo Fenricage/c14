@@ -31,7 +31,8 @@ export enum WidgetSteps {
   PHONE_VERIFICATION = 1,
   PHONE_CONFIRMATION = 2,
   PERSONAL_INFORMATION = 3,
-  PAYMENT_ADDING = 3.1,
+  EMAIL_VERIFICATION = 3.1,
+  PAYMENT_ADDING = 3.2,
   PAYMENT_SELECT = 4,
   REVIEW_ORDER = 5,
   PROCESS = 6,
@@ -97,6 +98,9 @@ const getNextWidgetStep = (currentStep: WidgetSteps) => {
     case WidgetSteps.PHONE_CONFIRMATION: {
       return WidgetSteps.PERSONAL_INFORMATION;
     }
+    case WidgetSteps.EMAIL_VERIFICATION: {
+      return WidgetSteps.PAYMENT_SELECT;
+    }
     case WidgetSteps.PAYMENT_ADDING: {
       return WidgetSteps.PAYMENT_SELECT;
     }
@@ -132,6 +136,9 @@ const getPrevWidgetStep = (currentStep: WidgetSteps) => {
     }
     case WidgetSteps.PAYMENT_ADDING: {
       return WidgetSteps.PAYMENT_SELECT;
+    }
+    case WidgetSteps.EMAIL_VERIFICATION: {
+      return WidgetSteps.PERSONAL_INFORMATION;
     }
     case WidgetSteps.PAYMENT_SELECT: {
       return WidgetSteps.PERSONAL_INFORMATION;
@@ -174,6 +181,7 @@ export type AppState = {
   isUserUpdating: boolean
   isUserUpdated: boolean
   isUserVerified: boolean;
+  isEmailVerified: boolean;
   quoteError: null | string
   quotes: QuoteResponse | Record<string, never>
   isQuotesAutoUpdateEnabled: boolean
@@ -209,6 +217,8 @@ export type AppState = {
   isAuthenticated: boolean;
   isAuthenticating: boolean;
   phoneNumber: string | null;
+  isEmailVerificationSent: boolean;
+  isEmailVerificationSending: boolean;
 }
 
 export const initialQuotesValuesForm: QuoteFormValues = {
@@ -239,6 +249,7 @@ export const initialState = {
   isUserUpdating: false,
   isUserUpdated: false,
   isUserVerified: false,
+  isEmailVerified: false,
   isQuoteLoading: false,
   isUserCardsEmpty: false,
   quotesUserDecimalSeparator: undefined,
@@ -283,6 +294,8 @@ export const initialState = {
   isAuthenticated: false,
   isAuthenticating: false,
   phoneNumber: null,
+  isEmailVerificationSent: false,
+  isEmailVerificationSending: false,
 } as AppState;
 
 const applicationSlice = createSlice({
@@ -397,6 +410,9 @@ const applicationSlice = createSlice({
     },
     setSkipPersonalInfoStep: (state, { payload }: PayloadAction<boolean>) => {
       state.skipPersonalInfoStep = payload;
+    },
+    setEmailVerificationSent: (state, { payload }: PayloadAction<boolean>) => {
+      state.isEmailVerificationSent = payload;
     },
   },
   extraReducers: (builder) => {
@@ -625,6 +641,7 @@ const applicationSlice = createSlice({
       (state, { payload }) => {
         state.user = payload;
         state.isUserVerified = payload.identity_verified;
+        state.isEmailVerified = payload.email_verified;
         state.isUserLoaded = true;
         state.isUserLoading = false;
       },
@@ -660,6 +677,28 @@ const applicationSlice = createSlice({
         state.isUserUpdating = false;
       },
     );
+
+    builder.addMatcher(
+      userApi.endpoints.sendEmailVerification.matchPending,
+      (state) => {
+        state.isEmailVerificationSending = true;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.sendEmailVerification.matchFulfilled,
+      (state) => {
+        state.isEmailVerificationSent = true;
+        state.isEmailVerificationSending = false;
+      },
+    );
+
+    builder.addMatcher(
+      userApi.endpoints.sendEmailVerification.matchRejected,
+      (state) => {
+        state.isEmailVerificationSending = false;
+      },
+    );
   },
 });
 
@@ -690,6 +729,7 @@ export const {
   setSkipPaymentStep,
   setGeneralError,
   setSkipPersonalInfoStep,
+  setEmailVerificationSent,
 } = applicationSlice.actions;
 
 export default applicationSlice;
