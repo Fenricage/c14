@@ -7,7 +7,7 @@ import { FormikContextType, useField, useFormikContext } from 'formik';
 import { ReactComponent as ArrowIcon } from '../../assets/arrow.svg';
 import { ReactComponent as CrossIcon } from '../../assets/cross_icon.svg';
 import { Title } from '../../theme/components';
-import { sourceOptions } from '../../pages/HomePage/steps/QuotesStep/QuotesStep';
+import { sourceOptions } from '../../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
 import { SHOULD_VALIDATE } from '../../constants';
 import CurrencySelectIcon from '../CurrencySelectIcon/CurrencySelectIcon';
 
@@ -27,10 +27,24 @@ export type OnChangeCurrencySelectField = ({
   value: string;
 }) => unknown;
 
-type CurrencySelectProps = {
+type CurrencySelectFieldHOCProps = {
   name: string;
   options: SelectOption[];
-  onHandleChange: OnChangeCurrencySelectField
+  onHandleChange: OnChangeCurrencySelectField;
+  disabled?: boolean;
+}
+
+type CurrencySelectFieldProps = {
+  value: Currency;
+  options: SelectOption[];
+  onOpenModalClick?: () => void;
+  disabled?: boolean;
+  children?: React.ReactElement;
+}
+
+type CurrencySelectFieldItemProps = {
+  name: string;
+  icon: JSX.Element;
 }
 
 const StyledCrossIcon = styled(CrossIcon)`
@@ -126,11 +140,6 @@ const CurrencyItem = styled.div`
   }
 `;
 
-type CurrencySelectFieldItemProps = {
-  name: string;
-  icon: JSX.Element;
-}
-
 const CurrencySelectFieldItem: FC<CurrencySelectFieldItemProps> = ({ name, icon }) => (
   <>
     <Name>{name}</Name>
@@ -138,10 +147,36 @@ const CurrencySelectFieldItem: FC<CurrencySelectFieldItemProps> = ({ name, icon 
   </>
 );
 
-const CurrencySelectField: FC<CurrencySelectProps> = ({
+export const CurrencySelectField: FC<CurrencySelectFieldProps> = ({
+  options,
+  disabled,
+  onOpenModalClick,
+  value,
+  children,
+}) => {
+  const selected = options.find((o) => o.value === value);
+  const handleClickSelect = () => {
+    if (!disabled && onOpenModalClick) {
+      onOpenModalClick();
+    }
+  };
+
+  return (
+    <CurrencySelectContainer onClick={handleClickSelect}>
+      <CurrencySelectFieldItem
+        name={selected?.label || sourceOptions[0].label}
+        icon={<CurrencySelectIcon optionValue={selected?.value || 'USD'} />}
+      />
+      {!disabled && children}
+    </CurrencySelectContainer>
+  );
+};
+
+const CurrencySelectFieldHOC: FC<CurrencySelectFieldHOCProps> = ({
   name,
   options,
   onHandleChange,
+  disabled = false,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const theme = useTheme();
@@ -181,55 +216,63 @@ const CurrencySelectField: FC<CurrencySelectProps> = ({
     return document.body;
   }, []);
 
-  const selected = options.find((o) => o.value === value);
-
   return (
-    <CurrencySelectContainer onClick={handleClickSelect}>
-      <CurrencySelectFieldItem
-        name={selected?.label || sourceOptions[0].label}
-        icon={<CurrencySelectIcon optionValue={selected?.value || 'USD'} />}
-      />
-      <StyledArrowIcon />
-      <ReactModal
-        style={selectFieldModalStyles}
-        parentSelector={handleModalParentSelector}
-        isOpen={isModalOpen}
-      >
-        <ModalHeader>
-          <Title color={theme.alt3}>Select currency</Title>
-          <CloseButton type="button" onClick={handleClickClose}>
-            <StyledCrossIcon />
-          </CloseButton>
-        </ModalHeader>
-        <ModalBody>
-          {options.map((o) => (
-            <CurrencyItem
-              key={o.value}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (o.value === value) {
+    <CurrencySelectField
+      value={value as Currency}
+      disabled={disabled}
+      options={options}
+      onOpenModalClick={handleClickSelect}
+    >
+      <>
+        <StyledArrowIcon />
+        <ReactModal
+          style={selectFieldModalStyles}
+          parentSelector={handleModalParentSelector}
+          isOpen={isModalOpen}
+        >
+          <ModalHeader>
+            <Title color={theme.alt3}>Select currency</Title>
+            <CloseButton type="button" onClick={handleClickClose}>
+              <StyledCrossIcon />
+            </CloseButton>
+          </ModalHeader>
+          <ModalBody>
+            {options.map((o) => (
+              <CurrencyItem
+                key={o.value}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (o.value === value) {
+                    setIsModalOpen(false);
+                    return;
+                  }
+                  setTouched(true, SHOULD_VALIDATE.FALSE);
+                  setValue(o.value, SHOULD_VALIDATE.TRUE);
+                  onHandleChange({
+                    context,
+                    value,
+                  });
                   setIsModalOpen(false);
-                  return;
-                }
-                setTouched(true, SHOULD_VALIDATE.FALSE);
-                setValue(o.value, SHOULD_VALIDATE.TRUE);
-                onHandleChange({
-                  context,
-                  value,
-                });
-                setIsModalOpen(false);
-              }}
-            >
-              <CurrencySelectFieldItem
-                name={o.description ?? o.label}
-                icon={<CurrencySelectIcon optionValue={o.value} />}
-              />
-            </CurrencyItem>
-          ))}
-        </ModalBody>
-      </ReactModal>
-    </CurrencySelectContainer>
+                }}
+              >
+                <CurrencySelectFieldItem
+                  name={o.description ?? o.label}
+                  icon={<CurrencySelectIcon optionValue={o.value} />}
+                />
+              </CurrencyItem>
+            ))}
+          </ModalBody>
+        </ReactModal>
+      </>
+    </CurrencySelectField>
   );
 };
 
-export default CurrencySelectField;
+export const CurrencySelect: FC<CurrencySelectFieldProps | CurrencySelectFieldHOCProps> = (props) => (
+  // eslint-disable-next-line react/destructuring-assignment
+  props.disabled
+    ? <CurrencySelectField {...props as CurrencySelectFieldProps} />
+    : <CurrencySelectFieldHOC {...props as CurrencySelectFieldHOCProps} />
+);
+
+export default CurrencySelect;

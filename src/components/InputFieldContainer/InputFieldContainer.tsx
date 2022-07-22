@@ -1,6 +1,12 @@
 import React, { forwardRef, PropsWithChildren } from 'react';
 import styled, { css } from 'styled-components/macro';
-import InputField, { InputFieldProps, Input, InputContainer } from '../InputField/InputField';
+import InputFieldFormikHOC, {
+  InputField,
+  InputFieldProps,
+  Input,
+  InputContainer,
+  InputFieldFormikHOCProps,
+} from '../InputField/InputField';
 import { InputLabel } from '../../theme/components';
 
 export const sharedInputStyles = css`
@@ -17,7 +23,7 @@ export const sharedLabelStyles = css`
   font-weight: 700;
 `;
 
-const QuoteInputFieldContainer = styled.div`
+const InputFieldContainerElement = styled.div`
   width: 100%;
 
   ${InputContainer} {
@@ -39,10 +45,13 @@ const QuoteInputFieldContainer = styled.div`
 
 `;
 
-const QuoteInputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>>((props, ref) => (
-  <QuoteInputFieldContainer>
-    <InputField {...props} ref={ref} />
-  </QuoteInputFieldContainer>
-));
+const InputFieldContainer = forwardRef<HTMLDivElement,
+  PropsWithChildren<InputFieldFormikHOCProps | InputFieldProps>>(
+    (props, ref) => (
+      <InputFieldContainerElement>
+        {props.disabled ? <InputField {...props} ref={ref} /> : <InputFieldFormikHOC {...props} ref={ref} /> }
+      </InputFieldContainerElement>
+    ),
+  );
 
-export default QuoteInputField;
+export default InputFieldContainer;

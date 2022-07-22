@@ -66,8 +66,8 @@ describe('OrderReviewStep tests', () => {
       expect(paymentMethodItem).toBeInTheDocument();
       expect(receiveItem).toBeInTheDocument();
 
-      expect(within(payItem).getByTestId('AmountBadgeValue'))
-        .toHaveTextContent(serverQuoteRequestMock.source_amount);
+      expect(within(payItem).getByTestId('quoteSourceAmount'))
+        .toHaveValue(serverQuoteRequestMock.source_amount);
 
       expect(within(feeItem).getByTestId('NetworkFee'))
         .toHaveTextContent(serverQuoteRequestMock.fiat_blockchain_fee);
@@ -81,8 +81,8 @@ describe('OrderReviewStep tests', () => {
       expect(within(paymentMethodItem).getByTestId('BadgeCardLastNumbers'))
         .toHaveTextContent(cardToSelect.last4);
 
-      expect(within(receiveItem).getByTestId('AmountBadgeValue'))
-        .toHaveTextContent(serverQuoteRequestMock.target_amount);
+      expect(within(receiveItem).getByTestId('quoteTargetAmount'))
+        .toHaveValue(serverQuoteRequestMock.target_amount);
 
       expect(submitButton).not.toBeDisabled();
     },

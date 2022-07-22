@@ -38,12 +38,22 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'import/prefer-default-export': 'off',
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: [
+          '.storybook/**',
+          '*/**/stories/**',
+          '**/*.stories.tsx',
+        ],
+      },
+    ],
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
     'max-len': ['warn', { code: 110 }],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-    'import/prefer-default-export': 'off',
     'react/prop-types': 'off',
     'react/function-component-definition': 'off',
     'react/require-default-props': 'off',

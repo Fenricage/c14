@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import styled from 'styled-components/macro';
 import { useAppSelector } from '../../../app/hooks';
 import { selectApp, WidgetSteps } from '../../../state/applicationSlice';
-import QuotesStep from '../steps/QuotesStep/QuotesStep';
+import QuotesStepContainer from '../steps/QuotesStep/QuotesStepContainer';
 import PhoneInputStep from '../steps/PhoneInputStep/PhoneInputStep';
 import AddCardStep from '../steps/AddCardStep/AddCardStep';
 import PaymentSelectStep from '../steps/PaymentSelectStep/PaymentSelectStep';
@@ -50,7 +50,7 @@ const Widget: FC = () => {
   const renderStep = useCallback(() => {
     switch (currentStep) {
       case WidgetSteps.QUOTES: {
-        return <QuotesStep />;
+        return <QuotesStepContainer />;
       }
       case WidgetSteps.PHONE_VERIFICATION: {
         return <PhoneInputStep />;

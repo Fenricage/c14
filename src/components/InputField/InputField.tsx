@@ -72,7 +72,6 @@ export type InputFieldProps<FormValues = unknown> = {
   label?: string;
   min?: string;
   max?: string;
-  onHandleChange?: OnChangeInputField;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 } &
   /* from Field HOC, if wrapped. */
@@ -80,7 +79,65 @@ export type InputFieldProps<FormValues = unknown> = {
   /* Any extra props. */
   FieldHookConfig<string>;
 
-const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>>(
+export type InputFieldFormikHOCProps = {
+  onHandleChange?: OnChangeInputField;
+} & InputFieldProps
+
+export const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>>(
+  ({
+    label,
+    autoComplete,
+    autoFocus = false,
+    name,
+    type,
+    placeholder,
+    tabIndex,
+    value,
+    style,
+    onKeyDown,
+    onBlur,
+    onChange,
+    disabled,
+    min,
+    max,
+  }, ref) => {
+    const { current: htmlId } = useRef(uuidv4());
+
+    return (
+      <InputContainer ref={ref}>
+        {label && (
+          <InputLabel htmlFor={htmlId}>
+            {label}
+          </InputLabel>
+        )}
+        <InputBox>
+          <InputInner>
+            <Input
+              data-testid={name}
+              id={htmlId}
+              name={name}
+              type={type}
+              autoFocus={autoFocus}
+              autoComplete={autoComplete}
+              placeholder={placeholder}
+              tabIndex={tabIndex}
+              onKeyDown={onKeyDown}
+              value={value}
+              style={style}
+              min={min}
+              max={max}
+              onBlur={onBlur as FocusEventHandler<HTMLInputElement>}
+              onChange={onChange as ChangeEventHandler<HTMLInputElement>}
+              disabled={disabled}
+            />
+          </InputInner>
+        </InputBox>
+      </InputContainer>
+    );
+  },
+);
+
+const InputFieldFormikHOC = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldFormikHOCProps>>(
   ({
     label,
     autoComplete,
@@ -107,8 +164,6 @@ const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>
     const {
       validateOnBlur,
     } = formikContext;
-
-    const { current: htmlId } = useRef(uuidv4());
 
     const [
       fieldInputProps,,
@@ -145,36 +200,26 @@ const InputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>
     };
 
     return (
-      <InputContainer ref={ref}>
-        {label && (
-        <InputLabel htmlFor={htmlId}>
-          {label}
-        </InputLabel>
-        )}
-        <InputBox>
-          <InputInner>
-            <Input
-              id={htmlId}
-              name={name}
-              type={type}
-              min={min}
-              max={max}
-              autoFocus={autoFocus}
-              autoComplete={autoComplete}
-              placeholder={placeholder}
-              tabIndex={tabIndex}
-              onKeyDown={onKeyDown}
-              value={value}
-              style={style}
-              onBlur={handleBlur as FocusEventHandler<HTMLInputElement>}
-              onChange={handleInputChange}
-              disabled={disabled}
-            />
-          </InputInner>
-        </InputBox>
-      </InputContainer>
+      <InputField
+        ref={ref}
+        disabled={disabled}
+        label={label}
+        autoComplete={autoComplete}
+        autoFocus={autoFocus}
+        name={name}
+        type={type}
+        min={min}
+        max={max}
+        placeholder={placeholder}
+        tabIndex={tabIndex}
+        value={value}
+        style={style}
+        onKeyDown={onKeyDown}
+        onBlur={handleBlur}
+        onChange={handleInputChange}
+      />
     );
   },
 );
 
-export default InputField;
+export default InputFieldFormikHOC;

@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FeeData } from '../pages/HomePage/Widget/Widget';
 import { QuoteResponse, quotesApi } from '../redux/quotesApi';
-import { QuoteFormValues, UserDecimalSeparator } from '../pages/HomePage/steps/QuotesStep/QuotesStep';
+import {
+  QuoteFormValues,
+  UserDecimalSeparator,
+} from '../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
 import { replaceDecimalSeparator } from '../utils';
 import { RootState } from '../app/store';
 import { SECOND_MS } from '../constants';

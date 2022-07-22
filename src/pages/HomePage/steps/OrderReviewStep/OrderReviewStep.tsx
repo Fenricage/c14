@@ -6,7 +6,6 @@ import { PaymentCard } from '../../../../redux/cardsApi';
 import WidgetHead from '../../Widget/WidgetHead';
 import PreviewBadge from './PreviewBadge';
 import Fee from '../QuotesStep/Fee';
-import AmountBadge from './AmountBadge';
 import { Button, FormRow, BorderButton } from '../../../../theme/components';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
@@ -14,13 +13,16 @@ import {
   decrementWidgetStep,
   goToWidgetStep,
   incrementWidgetStep,
-  selectApp, setGeneralError,
+  selectApp,
+  setGeneralError,
   setQuotesLoaded,
-  setSkipPaymentStep, setSkipPersonalInfoStep,
+  setSkipPaymentStep,
+  setSkipPersonalInfoStep,
   WidgetSteps,
 } from '../../../../state/applicationSlice';
 import useCallOnExpireTimer from '../../../../hooks/useCallOnExpireTimer';
-import { targetOptions } from '../QuotesStep/QuotesStep';
+import { sourceOptions, targetOptions } from '../QuotesStep/QuotesStepContainer';
+import AmountField from '../../../../components/AmountField/AmountField';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import CardBadge from './CardBadge';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
@@ -140,8 +142,6 @@ const OrderReviewStep: FC = () => {
     dispatch(incrementWidgetStep());
   };
 
-  const targetCurrencyLabel = targetOptions.find((o) => o.value === target_crypto_asset_id);
-
   const handleClickChangePayment = () => {
     dispatch(setSkipPaymentStep(false));
     dispatch(decrementWidgetStep());
@@ -186,10 +186,13 @@ const OrderReviewStep: FC = () => {
             width="100%"
           >
             <ReviewOrderItem data-testid="ReviewOrderItemPay">
-              <AmountBadge
+              <AmountField
+                readOnly
                 label="You Pay"
-                value={source_amount}
-                currencyText={source_currency}
+                amountFieldName="quoteSourceAmount"
+                currencyFieldName="sourceCurrency"
+                currencyOptions={sourceOptions}
+                amountValue={source_amount}
                 currencyType={source_currency}
               />
             </ReviewOrderItem>
@@ -231,10 +234,13 @@ const OrderReviewStep: FC = () => {
               </PreviewBadge>
             </ReviewOrderItem>
             <ReviewOrderItem data-testid="ReviewOrderItemReceive">
-              <AmountBadge
+              <AmountField
+                readOnly
                 label="You Receive"
-                value={target_amount}
-                currencyText={targetCurrencyLabel?.label || ''}
+                amountFieldName="quoteTargetAmount"
+                currencyFieldName="targetCurrency"
+                currencyOptions={targetOptions}
+                amountValue={target_amount}
                 currencyType={target_crypto_asset_id}
               />
             </ReviewOrderItem>

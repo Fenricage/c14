@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { setQuotesLoading } from '../../../../state/applicationSlice';
-import { QuoteFormValues, replaceCommaWithDot } from './QuotesStep';
+import { QuoteFormValues, replaceCommaWithDot } from './QuotesStepContainer';
 import { useAppDispatch } from '../../../../app/hooks';
 
 export const useUpdateQuotes = (handleTriggerUpdateQuotes: (values: QuoteFormValues) => Promise<void>) => {

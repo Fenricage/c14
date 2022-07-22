@@ -6,7 +6,7 @@ import {
 } from '../../../../state/applicationSlice';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { SECOND_MS } from '../../../../constants';
-import { QuoteFormValues } from './QuotesStep';
+import { QuoteFormValues } from './QuotesStepContainer';
 import usePrevious from '../../../../hooks/usePrevious';
 import useCallOnExpireTimer from '../../../../hooks/useCallOnExpireTimer';
 

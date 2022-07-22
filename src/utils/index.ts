@@ -1,4 +1,4 @@
-import { UserDecimalSeparator } from '../pages/HomePage/steps/QuotesStep/QuotesStep';
+import { UserDecimalSeparator } from '../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
 
 export const replaceDecimalSeparator = (separator: UserDecimalSeparator, value: string): string => {
   let finalValue = value;
