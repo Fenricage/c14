@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import styled from 'styled-components/macro';
 import { Form, Formik } from 'formik';
 import WidgetHead from '../../Widget/WidgetHead';
@@ -17,6 +17,7 @@ import FormFieldErrorMessage from '../../../../components/FormFieldErrorMessage/
 import { ReactComponent as PhoneIcon } from '../../../../assets/phone_icon.svg';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
+import StepIcon from '../../../../components/StepIcon/StepIcon';
 
 const StyledForm = styled(Form)`
   flex: 1;
@@ -75,9 +76,9 @@ const SMSConfirmationStep: FC = () => {
       <WidgetHead
         text="Confirm Your Phone Number"
       />
-      <Flex marginTop="12px" width="100%" justifyContent="center">
+      <StepIcon>
         <PhoneIcon />
-      </Flex>
+      </StepIcon>
       <Flex flex={1}>
         <Formik
           initialValues={initialFormValues}

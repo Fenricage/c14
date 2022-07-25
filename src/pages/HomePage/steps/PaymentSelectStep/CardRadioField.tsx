@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 import { FieldInputProps, FormikState } from 'formik/dist/types';
 import React, { FC } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import ReactLoading from 'react-loading';
 import { ReactComponent as RemoveCardIcon } from '../../../../assets/remove_card_icon.svg';
 import { Card } from './Card';

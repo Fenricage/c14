@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import ReactModal from 'react-modal';
+import { Normalize } from 'styled-normalize';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ThemeProvider from './theme';
@@ -18,6 +19,7 @@ ReactModal.setAppElement('#root');
 root.render(
   <Provider store={store}>
     <ThemeProvider>
+      <Normalize />
       <ThemedGlobalStyle />
       <App />
     </ThemeProvider>

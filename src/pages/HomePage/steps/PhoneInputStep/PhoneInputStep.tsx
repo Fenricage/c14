@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import { Formik, Form } from 'formik';
 import {
   isPossiblePhoneNumber,
@@ -26,6 +26,7 @@ import { ReactComponent as PhoneIcon } from '../../../../assets/phone_icon.svg';
 import { PRIMARY_BORDER_RADIUS } from '../../../../components/PrimaryInputField/PrimaryInputField';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
+import StepIcon from '../../../../components/StepIcon/StepIcon';
 
 type PhoneFormValues = {
   phone?: string;
@@ -111,9 +112,9 @@ const PhoneInputStep: FC = () => {
       <WidgetHead
         text="Verify Your Phone Number"
       />
-      <Flex marginTop="12px" width="100%" justifyContent="center">
+      <StepIcon>
         <PhoneIcon />
-      </Flex>
+      </StepIcon>
       <Flex flex={1}>
         <Formik
           initialValues={initialFormValues}

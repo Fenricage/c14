@@ -10,12 +10,21 @@ const StyledBackIcon = styled(BackIcon)`
   transition: transform .25s ease;
 `;
 
-const NavigateBackButton = styled.button`
+export const NavigateBackButton = styled.button`
+  display: flex;
+  padding: 0;
   
   &:hover {
     ${StyledBackIcon} {
       transform: translateX(-5px);
     }
+  }
+  
+  svg {
+    width: 20px;
+    ${({ theme }) => theme.mediaWidth.upToSmall`
+      width: 32px;
+    `};
   }
 `;
 

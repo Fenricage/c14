@@ -8,6 +8,7 @@ import {
   FormFieldErrorMessageText,
   FormFieldErrorMessageWrapper,
 } from '../FormFieldErrorMessage/FormFieldErrorMessage';
+import { FORM_CONTROLS_LINE_HEIGHT } from '../../theme';
 
 export const PRIMARY_BORDER_RADIUS = '10px';
 
@@ -22,8 +23,15 @@ const PrimaryInputFieldContainer = styled.div`
     border-radius: ${PRIMARY_BORDER_RADIUS};
     border: 1px solid transparent;
     padding: 15px;
+    line-height: ${FORM_CONTROLS_LINE_HEIGHT}px;
     background-color: ${({ theme }) => theme.alt4};
     color: ${({ theme }) => theme.white};
+    
+    /* TODO(@ruslan): date input has another default height, to fix this -  
+        rewrite all input, select controls to box-sizing: content-box */
+    &[type=date] {
+      height: 42px;
+    }
     
     &:hover {
       border-color: ${({ theme }) => theme.alt6};

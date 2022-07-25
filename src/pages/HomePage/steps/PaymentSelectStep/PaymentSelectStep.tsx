@@ -2,7 +2,7 @@ import React, {
   FC, useCallback, useEffect, useState,
 } from 'react';
 import styled from 'styled-components/macro';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import { useFormik } from 'formik';
 import ReactLoading from 'react-loading';
 import WidgetHead from '../../Widget/WidgetHead';

@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import { Title } from '../../../theme/components';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { decrementWidgetStep, selectApp } from '../../../state/applicationSlice';
-import NavigateBack from './NavigateBack';
+import NavigateBack, { NavigateBackButton } from './NavigateBack';
 
 type WidgetHeadProps = {
   text: string;
@@ -16,6 +16,21 @@ const WidgetHeadContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin: 0 0 20px 0;
+  
+  ${Title} {
+    font-size: 14px;
+    
+    ${({ theme }) => theme.mediaWidth.upToSmall`
+       font-size: 18px;
+    `};
+  }
+  
+  ${NavigateBackButton} {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+  }
 `;
 
 const WidgetHead: FC<WidgetHeadProps> = ({

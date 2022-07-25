@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import styled from 'styled-components/macro';
 import {
   LastNumbersText, LastNumbers, LastNumbersContainer, StyledMasterCardIcon, PaymentMethodName,

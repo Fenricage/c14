@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import { Form, Formik } from 'formik';
 import styled from 'styled-components/macro';
 import * as Yup from 'yup';
@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import isDateFormatMatch from 'date-fns/isMatch';
 // eslint-disable-next-line import/no-duplicates
 import formatDate from 'date-fns/format';
+import { use100vh } from 'react-div-100vh';
 // eslint-disable-next-line import/no-duplicates
 import subDate from 'date-fns/sub';
 import ReactLoading from 'react-loading';
@@ -53,6 +54,14 @@ const StyledForm = styled(Form)`
 `;
 
 const ROW_MARGIN = '0 0 0px 0';
+const GAP = '30px';
+
+const WIDGET_TITLE_HEIGHT = 40;
+const WIDGET_TITLE_MARGIN = 20;
+const WIDGET_TOP_PADDING = 19;
+const WIDGET_BOTTOM_PADDING = 30;
+
+const OFFSETS = WIDGET_TITLE_HEIGHT + WIDGET_TITLE_MARGIN + WIDGET_TOP_PADDING + WIDGET_BOTTOM_PADDING;
 
 type PersonalFormValues = {
   firstNames: string;
@@ -90,6 +99,8 @@ const validationSchema = Yup.object({
 
 const PersonalInformationStep: FC = () => {
   const dispatch = useAppDispatch();
+
+  const final100Vh = use100vh();
 
   const {
     isUserUpdated,
@@ -213,7 +224,11 @@ const PersonalInformationStep: FC = () => {
           dispatch(logout());
         }}
       />
-      <Flex flex={1} height="calc(100% - 60px)">
+      <Flex height={[
+        final100Vh ? `${final100Vh - OFFSETS}px` : 'calc(100% - 120px)',
+        'calc(100% - 60px)',
+      ]}
+      >
         <Formik
           initialValues={initialFormValues}
           onSubmit={submitForm}
@@ -240,7 +255,7 @@ const PersonalInformationStep: FC = () => {
                         <FormFieldErrorMessage name="firstNames" />
                       </PrimaryInputBox>
                     </Flex>
-                    <Flex>
+                    <Flex marginLeft={GAP}>
                       <PrimaryInputBox hasError={!!errors.lastNames && !!touched.lastNames}>
                         <PrimaryInputField
                           label="Last Name"
@@ -275,7 +290,7 @@ const PersonalInformationStep: FC = () => {
                         <FormFieldErrorMessage name="stateCode" />
                       </PrimaryInputBox>
                     </Flex>
-                    <Flex flex={1} marginLeft="50px">
+                    <Flex flex={1} marginLeft={GAP}>
                       <PrimaryInputBox hasError={!!errors.dob && !!touched.dob}>
                         <PrimaryInputField
                           label="DOB"
@@ -304,7 +319,7 @@ const PersonalInformationStep: FC = () => {
                         <FormFieldErrorMessage name="unitNumber" />
                       </PrimaryInputBox>
                     </Flex>
-                    <Flex>
+                    <Flex marginLeft={GAP}>
                       <PrimaryInputBox hasError={!!errors.building && !!touched.building}>
                         <PrimaryInputField
                           label="Building"
@@ -335,7 +350,7 @@ const PersonalInformationStep: FC = () => {
                         <FormFieldErrorMessage name="city" />
                       </PrimaryInputBox>
                     </Flex>
-                    <Flex>
+                    <Flex marginLeft={GAP}>
                       <PrimaryInputBox hasError={!!errors.postalCode && !!touched.postalCode}>
                         <PrimaryInputField
                           label="Postal code"

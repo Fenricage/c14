@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import { useAppSelector } from '../../../../app/hooks';
 import { selectApp } from '../../../../state/applicationSlice';
 import { GetPurchaseDetailsResponse, GetPurchaseDetailsResponseStatus } from '../../../../redux/purchaseApi';

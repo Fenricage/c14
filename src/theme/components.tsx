@@ -153,9 +153,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
 html {
   color: ${({ theme }) => theme.white};
   background: ${({ theme }) => theme.bg};
-  min-height: 100vh;
   font-weight: 700;
-  height: 100vh;
 }
 
 * {
@@ -188,5 +186,9 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+select {
+  -webkit-appearance: initial;
 }
 `;

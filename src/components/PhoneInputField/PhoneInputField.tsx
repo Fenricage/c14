@@ -12,7 +12,7 @@ import {
 // @ts-ignore
 import en from 'react-phone-number-input/locale/en.json';
 import Input from 'react-phone-number-input/input';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import { useField } from 'formik';
 import CountrySelect, { CountrySelectElement } from './CountrySelect';
 import Flag, { FlagContainer } from './Flag';
@@ -40,7 +40,8 @@ export const PhoneInputFieldContainer = styled.div`
     flex: 1;
     background-color: transparent;
     font-size: 16px;
-    padding: 0 20px;
+    //padding: 0 20px;
+    padding: 4px 20px 0 20px;
     letter-spacing: ${LETTER_SPACING};
     color: #fff;
     border: 0;
@@ -48,6 +49,7 @@ export const PhoneInputFieldContainer = styled.div`
 
     &::placeholder {
       color: rgb(82, 120, 141);
+      //padding: 4px 0 0 0;
     }
   }
 `;
@@ -59,7 +61,7 @@ const CountryCode = styled.div`
   position: absolute;
   letter-spacing: ${LETTER_SPACING};
   pointer-events: none;
-  top: 16.5px;
+  top: 15.5px;
   right: 18px;
 `;
 
@@ -82,9 +84,9 @@ const CountryBox = styled.div`
   ${FlagContainer} {
     pointer-events: none;
     position:absolute;
-    top: 50%;
+    top: 56%;
     transform: translateY(-50%);
-    left: 10px;
+    left: 12px;
   }
   
   ${CountrySelectElement} {

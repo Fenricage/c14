@@ -1,11 +1,12 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import { Title } from '../../../../../theme/components';
 import { ReactComponent as PurchaseCompletedIcon } from '../../../../../assets/purchase_completed_icon.svg';
 import { GetPurchaseDetailsResponse } from '../../../../../redux/purchaseApi';
 import CompletePreviewCardBadge from './CompletePreviewCardBadge';
 import { PaymentCard } from '../../../../../redux/cardsApi';
+import StepIcon from '../../../../../components/StepIcon/StepIcon';
 
 type CompleteSuccessProps = {
   purchaseDetails: GetPurchaseDetailsResponse
@@ -70,9 +71,9 @@ const CompleteSuccess: FC<CompleteSuccessProps> = ({
 }) => (
   <Flex flex={1} flexDirection="column">
     <Title>Purchase Completed</Title>
-    <Flex marginTop="12px" width="100%" justifyContent="center">
+    <StepIcon>
       <PurchaseCompletedIcon />
-    </Flex>
+    </StepIcon>
     <Flex marginTop="20px" flex={1} flexDirection="column">
       <Row>
         <RowLabel>Amount sent</RowLabel>

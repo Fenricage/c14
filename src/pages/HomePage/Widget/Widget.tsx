@@ -18,17 +18,21 @@ const WidgetContainer = styled.div`
   position: relative;
   overflow: auto;
   flex-flow: column nowrap;
-  width: 465px;
-  min-height: 517px;
-  height: 517px;
-  min-width: 465px;
-  max-width: 465px;
+  width: 100%;
+  height: 100%;
   background: ${({ theme }) => theme.alt2};
-  box-shadow: 0 4px 31px 25px rgba(0, 0, 0, 0.03);
-  border-radius: 24px;
   flex-flow: column;
-  //flex: 1;
   padding: 19px 30px 30px 30px;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+     min-height: 517px;
+     border-radius: 24px;
+     box-shadow: 0 4px 31px 25px rgba(0, 0, 0, 0.03);
+     width: 465px;
+     min-width: 465px;
+     max-width: 465px;
+     height: 517px;
+  `};
 `;
 
 // TODO(@ruslan): move to slice

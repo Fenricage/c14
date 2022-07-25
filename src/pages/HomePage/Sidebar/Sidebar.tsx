@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import Stepper from './Stepper/Stepper';
 
 const SidebarContainer = styled.div`

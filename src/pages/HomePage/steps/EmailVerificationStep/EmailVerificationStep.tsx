@@ -1,7 +1,7 @@
 import React, {
   FC, useCallback, useEffect, useState,
 } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import styled from 'styled-components/macro';
 import WidgetHead from '../../Widget/WidgetHead';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
@@ -10,11 +10,13 @@ import {
   decrementWidgetStep,
   incrementWidgetStep,
   selectApp,
-  setEmailVerificationSent, setSkipPersonalInfoStep,
+  setEmailVerificationSent,
+  setSkipPersonalInfoStep,
 } from '../../../../state/applicationSlice';
 import { BorderButton } from '../../../../theme/components';
 import useCallOnExpireTimer from '../../../../hooks/useCallOnExpireTimer';
 import { ReactComponent as EmailIcon } from '../../../../assets/email_icon.svg';
+import StepIcon from '../../../../components/StepIcon/StepIcon';
 
 const ButtonBox = styled.div`
   margin-top: auto;
@@ -103,9 +105,9 @@ const EmailVerificationStep: FC = () => {
           alignItems="center"
           textAlign="center"
         >
-          <Flex marginTop="12px" width="100%" justifyContent="center">
+          <StepIcon>
             <EmailIcon />
-          </Flex>
+          </StepIcon>
           <EmailText>
             Verification email has been sent, please confirm your email.
           </EmailText>

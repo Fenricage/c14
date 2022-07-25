@@ -1,12 +1,12 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import Sidebar from './Sidebar/Sidebar';
 import Widget from './Widget/Widget';
 import GeneralError from './GeneralError';
 
-const SidebarContainer = styled.div`
+const SidebarBox = styled.div`
   height: 100%;
   display: none;
 
@@ -15,25 +15,30 @@ const SidebarContainer = styled.div`
   `};
 `;
 
-const WidgetContainer = styled.div`
+const WidgetBox = styled.div`
   display: flex;
   position: relative;
   flex-flow: column;
   align-items: center;
   justify-content: center;
   height: 100%;
+  width: 100%;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+     width: auto;
+  `};
 `;
 
 const HomePage: FC = () => (
   <AppLayout>
     <Flex height="100%" justifyContent="center" alignItems="flex-start">
-      <SidebarContainer>
+      <SidebarBox>
         <Sidebar />
-      </SidebarContainer>
-      <WidgetContainer>
+      </SidebarBox>
+      <WidgetBox>
         <GeneralError />
         <Widget />
-      </WidgetContainer>
+      </WidgetBox>
     </Flex>
   </AppLayout>
 );

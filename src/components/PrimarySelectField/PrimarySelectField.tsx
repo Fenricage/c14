@@ -8,6 +8,7 @@ import {
   FormFieldErrorMessageText,
   FormFieldErrorMessageWrapper,
 } from '../FormFieldErrorMessage/FormFieldErrorMessage';
+import { FORM_CONTROLS_LINE_HEIGHT } from '../../theme';
 
 export const PRIMARY_BORDER_RADIUS = '10px';
 
@@ -22,6 +23,7 @@ const PrimaryInputFieldContainer = styled.div`
     border-radius: ${PRIMARY_BORDER_RADIUS};
     border: 1px solid transparent;
     padding: 15px;
+    line-height: ${FORM_CONTROLS_LINE_HEIGHT}px;
     background-color: ${({ theme }) => theme.alt4};
     color: ${({ theme }) => theme.white};
     

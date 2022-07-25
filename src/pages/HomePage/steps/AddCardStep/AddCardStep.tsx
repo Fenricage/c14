@@ -5,7 +5,7 @@ import styled from 'styled-components/macro';
 import {
   Frames, CardNumber, ExpiryDate, Cvv, FrameValidationChangedEvent, FrameCardTokenizedEvent,
 } from 'frames-react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import { QueryStatus } from '@reduxjs/toolkit/query';
 import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';

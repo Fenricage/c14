@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect } from 'react';
-import { Flex } from 'rebass';
+import { Flex } from 'rebass/styled-components';
 import styled from 'styled-components/macro';
 import ReactLoading from 'react-loading';
 import { PaymentCard } from '../../../../redux/cardsApi';
@@ -183,6 +183,7 @@ const OrderReviewStep: FC = () => {
           <Flex
             flexDirection="column"
             flex={1}
+            justifyContent={['center', 'flex-start']}
             width="100%"
           >
             <ReviewOrderItem data-testid="ReviewOrderItemPay">

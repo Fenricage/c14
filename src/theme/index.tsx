@@ -2,32 +2,14 @@ import React, { useMemo, ReactNode } from 'react';
 import { css, DefaultTheme, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components/macro';
 import { Colors } from './styled';
 
-const sizes = {
-  large: 1440,
-  desktop: 1024,
-  small: 600,
-  medium: 768,
-};
-
-export const sizePx = {
-  desktop: `${sizes.desktop}px`,
-  large: `${sizes.large}px`,
-  small: `${sizes.small}px`,
-  medium: `${sizes.medium}px`,
-};
-
-export const device = {
-  desktop: `(min-width: ${sizePx.desktop})`,
-  large: `(min-width: ${sizePx.large})`,
-  small: `(min-width: ${sizePx.small})`,
-  medium: `(min-width: ${sizePx.medium})`,
-};
-
 export const white = '#FFFFFF';
 export const black = '#000000';
 export const bg = white;
 
+export const FORM_CONTROLS_LINE_HEIGHT = 20;
+
 export const MEDIA_WIDTHS = {
+  upToSmall: 575,
   upToMedium: 960,
   upToLarge: 1600,
   upToExtraLarge: 1960,
@@ -91,7 +73,7 @@ export function colors(): Colors {
   };
 }
 
-export function theme(): DefaultTheme {
+export function theme(): DefaultTheme & {breakpoints: string[]} {
   return {
     ...colors(),
 
@@ -103,6 +85,9 @@ export function theme(): DefaultTheme {
 
     // medias
     mediaWidth: mediaWidthTemplates,
+
+    // for rebass components, e.g. Flex
+    breakpoints: Object.values(MEDIA_WIDTHS).map((v) => `${v}px`),
 
     // shadows
     shadow1: '#2F80ED',
