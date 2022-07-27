@@ -59,7 +59,7 @@
     "lint:global": "eslint --fix --ext .ts,.tsx ./src",
     "lint-staged": "lint-staged --debug --config lint-staged.js",
     "husky-install": "husky install",
-    "test": "DEBUG_PRINT_LIMIT=50000 react-scripts test --testURL https://mock.app/?targetAddress=0x36Cc45bF0b058E7A463CfBc8F77Db285a52dC9a1",
+    "test": "DEBUG_PRINT_LIMIT=50000 react-scripts test",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },

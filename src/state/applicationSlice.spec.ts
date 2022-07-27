@@ -1,14 +1,10 @@
 import { waitFor } from '@testing-library/react';
 import slice, {
-  decrementCounter,
   // decrementWidgetStep,
   // incrementWidgetStep,
   initialState,
   setFee,
   setLastChangedQuoteInputName,
-  setQuotesAutoUpdateEnable,
-  setQuotesUserDecimalSeparator,
-  setRequestCounter,
   // Steps,
   selectApp,
 } from './applicationSlice';
@@ -39,13 +35,6 @@ describe('application slice testing', () => {
     ).toEqual(initialState);
   });
 
-  it('test counter', () => {
-    store.dispatch(setRequestCounter(3000));
-    expect(selectApp(store.getState()).requestCounter).toBe(3000);
-    store.dispatch(decrementCounter(1000));
-    expect(selectApp(store.getState()).requestCounter).toBe(2000);
-  });
-
   it('test set fee', () => {
     const valueToSet = {
       c14: '100',
@@ -57,19 +46,9 @@ describe('application slice testing', () => {
     expect(selectApp(store.getState()).fee).toBe(valueToSet);
   });
 
-  it('test setting auto update', () => {
-    store.dispatch(setQuotesAutoUpdateEnable(true));
-    expect(selectApp(store.getState()).isQuotesAutoUpdateEnabled).toBe(true);
-  });
-
   it('test last changed quote input name', () => {
     store.dispatch(setLastChangedQuoteInputName('quoteTargetAmount'));
     expect(selectApp(store.getState()).lastChangedQuoteInputName).toBe('quoteTargetAmount');
-  });
-
-  it('test last changed quote input name', () => {
-    store.dispatch(setQuotesUserDecimalSeparator(','));
-    expect(selectApp(store.getState()).quotesUserDecimalSeparator).toBe(',');
   });
 
   it('tests quote request', async () => {

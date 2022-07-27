@@ -2,10 +2,8 @@ import React, { ChangeEvent, FC } from 'react';
 import { Flex } from 'rebass';
 import { Form, Formik } from 'formik';
 import styled from 'styled-components/macro';
-import { QueryStatus } from '@reduxjs/toolkit/query';
 import WidgetHead from '../../Widget/WidgetHead';
 import { CALCULATOR_FORM_NAME, QuoteInputName } from '../../../../state/applicationSlice';
-import AutoUpdate from './AutoUpdate';
 import { Button, FormRow } from '../../../../theme/components';
 import {
   SelectOption,
@@ -24,11 +22,10 @@ interface IQuotesStep {
   isQuoteInputDisabled: boolean;
   submitForm: () => Promise<boolean>;
   validate: (values: QuoteFormValues) => Partial<QuoteFormValues>;
-  debouncedUpdateQuotes: (values: any) => void;
-  updateQuotes: (values: QuoteFormValues) => Promise<void>;
-  requestQuoteStatus: QueryStatus;
-  onAmountChange: (type: QuoteInputName, value: string, event: ChangeEvent<HTMLInputElement>) => void;
-  onCurrencyChange: () => void;
+  onSourceAmountChange: (type: QuoteInputName, value: string, event: ChangeEvent<HTMLInputElement>) => void;
+  onTargetAmountChange: (type: QuoteInputName, value: string, event: ChangeEvent<HTMLInputElement>) => void;
+  onSourceCurrencyChange: (currency_id: string) => void;
+  onTargetCurrencyChange: (currency_id: string) => void;
   onSubmit: () => void;
   c14Fee?: string;
   networkFee?: string;
@@ -98,12 +95,11 @@ const QuotesStep: FC<IQuotesStep> = ({
   initialQuotesValuesForm,
   submitForm,
   validate,
-  onAmountChange,
-  onCurrencyChange,
+  onSourceAmountChange,
+  onTargetAmountChange,
+  onSourceCurrencyChange,
+  onTargetCurrencyChange,
   onSubmit,
-  debouncedUpdateQuotes,
-  updateQuotes,
-  requestQuoteStatus,
   isSubmitDisabled,
   initialTouched,
   isQuoteInputDisabled,
@@ -138,11 +134,6 @@ const QuotesStep: FC<IQuotesStep> = ({
           data-testid="QuotesForm"
           name={CALCULATOR_FORM_NAME}
         >
-          <AutoUpdate
-            requestStatus={requestQuoteStatus}
-            onChangeFormValues={debouncedUpdateQuotes}
-            onExpireTimer={updateQuotes}
-          />
           <FormRow>
             <AmountField
               readOnly={false}
@@ -156,12 +147,12 @@ const QuotesStep: FC<IQuotesStep> = ({
               onAmountChange={({
                 value,
                 event,
-              }) => onAmountChange(
+              }) => onSourceAmountChange(
                 'quoteSourceAmount',
                 value,
                 event,
               )}
-              onCurrencyChange={() => onCurrencyChange()}
+              onCurrencyChange={(currency_id) => onSourceCurrencyChange(currency_id)}
             />
           </FormRow>
           <TreeContainer>
@@ -192,13 +183,13 @@ const QuotesStep: FC<IQuotesStep> = ({
               placeholder="You Receive..."
               hasError={!!errors.quoteTargetAmount && !!touched.quoteTargetAmount}
               onAmountChange={
-                ({ value, event }) => onAmountChange(
+                ({ value, event }) => onTargetAmountChange(
                   'quoteTargetAmount',
                   value,
                   event,
                 )
               }
-              onCurrencyChange={() => onCurrencyChange()}
+              onCurrencyChange={(currency_id) => onTargetCurrencyChange(currency_id)}
             />
           </FormRow>
           <FormRow margin="auto 0 0 0">

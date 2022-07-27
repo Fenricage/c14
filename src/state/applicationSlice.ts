@@ -3,11 +3,8 @@ import { FeeData } from '../pages/HomePage/Widget/Widget';
 import { QuoteResponse, quotesApi } from '../redux/quotesApi';
 import {
   QuoteFormValues,
-  UserDecimalSeparator,
 } from '../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
-import { replaceDecimalSeparator } from '../utils';
 import { RootState } from '../app/store';
-import { SECOND_MS } from '../constants';
 import { cardsApi, GetUserCardsResponse, PaymentCard } from '../redux/cardsApi';
 import { PaymentSelectFormValues } from '../pages/HomePage/steps/PaymentSelectStep/PaymentSelectStep';
 import { GetPurchaseDetailsResponse, purchaseApi } from '../redux/purchaseApi';
@@ -175,7 +172,6 @@ export type AppState = {
   isQuoteLoading: boolean
   isUserCardsEmpty: boolean
   generalError: GeneralError
-  requestCounter: number
   user: null | UserDetails
   isUserLoading: boolean
   skipPaymentStep: boolean
@@ -187,8 +183,6 @@ export type AppState = {
   isEmailVerified: boolean;
   quoteError: null | string
   quotes: QuoteResponse | Record<string, never>
-  isQuotesAutoUpdateEnabled: boolean
-  quotesUserDecimalSeparator: UserDecimalSeparator
   lastChangedQuoteInputName: QuoteInputName
   fee: FeeData
   stepperSteps: {
@@ -222,6 +216,7 @@ export type AppState = {
   phoneNumber: string | null;
   isEmailVerificationSent: boolean;
   isEmailVerificationSending: boolean;
+  blockChainTargetAddress: string | null
 }
 
 export const initialQuotesValuesForm: QuoteFormValues = {
@@ -299,22 +294,13 @@ export const initialState = {
   phoneNumber: null,
   isEmailVerificationSent: false,
   isEmailVerificationSending: false,
+  blockChainTargetAddress: '',
 } as AppState;
 
 const applicationSlice = createSlice({
   name: 'application',
   initialState,
   reducers: {
-    setRequestCounter(state, action: PayloadAction<number>) {
-      state.requestCounter = action.payload;
-    },
-    decrementCounter(state, action: PayloadAction<number>) {
-      if (!state.requestCounter) {
-        return;
-      }
-      const decValue = action?.payload || SECOND_MS;
-      state.requestCounter -= decValue;
-    },
     setFee(state, action: PayloadAction<FeeData>) {
       state.fee = action.payload;
     },
@@ -339,15 +325,8 @@ const applicationSlice = createSlice({
     goToStepperStep(state, action: PayloadAction<StepperSteps>) {
       state.stepperSteps.currentStep = action.payload;
     },
-    // prevent triggerGetQuotes on change form values
-    setQuotesAutoUpdateEnable(state, action: PayloadAction<boolean>) {
-      state.isQuotesAutoUpdateEnabled = action.payload;
-    },
     setLastChangedQuoteInputName(state, action: PayloadAction<QuoteInputName>) {
       state.lastChangedQuoteInputName = action.payload;
-    },
-    setQuotesUserDecimalSeparator(state, action: PayloadAction<UserDecimalSeparator>) {
-      state.quotesUserDecimalSeparator = action.payload;
     },
     setQuotesLoading(state, action: PayloadAction<boolean>) {
       state.isQuoteLoading = action.payload;
@@ -416,6 +395,9 @@ const applicationSlice = createSlice({
     },
     setEmailVerificationSent: (state, { payload }: PayloadAction<boolean>) => {
       state.isEmailVerificationSent = payload;
+    },
+    setBlockchainTargetAddress: (state, { payload }: PayloadAction<string | null>) => {
+      state.blockChainTargetAddress = payload;
     },
   },
   extraReducers: (builder) => {
@@ -523,8 +505,8 @@ const applicationSlice = createSlice({
         state.quoteError = '';
         state.quotes = {
           ...payload,
-          target_amount: replaceDecimalSeparator(state.quotesUserDecimalSeparator, payload.target_amount),
-          source_amount: replaceDecimalSeparator(state.quotesUserDecimalSeparator, payload.source_amount),
+          target_amount: payload.target_amount,
+          source_amount: payload.source_amount,
         };
       },
     );
@@ -708,8 +690,6 @@ const applicationSlice = createSlice({
 export const selectApp = (state: RootState) => state.application;
 
 export const {
-  setRequestCounter,
-  decrementCounter,
   setFee,
   decrementWidgetStep,
   incrementWidgetStep,
@@ -720,12 +700,10 @@ export const {
   setInitialValuesForm,
   setSelectedUserCard,
   setQuotesLoading,
-  setQuotesAutoUpdateEnable,
   setLastChangedQuoteInputName,
   setUserCardsEmpty,
   setQuotesLoaded,
   setSnapshotValuesForm,
-  setQuotesUserDecimalSeparator,
   resetUserCards,
   resetApplication,
   setUserUpdated,
@@ -733,6 +711,7 @@ export const {
   setGeneralError,
   setSkipPersonalInfoStep,
   setEmailVerificationSent,
+  setBlockchainTargetAddress,
 } = applicationSlice.actions;
 
 export default applicationSlice;

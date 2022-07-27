@@ -1,7 +1,11 @@
-import React, { FC, useCallback } from 'react';
+import React, {
+  FC, useCallback, useEffect,
+} from 'react';
 import styled from 'styled-components/macro';
-import { useAppSelector } from '../../../app/hooks';
-import { selectApp, WidgetSteps } from '../../../state/applicationSlice';
+import { parse } from 'query-string';
+import { toast } from 'react-toastify';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { selectApp, setBlockchainTargetAddress, WidgetSteps } from '../../../state/applicationSlice';
 import QuotesStepContainer from '../steps/QuotesStep/QuotesStepContainer';
 import PhoneInputStepContainer from '../steps/PhoneInputStep/PhoneInputStepContainer';
 import AddCardStep from '../steps/AddCardStep/AddCardStep';
@@ -44,12 +48,25 @@ export type FeeData = {
 
 const Widget: FC = () => {
   const application = useAppSelector(selectApp);
+  const dispatch = useAppDispatch();
 
   const {
     widgetSteps: {
       currentStep,
     },
   } = application;
+
+  useEffect(() => {
+    const queryStringParsed = parse(window.location.search);
+
+    if (!queryStringParsed.targetAddress) {
+      toast.error('targetAddress is missing from URI query params.');
+      dispatch(setBlockchainTargetAddress(null));
+      return;
+    }
+
+    dispatch(setBlockchainTargetAddress((queryStringParsed as { targetAddress: string }).targetAddress));
+  }, [dispatch]);
 
   const renderStep = useCallback(() => {
     switch (currentStep) {

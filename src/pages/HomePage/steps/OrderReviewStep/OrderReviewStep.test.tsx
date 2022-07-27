@@ -49,7 +49,7 @@ describe('OrderReviewStep tests', () => {
         await store.dispatch(goToWidgetStep(WidgetSteps.REVIEW_ORDER));
       });
 
-      await act(() => {
+      await waitFor(() => {
         expect(getByTestId('ReviewOrderLoader')).toBeInTheDocument();
       });
 
@@ -67,7 +67,7 @@ describe('OrderReviewStep tests', () => {
       expect(receiveItem).toBeInTheDocument();
 
       expect(within(payItem).getByTestId('quoteSourceAmount'))
-        .toHaveValue(serverQuoteRequestMock.source_amount);
+        .toHaveValue(parseInt(serverQuoteRequestMock.source_amount, 10));
 
       expect(within(feeItem).getByTestId('NetworkFee'))
         .toHaveTextContent(serverQuoteRequestMock.fiat_blockchain_fee);
@@ -82,7 +82,7 @@ describe('OrderReviewStep tests', () => {
         .toHaveTextContent(cardToSelect.last4);
 
       expect(within(receiveItem).getByTestId('quoteTargetAmount'))
-        .toHaveValue(serverQuoteRequestMock.target_amount);
+        .toHaveValue(parseInt(serverQuoteRequestMock.target_amount, 10));
 
       expect(submitButton).not.toBeDisabled();
     },

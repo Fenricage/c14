@@ -1,10 +1,8 @@
 import React, {
-  ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState,
+  FC, useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 
 import debounce from 'just-debounce-it';
-import { parse } from 'query-string';
-import { toast } from 'react-toastify';
 
 import {
   Currency,
@@ -19,9 +17,6 @@ import {
   setFee,
   setInitialValuesForm,
   setLastChangedQuoteInputName,
-  setQuotesAutoUpdateEnable,
-  setQuotesLoading,
-  setQuotesUserDecimalSeparator, setQuotesLoaded,
 } from '../../../../state/applicationSlice';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
 import { useUpdateQuotes } from './hooks';
@@ -29,8 +24,6 @@ import QuotesStep from './QuotesStep';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import { useGetUserLimitsQuery } from '../../../../redux/limitsApi';
 import { selectLimits, setLimitsLoaded } from '../../../../state/limitsSlice';
-
-export type UserDecimalSeparator = ',' | '.' | undefined
 
 export type QuoteFormValues = {
   quoteSourceAmount: string;
@@ -40,8 +33,14 @@ export type QuoteFormValues = {
 }
 
 export const replaceCommaWithDot = (value: string) => value.replace(',', '.');
-const validQuoteInputValueRegEx = /^(?:\d{1,3}(?:\d{3})*|\d+)(?:[.|,]\d{0,2})?$/;
-
+const countDecimals = (value: string) => {
+  const float_value = parseFloat(value);
+  if (float_value && float_value % 1 !== 0) {
+    return float_value.toString()
+      .split('.')[1].length;
+  }
+  return 0;
+};
 type FormAmounts = Pick<QuoteFormValues, 'quoteSourceAmount'>
 
 export const sourceOptions: SelectOption[] = [
@@ -95,22 +94,16 @@ const QuotesStepContainer: FC = () => {
         initialValues: initialQuotesValuesForm,
       },
     },
+    blockChainTargetAddress,
   } = useAppSelector(selectApp);
 
   useGetUserLimitsQuery();
 
-  const [targetAddress, setTargetAddress] = useState('');
+  const [sourceCurrencyId, setSourceCurrencyId] = useState(sourceOptions[0].value as string);
+  const [targetCurrencyId, setTargetCurrencyId] = useState(targetOptions[0].value as string);
 
-  useEffect(() => {
-    const queryStringParsed = parse(window.location.search);
-
-    if (!queryStringParsed.targetAddress) {
-      toast.error('targetAddress is missing from URI query params.');
-      return;
-    }
-
-    setTargetAddress((queryStringParsed as { targetAddress: string }).targetAddress);
-  }, []);
+  const [quoteSourceAmount, setQuoteSourceAmount] = useState('');
+  const [quoteTargetAmount, setQuoteTargetAmount] = useState('');
 
   const request = useRef<any>(null);
 
@@ -120,13 +113,8 @@ const QuotesStepContainer: FC = () => {
     dispatch(setLimitsLoaded(false));
   }, [dispatch]);
 
-  useEffect(() => () => {
-    dispatch(setQuotesLoaded(false));
-  }, [dispatch]);
-
   const [triggerGetQuotes, {
     fulfilledTimeStamp,
-    status: requestQuoteStatus,
     isError: isQuoteRequestError,
   }] = useGetQuoteMutation();
 
@@ -159,6 +147,10 @@ const QuotesStepContainer: FC = () => {
 
       if (+(replaceCommaWithDot(value)) < 20) {
         errors[key as keyof FormAmounts] = 'Must be at least 20$';
+      }
+
+      if (countDecimals(value) > 2) {
+        errors[key as keyof FormAmounts] = 'Number of decimal places must be no more than 2';
       }
 
       if (limits?.weekly_limit_usd) {
@@ -221,9 +213,6 @@ const QuotesStepContainer: FC = () => {
       return;
     }
 
-    // disable autoupdate on reinit form
-    dispatch(setQuotesAutoUpdateEnable(false));
-
     dispatch(setInitialValuesForm({
       formName: CALCULATOR_FORM_NAME,
       state: {
@@ -253,47 +242,55 @@ const QuotesStepContainer: FC = () => {
     [updateQuotes],
   );
 
-  const updateUserDecimalSeparator = useCallback((value: string): void => {
-    if (value.includes(',')) {
-      dispatch(setQuotesUserDecimalSeparator(','));
-    }
-
-    if (value.includes('.')) {
-      dispatch(setQuotesUserDecimalSeparator('.'));
-    }
-  }, [dispatch]);
+  useEffect(() => {
+    debouncedUpdateQuotes({
+      quoteSourceAmount,
+      quoteTargetAmount,
+      sourceCurrency: sourceCurrencyId as Currency,
+      targetCurrency: targetCurrencyId as Currency,
+    });
+  }, [
+    debouncedUpdateQuotes,
+    sourceCurrencyId,
+    targetCurrencyId,
+    quoteSourceAmount,
+    quoteTargetAmount,
+  ]);
 
   const handleSetLastChanged = useCallback((
     type: QuoteInputName,
-    value: string,
-    event: ChangeEvent<HTMLInputElement>,
   ) => {
-    if (
-      value !== ''
-      && !validQuoteInputValueRegEx.test(value)
-    ) {
-      event.preventDefault();
-      return;
-    }
-
-    // cancel prev requests
+    // // cancel prev requests
     if (request.current) {
       request.current.abort();
     }
-
-    updateUserDecimalSeparator(value);
-    dispatch(setQuotesLoading(true));
-    dispatch(setQuotesAutoUpdateEnable(true));
     dispatch(setLastChangedQuoteInputName(type));
-  }, [dispatch, updateUserDecimalSeparator]);
+  }, [dispatch]);
+  const onSourceAmountChange = ((
+    type: QuoteInputName,
+    value: string,
+  ) => {
+    setQuoteSourceAmount(value);
+    handleSetLastChanged(type);
+  });
 
+  const onTargetAmountChange = ((
+    type: QuoteInputName,
+    value: string,
+  ) => {
+    setQuoteTargetAmount(value);
+    handleSetLastChanged(type);
+  });
   const handleClickNextStep = () => {
     dispatch(incrementWidgetStep());
   };
 
-  const handleChangeCurrency = () => {
-    dispatch(setQuotesLoading(true));
-    dispatch(setQuotesAutoUpdateEnable(true));
+  const onSourceCurrencyChange = (target_currency_id: string) => {
+    setSourceCurrencyId(target_currency_id);
+  };
+
+  const onTargetCurrencyChange = (target_currency_id: string) => {
+    setTargetCurrencyId(target_currency_id);
   };
 
   const initialTouched = useMemo(() => ({
@@ -301,7 +298,7 @@ const QuotesStepContainer: FC = () => {
     quoteTargetAmount: true,
   }), []);
 
-  const isQuoteInputDisabled = isLimitsLoading || !targetAddress;
+  const isQuoteInputDisabled = isLimitsLoading || blockChainTargetAddress === null;
 
   return (
     <QuotesStep
@@ -310,13 +307,13 @@ const QuotesStepContainer: FC = () => {
       validate={validate}
       initialTouched={initialTouched}
       isQuoteInputDisabled={isQuoteInputDisabled}
-      debouncedUpdateQuotes={debouncedUpdateQuotes}
-      updateQuotes={updateQuotes}
-      requestQuoteStatus={requestQuoteStatus}
-      onAmountChange={handleSetLastChanged}
-      onCurrencyChange={handleChangeCurrency}
+      onSourceAmountChange={onSourceAmountChange}
+      onTargetAmountChange={onTargetAmountChange}
+      onSourceCurrencyChange={(currency_id) => onSourceCurrencyChange(currency_id)}
+      onTargetCurrencyChange={(currency_id) => onTargetCurrencyChange(currency_id)}
       onSubmit={handleClickNextStep}
-      isSubmitDisabled={isLimitsLoading || isQuoteLoading || isQuoteRequestError || !targetAddress}
+      isSubmitDisabled={isLimitsLoading || isQuoteLoading || isQuoteRequestError
+        || blockChainTargetAddress === null}
       c14Fee={c14}
       networkFee={network}
       totalFee={total}

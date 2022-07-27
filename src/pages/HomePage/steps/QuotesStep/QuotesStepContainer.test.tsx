@@ -3,14 +3,14 @@ import {
   screen, act, waitFor, fireEvent,
 } from '@testing-library/react';
 import user from '@testing-library/user-event';
-import { render } from '../../../../utils/test-utils';
 import QuotesStepContainer from './QuotesStepContainer';
 import { server } from '../../../../testHandlers/utils';
 import { setupServerQuoteRequest } from '../../../../testHandlers/quotes/setupServerQuotes';
 import { setupServerLimits } from '../../../../testHandlers/limits/setupServerLimits';
+import { render } from '../../../../utils/test-utils';
 
-beforeAll(() => server.listen());
-beforeEach(() => {
+beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+beforeEach(async () => {
   jest.useFakeTimers();
 });
 afterEach(() => {
@@ -20,228 +20,145 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-const invalidValues = ['0', '19', '19.9', '500,3', '501'];
-const validValues = ['20', '200,9', '300.3', '500'];
+const initSetup = async (mockedSourceAmount = 100, mockedTargetAmount = 110) => {
+  setupServerQuoteRequest({
+    source_amount: mockedSourceAmount.toString(),
+    target_amount: mockedTargetAmount.toString(),
+  });
+  setupServerLimits();
+  render(<QuotesStepContainer />);
+
+  await waitFor(() => {
+    expect(screen.getByTestId('QuoteStep')).toBeInTheDocument();
+  });
+
+  await waitFor(() => expect(screen.getByTestId('quoteSourceAmount')).toHaveValue(mockedSourceAmount));
+  await waitFor(() => expect(screen.getByTestId('quoteTargetAmount')).toHaveValue(mockedTargetAmount));
+};
+
+const invalidValues = [0, 19, 19.9, 500.3, 501, 25.123];
+const validValues = [20, 200.9, 300.3, 500, 25.20];
 
 describe('QuotesStepContainer tests', () => {
   const quoteSourceAmount = () => screen.getByTestId('quoteSourceAmount');
   const quoteTargetAmount = () => screen.getByTestId('quoteTargetAmount');
-  it(
-    'check input values, button is disabled on invalid values, button is enabled on valid values',
-    async () => {
-      setupServerQuoteRequest();
-      setupServerLimits();
 
-      const {
-        getByTestId,
-      } = render(<QuotesStepContainer />);
-
-      await act(() => {
-        expect(getByTestId('QuoteStep')).toBeInTheDocument();
-      });
-
-      const submitButton = screen.getByTestId('submitButton');
-
-      expect(submitButton).toBeDisabled();
-
-      await waitFor(() => {
-        expect(quoteTargetAmount()).toHaveValue('110');
-      });
-
-      setupServerQuoteRequest({
-        source_amount: '200',
-        target_amount: '210',
-      });
-
-      await waitFor(() => {
-        expect(quoteSourceAmount()).not.toBeDisabled();
-        // console.debug(screen.getByTestId('quoteTargetAmount'));
-        expect(quoteTargetAmount()).not.toBeDisabled();
-      });
-
-      await act(() => {
-        fireEvent.input(quoteTargetAmount(), { target: { value: '' } });
-        fireEvent.input(quoteSourceAmount(), { target: { value: '' } });
-      });
-
-      await act(async () => {
-        await user.type(quoteSourceAmount(), '2');
-      });
-
-      await waitFor(() => {
-        expect(quoteSourceAmount()).toHaveValue('2');
-      });
-
-      await waitFor(() => {
-        expect(quoteTargetAmount()).toHaveValue('');
-      });
-
-      await waitFor(() => {
-        expect(submitButton).toBeDisabled();
-      });
-
-      await act(async () => {
-        await user.type(quoteSourceAmount(), '00');
-      });
-
-      await waitFor(() => {
-        expect(quoteSourceAmount()).toHaveValue('200');
-      });
-
-      await waitFor(() => {
-        expect(quoteTargetAmount()).toHaveValue('210');
-      });
-
-      await waitFor(() => {
-        expect(submitButton).not.toBeDisabled();
-      });
-    },
-  );
-
-  it('check comma replaced by dot', async () => {
-    setupServerQuoteRequest({
-      source_amount: '30.3',
-      target_amount: '40.3',
-    });
-
-    setupServerLimits();
-
-    const {
-      getByTestId,
-    } = render(<QuotesStepContainer />);
-
-    await act(() => {
-      expect(getByTestId('QuoteStep')).toBeInTheDocument();
-    });
-
-    const submitButton = screen.getByTestId('submitButton');
+  it('QuotesStepContainer component initialized with default values', async () => {
+    await initSetup();
 
     await waitFor(() => {
       expect(quoteSourceAmount()).not.toBeDisabled();
       expect(quoteTargetAmount()).not.toBeDisabled();
     });
 
-    await act(() => {
-      fireEvent.input(quoteSourceAmount(), { target: { value: '' } });
-      fireEvent.input(quoteTargetAmount(), { target: { value: '' } });
-    });
+    await waitFor(() => expect(screen.getByTestId('quoteSourceAmount')).toHaveValue(100));
+    await waitFor(() => expect(screen.getByTestId('quoteTargetAmount')).toHaveValue(110));
 
-    await act(async () => {
-      await user.type(quoteSourceAmount(), '30,3');
-    });
-
-    await act(async () => {
-      jest.runOnlyPendingTimers();
-    });
-
-    await waitFor(() => {
-      expect((quoteSourceAmount() as HTMLInputElement).value).toBe('30,3');
-    });
-
-    await waitFor(() => {
-      expect((quoteTargetAmount() as HTMLInputElement).value).toContain('40,3');
-    });
-
+    const submitButton = screen.getByTestId('submitButton');
     await waitFor(() => {
       expect(submitButton).not.toBeDisabled();
     });
   });
 
-  it.each(invalidValues)(
-    'test invalid values validation',
-    async (invalidValue) => {
-      setupServerQuoteRequest();
-      setupServerLimits();
+  it('QuotesStepContainer continue button disabled when input fields are empty', async () => {
+    await initSetup();
 
-      const { getByTestId } = render(<QuotesStepContainer />);
+    await act(() => {
+      fireEvent.input(quoteTargetAmount(), { target: { value: '' } });
+      fireEvent.input(quoteSourceAmount(), { target: { value: '' } });
+    });
+
+    await waitFor(() => expect(screen.getByTestId('quoteSourceAmount')).toHaveValue(null));
+    await waitFor(() => expect(screen.getByTestId('quoteTargetAmount')).toHaveValue(null));
+
+    const submitButton = screen.getByTestId('submitButton');
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+    });
+  });
+
+  it('QuotesStepContainer when value changed quotes automatically fetched', async () => {
+    await initSetup();
+    const mockedSourceAmount = 200;
+    const mockedTargetAmount = 220;
+
+    setupServerQuoteRequest({
+      source_amount: mockedSourceAmount.toString(),
+      target_amount: mockedTargetAmount.toString(),
+    });
+
+    await act(() => {
+      fireEvent.input(quoteTargetAmount(), { target: { value: '' } });
+      fireEvent.input(quoteSourceAmount(), { target: { value: '' } });
+    });
+
+    await act(async () => {
+      await user.type(quoteSourceAmount(), mockedSourceAmount.toString());
+    });
+
+    await waitFor(() => {
+      expect(quoteSourceAmount()).toHaveValue(mockedSourceAmount);
+      expect(quoteTargetAmount()).toHaveValue(mockedTargetAmount);
+    });
+  });
+
+  it.each(invalidValues)(
+    'QuotesStepContainer shows error message on invalid value',
+    async (invalidValue) => {
+      await initSetup();
 
       await act(() => {
-        expect(getByTestId('QuoteStep')).toBeInTheDocument();
+        fireEvent.input(quoteTargetAmount(), { target: { value: '' } });
+        fireEvent.input(quoteSourceAmount(), { target: { value: '' } });
+      });
+
+      await waitFor(() => expect(screen.getByTestId('quoteSourceAmount')).toHaveValue(null));
+      await waitFor(() => expect(screen.getByTestId('quoteTargetAmount')).toHaveValue(null));
+
+      await act(async () => {
+        await user.type(quoteSourceAmount(), invalidValue.toString());
+      });
+
+      await waitFor(() => {
+        expect(quoteSourceAmount()).toHaveValue(invalidValue);
+      });
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('ErrorMessage-quoteSourceAmount')).toBeInTheDocument();
       });
 
       const submitButton = screen.getByTestId('submitButton');
-
-      const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
-
-      await waitFor(() => {
-        expect(quoteSourceAmount()).not.toBeDisabled();
-        expect(quoteTargetAmount()).not.toBeDisabled();
-      });
-
-      (quoteSourceAmount() as HTMLInputElement)
-        .setSelectionRange(0, (quoteSourceAmount() as HTMLInputElement).value.length);
-
-      await act(async () => {
-        await user.type(quoteSourceAmount(), invalidValue);
-        user.tab();
-      });
-
-      await waitFor(() => {
-        expect((quoteSourceAmount() as HTMLInputElement).value).toBe(invalidValue);
-      });
-
-      await waitFor(() => {
-        expect(getByTestId(quoteSourceErrorFieldTestId)).toBeInTheDocument();
-      });
-
-      await waitFor(() => {
-        expect(submitButton).toBeDisabled();
-      });
+      expect(submitButton).toBeDisabled();
     },
   );
 
   it.each(validValues)(
-    'test valid values validation',
-    async (validValue) => {
-      setupServerQuoteRequest();
-      setupServerLimits();
-
-      const {
-        getByTestId, getByLabelText, queryByTestId,
-      } = render(<QuotesStepContainer />);
+    'QuotesStepContainer does not show the error message on valid input',
+    async (validValuee) => {
+      await initSetup();
 
       await act(() => {
-        expect(getByTestId('QuoteStep')).toBeInTheDocument();
+        fireEvent.input(quoteTargetAmount(), { target: { value: '' } });
+        fireEvent.input(quoteSourceAmount(), { target: { value: '' } });
       });
 
-      const quoteSourceInputLabelText = 'You Pay';
-      const quoteTargetInputLabelText = 'You Receive';
-      const submitButtonTestId = 'submitButton';
-
-      const quoteSourceErrorFieldTestId = 'ErrorMessage-quoteSourceAmount';
-
-      await waitFor(() => {
-        expect(getByLabelText(quoteSourceInputLabelText)).not.toBeDisabled();
-        expect(getByLabelText(quoteTargetInputLabelText)).not.toBeDisabled();
-      });
-
-      (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement)
-        .setSelectionRange(0, (getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value.length);
+      await waitFor(() => expect(screen.getByTestId('quoteSourceAmount')).toHaveValue(null));
+      await waitFor(() => expect(screen.getByTestId('quoteTargetAmount')).toHaveValue(null));
 
       await act(async () => {
-        await user.type(getByLabelText(quoteSourceInputLabelText), validValue);
-        user.tab();
+        await user.type(quoteSourceAmount(), validValuee.toString());
       });
 
       await waitFor(() => {
-        expect((getByLabelText(quoteSourceInputLabelText) as HTMLInputElement).value).toBe(validValue);
+        expect(quoteSourceAmount()).toHaveValue(validValuee);
       });
 
       await waitFor(() => {
-        expect(queryByTestId(quoteSourceErrorFieldTestId)).not.toBeInTheDocument();
+        expect(screen.queryByTestId('ErrorMessage-quoteSourceAmount')).not.toBeInTheDocument();
       });
 
-      await waitFor(() => {
-        expect(getByTestId(submitButtonTestId)).toBeDisabled();
-      });
-
-      await act(() => {
-        jest.runOnlyPendingTimers();
-      });
-
-      await waitFor(() => {
-        expect(getByTestId(submitButtonTestId)).not.toBeDisabled();
-      });
+      const submitButton = screen.getByTestId('submitButton');
+      expect(submitButton).not.toBeDisabled();
     },
   );
 });

@@ -81,9 +81,10 @@ Default.args = {
   c14Fee,
   networkFee,
   totalFee,
-  onAmountChange: mockFn,
-  onCurrencyChange: mockFn,
-  updateQuotes: () => Promise.resolve(),
+  onSourceAmountChange: mockFn,
+  onTargetAmountChange: mockFn,
+  onSourceCurrencyChange: mockFn,
+  onTargetCurrencyChange: mockFn,
   submitForm: () => new Promise((resolve) => {
     setTimeout(() => resolve(true), 2000);
   }),

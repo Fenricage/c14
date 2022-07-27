@@ -23,7 +23,7 @@ interface IAmountField {
   currencyOptions: SelectOption[];
   hasError?: boolean;
   onAmountChange?: OnChangeInputField;
-  onCurrencyChange?: () => void;
+  onCurrencyChange?: (currency_id: string) => void;
 }
 
 export const InputRow = styled.div`
@@ -87,7 +87,7 @@ const AmountField: FC<IAmountField> = ({
         label={label}
         name={amountFieldName}
         onHandleChange={onAmountChange}
-        type="string"
+        type="number"
         placeholder={placeholder}
       />
       <CurrencySelect
@@ -95,7 +95,7 @@ const AmountField: FC<IAmountField> = ({
         value={currencyType as Currency}
         name={currencyFieldName}
         options={currencyOptions}
-        onHandleChange={() => onCurrencyChange && onCurrencyChange()}
+        onHandleChange={(v) => onCurrencyChange && onCurrencyChange(v.value)}
       />
     </InputRow>
     {!readOnly && (
