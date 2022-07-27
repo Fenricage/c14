@@ -4,7 +4,7 @@ import {
 } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
-import PhoneInputStep from './PhoneInputStep';
+import PhoneInputStepContainer from './PhoneInputStepContainer';
 import { server } from '../../../../testHandlers/utils';
 
 const SECONDS = 1000;
@@ -20,7 +20,7 @@ describe('EmailVerificationStep tests', () => {
     async () => {
       const {
         getByTestId,
-      } = render(<PhoneInputStep />);
+      } = render(<PhoneInputStepContainer />);
 
       await act(() => {
         expect(getByTestId('PhoneInput')).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe('EmailVerificationStep tests', () => {
     async () => {
       const {
         getByTestId,
-      } = render(<PhoneInputStep />);
+      } = render(<PhoneInputStepContainer />);
 
       const validNumber = '3333333333';
 
@@ -65,7 +65,7 @@ describe('EmailVerificationStep tests', () => {
     async () => {
       const {
         getByTestId,
-      } = render(<PhoneInputStep />);
+      } = render(<PhoneInputStepContainer />);
 
       const invalidNumber = '234';
 

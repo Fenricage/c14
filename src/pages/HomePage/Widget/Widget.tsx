@@ -3,12 +3,12 @@ import styled from 'styled-components/macro';
 import { useAppSelector } from '../../../app/hooks';
 import { selectApp, WidgetSteps } from '../../../state/applicationSlice';
 import QuotesStepContainer from '../steps/QuotesStep/QuotesStepContainer';
-import PhoneInputStep from '../steps/PhoneInputStep/PhoneInputStep';
+import PhoneInputStepContainer from '../steps/PhoneInputStep/PhoneInputStepContainer';
 import AddCardStep from '../steps/AddCardStep/AddCardStep';
 import PaymentSelectStep from '../steps/PaymentSelectStep/PaymentSelectStep';
 import PersonalInformationStep from '../steps/PersonalInformationStep/PersonalInformationStep';
 import OrderReviewStep from '../steps/OrderReviewStep/OrderReviewStep';
-import SMSConfirmationStep from '../steps/SMSConfirmationStep/SMSConfirmationStep';
+import SMSConfirmationStepContainer from '../steps/SMSConfirmationStep/SMSConfirmationStepContainer';
 import PurchaseInProgressStep from '../steps/PurchaseInProgressStep/PurchaseInProgressStep';
 import CompleteStep from '../steps/CompleteStep/CompleteStep';
 import EmailVerificationStep from '../steps/EmailVerificationStep/EmailVerificationStep';
@@ -57,10 +57,10 @@ const Widget: FC = () => {
         return <QuotesStepContainer />;
       }
       case WidgetSteps.PHONE_VERIFICATION: {
-        return <PhoneInputStep />;
+        return <PhoneInputStepContainer />;
       }
       case WidgetSteps.PHONE_CONFIRMATION: {
-        return <SMSConfirmationStep />;
+        return <SMSConfirmationStepContainer />;
       }
       case WidgetSteps.PERSONAL_INFORMATION: {
         return <PersonalInformationStep />;

@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import QuotesStep from './QuotesStep';
-import { mockFn, withProvider } from '../../../../utils/storybook';
+import { mockFn, withProvider, mockStore } from '../../../../utils/storybook';
 import { createStoreWithMiddlewares } from '../../../../app/store';
 
 const sourceCurrency = 'USD';
@@ -14,9 +14,9 @@ const networkFee = '0.01';
 const totalFee = '3';
 
 const store = createStoreWithMiddlewares({
+  ...mockStore,
   application: {
-    isQuoteLoaded: true,
-    quoteError: '',
+    ...mockStore.application,
     quotes: {
       id: 'c0dc71d2-b5da-45ac-be03-23db1a122932',
       source_currency: sourceCurrency,
@@ -29,21 +29,6 @@ const store = createStoreWithMiddlewares({
       total_fee: totalFee,
       expires_at: '2022-07-20T20:26:04.075000+00:00',
     },
-    user: null,
-    generalError: null,
-    skipPaymentStep: true,
-    skipPersonalInfoStep: true,
-    isUserLoading: false,
-    isUserLoaded: false,
-    isUserUpdating: false,
-    isUserUpdated: false,
-    isUserVerified: false,
-    isEmailVerified: false,
-    isQuoteLoading: false,
-    isUserCardsEmpty: false,
-    isQuotesAutoUpdateEnabled: false,
-    lastChangedQuoteInputName: 'quoteSourceAmount',
-    requestCounter: 1381977,
     fee: {
       c14: '2.99',
       network: '0.01',
@@ -75,23 +60,6 @@ const store = createStoreWithMiddlewares({
         snapshot: {},
       },
     },
-    userCards: {
-      customer_cards: [],
-    },
-    selectedUserCard: null,
-    isUserCardsLoading: true,
-    isUserCardsLoaded: false,
-    userCardsError: null,
-    purchaseDetails: null,
-    deletingCards: [],
-    isSMSSended: false,
-    jwtToken: null,
-    isSMSSending: false,
-    isAuthenticated: false,
-    isAuthenticating: false,
-    phoneNumber: null,
-    isEmailVerificationSent: false,
-    isEmailVerificationSending: false,
   },
 });
 
