@@ -1,7 +1,10 @@
-import React, { FC, useCallback, useEffect } from 'react';
+import React, {
+  FC, useCallback, useEffect, useState,
+} from 'react';
 import { Flex } from 'rebass/styled-components';
 import styled from 'styled-components/macro';
 import ReactLoading from 'react-loading';
+import differenceInYears from 'date-fns/differenceInYears';
 import { PaymentCard } from '../../../../redux/cardsApi';
 import WidgetHead from '../../Widget/WidgetHead';
 import PreviewBadge from './PreviewBadge';
@@ -28,6 +31,12 @@ import CardBadge from './CardBadge';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 import { useGetUserLimitsQuery } from '../../../../redux/limitsApi';
 import { selectLimits } from '../../../../state/limitsSlice';
+import Modal from '../../../../components/Modal/Modal';
+import { selectFieldModalStyles } from '../../../../components/CurrencySelectField/CurrencySelectField';
+import ModalInnerConfirm from './ModalInnerConfirm';
+import ModalInnerTooManyYears from './ModalInnerTooManyYears';
+
+export const YEARS_OLD_CAP = 60;
 
 const ReviewOrderItem = styled.div`
   display: flex;
@@ -69,10 +78,22 @@ const OrderReviewStep: FC = () => {
     ...application
   } = useAppSelector(selectApp);
 
+  const isUserTooManyYearsOld = user?.date_of_birth
+    ? differenceInYears(new Date(), new Date(user?.date_of_birth)) >= YEARS_OLD_CAP
+    : false;
+
   const {
     limits,
     isLimitsLoaded,
   } = useAppSelector(selectLimits);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleClickClose = useCallback((e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsModalOpen(false);
+  }, []);
 
   const selectedUserCard = application.selectedUserCard as PaymentCard;
   useGetUserLimitsQuery();
@@ -138,8 +159,8 @@ const OrderReviewStep: FC = () => {
   useCallOnExpireTimer(expires_at, onExpire);
   useClearGeneralError();
 
-  const handleClickBuy = () => {
-    dispatch(incrementWidgetStep());
+  const handleClickSubmit = () => {
+    setIsModalOpen(true);
   };
 
   const handleClickChangePayment = () => {
@@ -147,10 +168,23 @@ const OrderReviewStep: FC = () => {
     dispatch(decrementWidgetStep());
   };
 
+  const onConfirm = () => {
+    dispatch(incrementWidgetStep());
+  };
+
   const handleClickChangePersonal = () => {
     dispatch(setSkipPersonalInfoStep(false));
     dispatch(goToWidgetStep(WidgetSteps.PERSONAL_INFORMATION));
   };
+
+  const handleModalParentSelector = useCallback(() => {
+    const widgetNode = document.getElementById('widget');
+    if (widgetNode) {
+      return widgetNode;
+    }
+
+    return document.body;
+  }, []);
 
   return (
     <Flex
@@ -250,7 +284,7 @@ const OrderReviewStep: FC = () => {
       </Flex>
       <FormRow margin="auto 0 0 0">
         <Button
-          onClick={handleClickBuy}
+          onClick={handleClickSubmit}
           disabled={isQuoteLoading || isLimitsExceeded || !isLimitsLoaded}
           data-testid="submitButton"
           type="submit"
@@ -258,6 +292,19 @@ const OrderReviewStep: FC = () => {
           {(isQuoteLoading || !isLimitsLoaded) ? <ButtonLoader /> : 'Buy Now'}
         </Button>
       </FormRow>
+      <Modal
+        style={selectFieldModalStyles}
+        parentSelector={handleModalParentSelector}
+        isOpen={isModalOpen}
+        title="Warning"
+        handleClickClose={handleClickClose}
+      >
+        {isUserTooManyYearsOld ? (
+          <ModalInnerTooManyYears onClose={handleClickClose} />
+        ) : (
+          <ModalInnerConfirm onConfirm={onConfirm} />
+        )}
+      </Modal>
     </Flex>
   );
 };
