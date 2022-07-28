@@ -250,8 +250,6 @@ export const initialState = {
   isEmailVerified: false,
   isQuoteLoading: false,
   isUserCardsEmpty: false,
-  quotesUserDecimalSeparator: undefined,
-  isQuotesAutoUpdateEnabled: false,
   lastChangedQuoteInputName: 'quoteSourceAmount',
   requestCounter: 0,
   fee: {

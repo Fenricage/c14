@@ -21,10 +21,7 @@ export const mockStore: Partial<RootState> = {
     isEmailVerified: false,
     isQuoteLoading: false,
     isUserCardsEmpty: false,
-    quotesUserDecimalSeparator: undefined,
-    isQuotesAutoUpdateEnabled: false,
     lastChangedQuoteInputName: 'quoteSourceAmount',
-    requestCounter: 0,
     fee: {
       c14: undefined,
       network: undefined,
@@ -73,6 +70,7 @@ export const mockStore: Partial<RootState> = {
     phoneNumber: null,
     isEmailVerificationSent: false,
     isEmailVerificationSending: false,
+    blockChainTargetAddress: '123',
   },
 };
 

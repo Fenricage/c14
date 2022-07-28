@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { Flex } from 'rebass/styled-components';
-import { parse } from 'query-string';
 import ReactLoading from 'react-loading';
+import { throws } from 'assert';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { incrementWidgetStep, selectApp } from '../../../../state/applicationSlice';
 import { PaymentCard } from '../../../../redux/cardsApi';
@@ -23,8 +23,7 @@ const PurchaseInProgressStep: FC = () => {
   const quoteId = application.quotes.id;
   const cardId = (application.selectedUserCard as PaymentCard).card_id;
 
-  const queryStringParsed = parse(window.location.search);
-  const { targetAddress } = queryStringParsed as {targetAddress: string};
+  const targetAddress = application.blockChainTargetAddress;
 
   useClearGeneralError();
 
@@ -50,10 +49,14 @@ const PurchaseInProgressStep: FC = () => {
   }, [dispatch, isPurchaseDetailsLoading, purchaseDetails, purchaseDetails?.status]);
 
   useEffect(() => {
+    if (targetAddress === null) {
+      throws(() => 'targetBlockchainAddress is null, must be set to correct value');
+    }
+
     triggerExecutePurchase({
       card_id: cardId,
       quote_id: quoteId,
-      target_blockchain_address: targetAddress,
+      target_blockchain_address: targetAddress as string,
     });
   }, [cardId, quoteId, targetAddress, triggerExecutePurchase]);
 

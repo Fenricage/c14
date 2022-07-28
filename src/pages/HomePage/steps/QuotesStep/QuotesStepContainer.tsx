@@ -173,6 +173,10 @@ const QuotesStepContainer: FC = () => {
       return;
     }
 
+    if (request.current) {
+      request.current.abort();
+    }
+
     if (lastChangedQuoteInputName === 'quoteTargetAmount') {
       request.current = triggerGetQuotes({
         source_currency: values.sourceCurrency,
@@ -257,21 +261,12 @@ const QuotesStepContainer: FC = () => {
     quoteTargetAmount,
   ]);
 
-  const handleSetLastChanged = useCallback((
-    type: QuoteInputName,
-  ) => {
-    // // cancel prev requests
-    if (request.current) {
-      request.current.abort();
-    }
-    dispatch(setLastChangedQuoteInputName(type));
-  }, [dispatch]);
   const onSourceAmountChange = ((
     type: QuoteInputName,
     value: string,
   ) => {
     setQuoteSourceAmount(value);
-    handleSetLastChanged(type);
+    dispatch(setLastChangedQuoteInputName(type));
   });
 
   const onTargetAmountChange = ((
@@ -279,7 +274,7 @@ const QuotesStepContainer: FC = () => {
     value: string,
   ) => {
     setQuoteTargetAmount(value);
-    handleSetLastChanged(type);
+    dispatch(setLastChangedQuoteInputName(type));
   });
   const handleClickNextStep = () => {
     dispatch(incrementWidgetStep());
