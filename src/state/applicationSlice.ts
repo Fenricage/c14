@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FeeData } from '../pages/HomePage/Widget/Widget';
 import { QuoteResponse, quotesApi } from '../redux/quotesApi';
 import {
   QuoteFormValues,
@@ -12,11 +11,6 @@ import { LoginResponse, userApi, UserDetails } from '../redux/userApi';
 
 export const CALCULATOR_FORM_NAME = 'calculator-form';
 export const PAYMENT_SELECT_FORM_NAME = 'payment-select-form';
-
-export type ServerError = {
-  error_code: string;
-  message: null;
-}
 
 export enum StepperSteps {
   QUOTES,
@@ -183,8 +177,6 @@ export type AppState = {
   isEmailVerified: boolean;
   quoteError: null | string
   quotes: QuoteResponse | Record<string, never>
-  lastChangedQuoteInputName: QuoteInputName
-  fee: FeeData
   stepperSteps: {
     currentStep: StepperSteps
   }
@@ -192,10 +184,6 @@ export type AppState = {
     currentStep: WidgetSteps
   }
   wizard: {
-    [CALCULATOR_FORM_NAME]: {
-      initialValues: QuoteFormValues
-      snapshot: QuoteFormValues
-    },
     [PAYMENT_SELECT_FORM_NAME]: {
       initialValues: PaymentSelectFormValues | Record<string, never>
       snapshot: PaymentSelectFormValues | Record<string, never>
@@ -250,13 +238,7 @@ export const initialState = {
   isEmailVerified: false,
   isQuoteLoading: false,
   isUserCardsEmpty: false,
-  lastChangedQuoteInputName: 'quoteSourceAmount',
   requestCounter: 0,
-  fee: {
-    c14: undefined,
-    network: undefined,
-    total: undefined,
-  },
   stepperSteps: {
     currentStep: StepperSteps.QUOTES,
   },
@@ -264,10 +246,6 @@ export const initialState = {
     currentStep: WidgetSteps.QUOTES,
   },
   wizard: {
-    [CALCULATOR_FORM_NAME]: {
-      initialValues: initialQuotesValuesForm,
-      snapshot: initialQuotesValuesForm,
-    },
     [PAYMENT_SELECT_FORM_NAME]: {
       initialValues: {},
       snapshot: {},
@@ -299,8 +277,8 @@ const applicationSlice = createSlice({
   name: 'application',
   initialState,
   reducers: {
-    setFee(state, action: PayloadAction<FeeData>) {
-      state.fee = action.payload;
+    setQuote(state, action: PayloadAction<QuoteResponse>) {
+      state.quotes = action.payload;
     },
     setUserCardsEmpty(state, action: PayloadAction<boolean>) {
       state.isUserCardsEmpty = action.payload;
@@ -323,9 +301,6 @@ const applicationSlice = createSlice({
     goToStepperStep(state, action: PayloadAction<StepperSteps>) {
       state.stepperSteps.currentStep = action.payload;
     },
-    setLastChangedQuoteInputName(state, action: PayloadAction<QuoteInputName>) {
-      state.lastChangedQuoteInputName = action.payload;
-    },
     setQuotesLoading(state, action: PayloadAction<boolean>) {
       state.isQuoteLoading = action.payload;
     },
@@ -338,29 +313,7 @@ const applicationSlice = createSlice({
     clearSelectedUserCard(state) {
       state.selectedUserCard = null;
     },
-    setInitialValuesForm(state, action: PayloadAction<InitialFormValuesPayload>) {
-      if (action.payload.formName === CALCULATOR_FORM_NAME) {
-        state.wizard[action.payload.formName].initialValues = {
-          ...state.wizard[action.payload.formName].initialValues,
-          ...action.payload.state,
-        };
-      }
-
-      if (action.payload.formName === PAYMENT_SELECT_FORM_NAME) {
-        state.wizard[action.payload.formName].initialValues = {
-          ...state.wizard[action.payload.formName].initialValues,
-          ...action.payload.state,
-        };
-      }
-    },
     setSnapshotValuesForm(state, action: PayloadAction<InitialFormValuesPayload>) {
-      if (action.payload.formName === CALCULATOR_FORM_NAME) {
-        state.wizard[action.payload.formName].snapshot = {
-          ...state.wizard[action.payload.formName].snapshot,
-          ...action.payload.state,
-        };
-      }
-
       if (action.payload.formName === PAYMENT_SELECT_FORM_NAME) {
         state.wizard[action.payload.formName].snapshot = {
           ...state.wizard[action.payload.formName].snapshot,
@@ -688,17 +641,15 @@ const applicationSlice = createSlice({
 export const selectApp = (state: RootState) => state.application;
 
 export const {
-  setFee,
+  setQuote,
   decrementWidgetStep,
   incrementWidgetStep,
   goToWidgetStep,
   incrementStepperStep,
   logout,
   goToStepperStep,
-  setInitialValuesForm,
   setSelectedUserCard,
   setQuotesLoading,
-  setLastChangedQuoteInputName,
   setUserCardsEmpty,
   setQuotesLoaded,
   setSnapshotValuesForm,

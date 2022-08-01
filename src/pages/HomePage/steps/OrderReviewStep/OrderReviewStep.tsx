@@ -96,7 +96,7 @@ const OrderReviewStep: FC = () => {
   }, []);
 
   const selectedUserCard = application.selectedUserCard as PaymentCard;
-  useGetUserLimitsQuery();
+  const { isFetching: isLimitsLoading } = useGetUserLimitsQuery();
   const [triggerGetQuotes] = useGetQuoteMutation();
 
   let isLimitsExceeded = false;
@@ -106,7 +106,7 @@ const OrderReviewStep: FC = () => {
   }
 
   useEffect(() => {
-    if (isLimitsExceeded) {
+    if (!isLimitsLoading && isLimitsExceeded) {
       dispatch(setGeneralError({
         type: 'error',
         message: `You have exceeded the purchase limit. 
@@ -116,6 +116,7 @@ const OrderReviewStep: FC = () => {
     }
   }, [
     dispatch,
+    isLimitsLoading,
     isLimitsExceeded,
     limits?.remaining_weekly_limit_usd,
     limits?.weekly_limit_usd,

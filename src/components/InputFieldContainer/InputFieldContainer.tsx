@@ -1,15 +1,16 @@
 import React, { forwardRef, PropsWithChildren } from 'react';
 import styled, { css } from 'styled-components/macro';
-import InputFieldFormikHOC, {
-  InputField,
+import {
   InputFieldProps,
   Input,
   InputContainer,
   InputFieldFormikHOCProps,
 } from '../InputField/InputField';
 import { InputLabel } from '../../theme/components';
+import DebouncedInputFieldFormikHOC,
+{ DebouncedInputField } from '../DebouncedInputField/DebouncedInputField';
 
-export const sharedInputStyles = css`
+export const sharedInputStyleContainer = css`
   font-size: 24px;
   line-height: 24px;
   letter-spacing: -0.035em;
@@ -32,7 +33,7 @@ const InputFieldContainerElement = styled.div`
 
   ${Input} {
     color: ${({ theme }) => theme.white};
-    ${sharedInputStyles};
+    ${sharedInputStyleContainer};
 
     &::placeholder {
       color: rgb(82, 120, 141);
@@ -49,7 +50,8 @@ const InputFieldContainer = forwardRef<HTMLDivElement,
   PropsWithChildren<InputFieldFormikHOCProps | InputFieldProps>>(
     (props, ref) => (
       <InputFieldContainerElement>
-        {props.disabled ? <InputField {...props} ref={ref} /> : <InputFieldFormikHOC {...props} ref={ref} /> }
+        {props.disabled ? <DebouncedInputField {...props} ref={ref} />
+          : <DebouncedInputFieldFormikHOC {...props} ref={ref} /> }
       </InputFieldContainerElement>
     ),
   );

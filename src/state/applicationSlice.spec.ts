@@ -3,8 +3,6 @@ import slice, {
   // decrementWidgetStep,
   // incrementWidgetStep,
   initialState,
-  setFee,
-  setLastChangedQuoteInputName,
   // Steps,
   selectApp,
 } from './applicationSlice';
@@ -33,22 +31,6 @@ describe('application slice testing', () => {
         type: undefined,
       }),
     ).toEqual(initialState);
-  });
-
-  it('test set fee', () => {
-    const valueToSet = {
-      c14: '100',
-      network: '50',
-      total: '150',
-    };
-
-    store.dispatch(setFee(valueToSet));
-    expect(selectApp(store.getState()).fee).toBe(valueToSet);
-  });
-
-  it('test last changed quote input name', () => {
-    store.dispatch(setLastChangedQuoteInputName('quoteTargetAmount'));
-    expect(selectApp(store.getState()).lastChangedQuoteInputName).toBe('quoteTargetAmount');
   });
 
   it('tests quote request', async () => {

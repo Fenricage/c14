@@ -23,16 +23,16 @@ const ModalInnerTooManyYearsList = styled.ol`
 
 const text1 = 'Thank you for verifying.';
 
-const text2 = 'In order to verify this transaciton please e-mail "legal@c14.money" with the\n'
+const text2 = 'In order to verify this transaction please e-mail "legal@c14.money" with the\n'
   + 'following information.';
 
 const text3 = 'After review, our compliance team may reach'
   + ' out with additional questions before approving your transaction.';
 
 const list = [
-  'Use the subject line "Todays Date - YOUR NAME - Crypto',
+  'Use the subject line "Today\'s Date - YOUR NAME - Crypto"',
   'Please include a selfie of you holding your ID in one hand',
-  'In that selfie please hold todays newspaper in the other hand',
+  'In that selfie please hold today\'s newspaper in the other hand',
   'Please write a paragraph that describes your use case for purchasing crypto'
   + ' (four sentences at a minimum.)',
   'Please include a contact number',

@@ -21,12 +21,6 @@ export const mockStore: Partial<RootState> = {
     isEmailVerified: false,
     isQuoteLoading: false,
     isUserCardsEmpty: false,
-    lastChangedQuoteInputName: 'quoteSourceAmount',
-    fee: {
-      c14: undefined,
-      network: undefined,
-      total: undefined,
-    },
     stepperSteps: {
       currentStep: 2,
     },
@@ -34,20 +28,6 @@ export const mockStore: Partial<RootState> = {
       currentStep: 2,
     },
     wizard: {
-      'calculator-form': {
-        initialValues: {
-          quoteSourceAmount: '100',
-          quoteTargetAmount: '',
-          sourceCurrency: 'USD',
-          targetCurrency: 'b2384bf2-b14d-4916-aa97-85633ef05742',
-        },
-        snapshot: {
-          quoteSourceAmount: '100',
-          quoteTargetAmount: '',
-          sourceCurrency: 'USD',
-          targetCurrency: 'b2384bf2-b14d-4916-aa97-85633ef05742',
-        },
-      },
       'payment-select-form': {
         initialValues: {},
         snapshot: {},

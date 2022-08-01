@@ -2,28 +2,22 @@ import React, {
   FC, useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 
-import debounce from 'just-debounce-it';
-
 import {
   Currency,
   SelectOption,
 } from '../../../../components/CurrencySelectField/CurrencySelectField';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
-  CALCULATOR_FORM_NAME,
   QuoteInputName,
   incrementWidgetStep,
   selectApp,
-  setFee,
-  setInitialValuesForm,
-  setLastChangedQuoteInputName,
+  setQuote,
 } from '../../../../state/applicationSlice';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
-import { useUpdateQuotes } from './hooks';
 import QuotesStep from './QuotesStep';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import { useGetUserLimitsQuery } from '../../../../redux/limitsApi';
-import { selectLimits, setLimitsLoaded } from '../../../../state/limitsSlice';
+import { selectLimits } from '../../../../state/limitsSlice';
 
 export type QuoteFormValues = {
   quoteSourceAmount: string;
@@ -67,71 +61,27 @@ export const targetOptions: SelectOption[] = [
 const QuotesStepContainer: FC = () => {
   const dispatch = useAppDispatch();
 
-  const {
-    limits,
-    isLimitsLoading,
-  } = useAppSelector(selectLimits);
-
-  const {
-    quotes: {
-      target_amount,
-      absolute_internal_fee,
-      source_amount,
-      target_crypto_asset_id,
-      fiat_blockchain_fee,
-      total_fee,
-    },
-    fee: {
-      total,
-      network,
-      c14,
-    },
-    isQuoteLoading,
-    lastChangedQuoteInputName,
-    isQuoteLoaded: isQuotesLoaded,
-    wizard: {
-      [CALCULATOR_FORM_NAME]: {
-        initialValues: initialQuotesValuesForm,
-      },
-    },
-    blockChainTargetAddress,
-  } = useAppSelector(selectApp);
+  const { limits, isLimitsLoading } = useAppSelector(selectLimits);
+  const { isQuoteLoading, blockChainTargetAddress } = useAppSelector(selectApp);
 
   useGetUserLimitsQuery();
 
   const [sourceCurrencyId, setSourceCurrencyId] = useState(sourceOptions[0].value as string);
   const [targetCurrencyId, setTargetCurrencyId] = useState(targetOptions[0].value as string);
 
-  const [quoteSourceAmount, setQuoteSourceAmount] = useState('');
+  const [quoteSourceAmount, setQuoteSourceAmount] = useState('100');
   const [quoteTargetAmount, setQuoteTargetAmount] = useState('');
+  const [lastChangedQuoteInputName, setLastChangedQuoteInputName] = useState('');
+
+  const [c14Fee, setC14Fee] = useState('');
+  const [networkFee, setNetworkFee] = useState('');
+  const [totalFee, setTotalFee] = useState('');
 
   const request = useRef<any>(null);
 
   useClearGeneralError();
 
-  useEffect(() => () => {
-    dispatch(setLimitsLoaded(false));
-  }, [dispatch]);
-
-  const [triggerGetQuotes, {
-    fulfilledTimeStamp,
-    isError: isQuoteRequestError,
-  }] = useGetQuoteMutation();
-
-  // get data for 1st step
-  useEffect(() => {
-    if (!isQuotesLoaded) {
-      triggerGetQuotes({
-        source_currency: sourceOptions[0].value,
-        target_crypto_asset_id: targetOptions[0].value,
-        source_amount: initialQuotesValuesForm.quoteSourceAmount,
-      });
-    }
-  }, [
-    initialQuotesValuesForm.quoteSourceAmount,
-    isQuotesLoaded,
-    triggerGetQuotes,
-  ]);
+  const [triggerGetQuotes, { isError: isQuoteRequestError }] = useGetQuoteMutation();
 
   const validate = useCallback((values: QuoteFormValues) => {
     const errors: Partial<QuoteFormValues> = {};
@@ -165,8 +115,21 @@ const QuotesStepContainer: FC = () => {
 
   const submitForm = useCallback(() => Promise.resolve(true), []);
 
-  const handleTriggerUpdateQuotes = useCallback(async (values: QuoteFormValues) => {
-    const isValidInput = !Object.keys(validate(values)).length;
+  const runUpdateQuotes = useCallback(async () => {
+    if (!(sourceCurrencyId && targetCurrencyId && (quoteSourceAmount || quoteTargetAmount))) {
+      return;
+    }
+
+    if (request.current) {
+      request.current.abort();
+    }
+
+    const isValidInput = !Object.keys(validate({
+      sourceCurrency: sourceCurrencyId as Currency,
+      targetCurrency: targetCurrencyId as Currency,
+      quoteSourceAmount,
+      quoteTargetAmount,
+    })).length;
 
     // deny request only on invalid form and last changed source input
     if (!isValidInput && lastChangedQuoteInputName === 'quoteSourceAmount') {
@@ -179,82 +142,43 @@ const QuotesStepContainer: FC = () => {
 
     if (lastChangedQuoteInputName === 'quoteTargetAmount') {
       request.current = triggerGetQuotes({
-        source_currency: values.sourceCurrency,
-        target_crypto_asset_id: values.targetCurrency,
-        target_amount: values.quoteTargetAmount,
+        source_currency: sourceCurrencyId as Currency,
+        target_crypto_asset_id: targetCurrencyId as Currency,
+        target_amount: quoteTargetAmount,
       });
-      await request.current;
     } else {
       request.current = triggerGetQuotes({
-        source_currency: values.sourceCurrency,
-        target_crypto_asset_id: values.targetCurrency,
-        source_amount: values.quoteSourceAmount,
+        source_currency: sourceCurrencyId as Currency,
+        target_crypto_asset_id: targetCurrencyId as Currency,
+        source_amount: quoteSourceAmount,
       });
-      await request.current;
+    }
+
+    const json_response = (await request.current).data;
+
+    if (json_response) {
+      setQuoteSourceAmount(json_response.source_amount);
+      setQuoteTargetAmount(json_response.target_amount);
+      setC14Fee(json_response.absolute_internal_fee);
+      setNetworkFee(json_response.fiat_blockchain_fee);
+      setTotalFee(json_response.total_fee);
+      dispatch(setQuote(json_response));
     }
   }, [
-    lastChangedQuoteInputName,
+    dispatch,
+    quoteSourceAmount,
+    quoteTargetAmount,
+    sourceCurrencyId,
+    targetCurrencyId,
     triggerGetQuotes,
     validate,
+    lastChangedQuoteInputName,
   ]);
 
   useEffect(() => {
-    dispatch(setFee({
-      c14: absolute_internal_fee,
-      network: fiat_blockchain_fee,
-      total: total_fee,
-    }));
+    runUpdateQuotes();
   }, [
-    absolute_internal_fee,
-    dispatch,
-    fiat_blockchain_fee,
-    fulfilledTimeStamp,
-    total_fee,
-  ]);
-
-  useEffect(() => {
-    if (!isQuotesLoaded) {
-      return;
-    }
-
-    dispatch(setInitialValuesForm({
-      formName: CALCULATOR_FORM_NAME,
-      state: {
-        targetCurrency: target_crypto_asset_id,
-        quoteTargetAmount: target_amount,
-        quoteSourceAmount: source_amount,
-      },
-    }));
-  }, [
-    dispatch,
-    isQuotesLoaded,
-    source_amount,
-    target_amount,
-    fulfilledTimeStamp,
-    target_crypto_asset_id,
-  ]);
-
-  const updateQuotes = useUpdateQuotes(handleTriggerUpdateQuotes);
-
-  const debouncedUpdateQuotes = useMemo(
-    () => debounce(
-      async (values: QuoteFormValues) => {
-        await updateQuotes(values);
-      },
-      650,
-    ),
-    [updateQuotes],
-  );
-
-  useEffect(() => {
-    debouncedUpdateQuotes({
-      quoteSourceAmount,
-      quoteTargetAmount,
-      sourceCurrency: sourceCurrencyId as Currency,
-      targetCurrency: targetCurrencyId as Currency,
-    });
-  }, [
-    debouncedUpdateQuotes,
+    runUpdateQuotes,
     sourceCurrencyId,
     targetCurrencyId,
     quoteSourceAmount,
@@ -266,7 +190,7 @@ const QuotesStepContainer: FC = () => {
     value: string,
   ) => {
     setQuoteSourceAmount(value);
-    dispatch(setLastChangedQuoteInputName(type));
+    setLastChangedQuoteInputName(type);
   });
 
   const onTargetAmountChange = ((
@@ -274,7 +198,7 @@ const QuotesStepContainer: FC = () => {
     value: string,
   ) => {
     setQuoteTargetAmount(value);
-    dispatch(setLastChangedQuoteInputName(type));
+    setLastChangedQuoteInputName(type);
   });
   const handleClickNextStep = () => {
     dispatch(incrementWidgetStep());
@@ -295,9 +219,16 @@ const QuotesStepContainer: FC = () => {
 
   const isQuoteInputDisabled = isLimitsLoading || blockChainTargetAddress === null;
 
+  const quotesValues = {
+    sourceCurrency: sourceCurrencyId as Currency,
+    targetCurrency: targetCurrencyId as Currency,
+    quoteSourceAmount,
+    quoteTargetAmount,
+  } as QuoteFormValues;
+
   return (
     <QuotesStep
-      initialQuotesValuesForm={initialQuotesValuesForm as QuoteFormValues}
+      initialQuotesValuesForm={quotesValues}
       submitForm={submitForm}
       validate={validate}
       initialTouched={initialTouched}
@@ -309,9 +240,9 @@ const QuotesStepContainer: FC = () => {
       onSubmit={handleClickNextStep}
       isSubmitDisabled={isLimitsLoading || isQuoteLoading || isQuoteRequestError
         || blockChainTargetAddress === null}
-      c14Fee={c14}
-      networkFee={network}
-      totalFee={total}
+      c14Fee={c14Fee}
+      networkFee={networkFee}
+      totalFee={totalFee}
     />
   );
 };
