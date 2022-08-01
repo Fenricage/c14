@@ -19,18 +19,20 @@ export enum StepperSteps {
   PAYMENT_DETAILS,
   REVIEW_ORDER,
 }
+export type DocumentVerificationStatus = 'FAILED' | 'SUCCESS' | 'IN_PROGRESS' | 'NOT_STARTED'
 
 export enum WidgetSteps {
   QUOTES = 0,
   PHONE_VERIFICATION = 1,
   PHONE_CONFIRMATION = 2,
-  PERSONAL_INFORMATION = 3,
-  EMAIL_VERIFICATION = 3.1,
-  PAYMENT_ADDING = 3.2,
-  PAYMENT_SELECT = 4,
-  REVIEW_ORDER = 5,
-  PROCESS = 6,
-  COMPLETE= 7,
+  DOCUMENT_VERIFICATION = 3,
+  PERSONAL_INFORMATION = 4,
+  EMAIL_VERIFICATION = 4.1,
+  PAYMENT_ADDING = 4.2,
+  PAYMENT_SELECT = 5,
+  REVIEW_ORDER = 6,
+  PROCESS = 7,
+  COMPLETE= 8,
 }
 
 const getPrevStepperStep = (currentStep: StepperSteps) => {
@@ -90,6 +92,9 @@ const getNextWidgetStep = (currentStep: WidgetSteps) => {
       return WidgetSteps.PHONE_CONFIRMATION;
     }
     case WidgetSteps.PHONE_CONFIRMATION: {
+      return WidgetSteps.DOCUMENT_VERIFICATION;
+    }
+    case WidgetSteps.DOCUMENT_VERIFICATION: {
       return WidgetSteps.PERSONAL_INFORMATION;
     }
     case WidgetSteps.EMAIL_VERIFICATION: {
@@ -138,6 +143,9 @@ const getPrevWidgetStep = (currentStep: WidgetSteps) => {
       return WidgetSteps.PERSONAL_INFORMATION;
     }
     case WidgetSteps.PERSONAL_INFORMATION: {
+      return WidgetSteps.DOCUMENT_VERIFICATION;
+    }
+    case WidgetSteps.DOCUMENT_VERIFICATION: {
       return WidgetSteps.PHONE_CONFIRMATION;
     }
     case WidgetSteps.PHONE_CONFIRMATION: {
@@ -175,6 +183,7 @@ export type AppState = {
   isUserUpdated: boolean
   isUserVerified: boolean;
   isEmailVerified: boolean;
+  documentVerificationStatus: DocumentVerificationStatus | null;
   quoteError: null | string
   quotes: QuoteResponse | Record<string, never>
   stepperSteps: {
@@ -236,6 +245,7 @@ export const initialState = {
   isUserUpdated: false,
   isUserVerified: false,
   isEmailVerified: false,
+  documentVerificationStatus: null,
   isQuoteLoading: false,
   isUserCardsEmpty: false,
   requestCounter: 0,
@@ -578,6 +588,7 @@ const applicationSlice = createSlice({
         state.user = payload;
         state.isUserVerified = payload.identity_verified;
         state.isEmailVerified = payload.email_verified;
+        state.documentVerificationStatus = payload.document_verification_status;
         state.isUserLoaded = true;
         state.isUserLoading = false;
       },
@@ -599,9 +610,7 @@ const applicationSlice = createSlice({
 
     builder.addMatcher(
       userApi.endpoints.updateUser.matchFulfilled,
-      (state, { meta, payload }) => {
-        state.user = meta.arg.originalArgs;
-        state.isUserVerified = payload.identity_verified;
+      (state) => {
         state.isUserUpdated = true;
         state.isUserUpdating = false;
       },

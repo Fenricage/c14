@@ -135,9 +135,9 @@ const PersonalInformationStep: FC = () => {
         city: values.city,
         email: values.email,
         building: values.building,
-        date_of_birth: values.dob,
-        first_names: values.firstNames,
-        last_names: values.lastNames,
+        // date_of_birth: values.dob,
+        // first_names: values.firstNames,
+        // last_names: values.lastNames,
         postal_code: values.postalCode,
         state_code: values.stateCode,
         street_name: values.streetName,
@@ -172,7 +172,7 @@ const PersonalInformationStep: FC = () => {
     if (isUserUpdated && isUserVerified && isEmailVerified) {
       dispatch(incrementWidgetStep());
       // form is submitted but user is not verified
-    } else if (isUserUpdated && !isUserVerified) {
+    } else if (isUserUpdated && isUserVerified && !isEmailVerified) {
       dispatch(goToWidgetStep(WidgetSteps.EMAIL_VERIFICATION));
     // user already exists
     } else if (isUserNotEmpty && isUserVerified && isEmailVerified) {
@@ -232,6 +232,9 @@ const PersonalInformationStep: FC = () => {
         <Formik
           initialValues={initialFormValues}
           onSubmit={submitForm}
+          initialTouched={{
+            stateCode: true,
+          }}
           validationSchema={validationSchema}
           validateOnMount
           enableReinitialize
@@ -249,6 +252,7 @@ const PersonalInformationStep: FC = () => {
                     <Flex>
                       <PrimaryInputBox hasError={!!errors.firstNames && !!touched.firstNames}>
                         <PrimaryInputField
+                          disabled
                           label="First Name"
                           name="firstNames"
                         />
@@ -258,6 +262,7 @@ const PersonalInformationStep: FC = () => {
                     <Flex marginLeft={GAP}>
                       <PrimaryInputBox hasError={!!errors.lastNames && !!touched.lastNames}>
                         <PrimaryInputField
+                          disabled
                           label="Last Name"
                           name="lastNames"
                         />
@@ -295,6 +300,7 @@ const PersonalInformationStep: FC = () => {
                         <PrimaryInputField
                           label="DOB"
                           name="dob"
+                          disabled
                           type="date"
                           max={
                           formatDate(

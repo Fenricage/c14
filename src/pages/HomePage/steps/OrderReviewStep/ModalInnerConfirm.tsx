@@ -99,8 +99,8 @@ const ModalInnerConfirm: FC<ModalInnerConfirmProps> = ({ onConfirm }) => {
             <label>
               <Field type="checkbox" name="confirmYouAreNotBroker" />
               Please check this box to confirm you are not
-              workign with or being guided through this
-              transaciton by a broker/advisor
+              working with or being guided through this
+              transaction by a broker/advisor
             </label>
             <FormRow margin="auto 0 0 0">
               <Button

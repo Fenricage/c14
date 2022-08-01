@@ -191,4 +191,24 @@ input[type=number] {
 select {
   -webkit-appearance: initial;
 }
+
+
+// trulioo widget
+
+#trulioo-embedid {
+  width: 100% !important;
+}
+
+#embedid-module {
+  height: 100% !important;
+  body {
+    margin: 0 !important;
+  }
+}
+
+.embedid-rendered-section {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: inherit !important;
+}
 `;

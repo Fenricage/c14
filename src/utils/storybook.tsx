@@ -4,6 +4,7 @@ import ThemeProvider from '../theme';
 import { ThemedGlobalStyle } from '../theme/components';
 import { createStoreWithMiddlewares, RootState } from '../app/store';
 
+// TODO(@ruslan) - duplicated code, import store from app to here
 export const mockStore: Partial<RootState> = {
   application: {
     isQuoteLoaded: true,
@@ -11,6 +12,8 @@ export const mockStore: Partial<RootState> = {
     quotes: {},
     user: null,
     generalError: null,
+    // TODO(@ruslan): set to NOT_STARTED, whole app
+    documentVerificationStatus: null,
     skipPaymentStep: true,
     skipPersonalInfoStep: true,
     isUserLoading: false,

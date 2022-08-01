@@ -16,6 +16,7 @@ import SMSConfirmationStepContainer from '../steps/SMSConfirmationStep/SMSConfir
 import PurchaseInProgressStep from '../steps/PurchaseInProgressStep/PurchaseInProgressStep';
 import CompleteStep from '../steps/CompleteStep/CompleteStep';
 import EmailVerificationStep from '../steps/EmailVerificationStep/EmailVerificationStep';
+import DocumentVerificationContainer from '../steps/DocumentVerificationStep/DocumentVerificationContainer';
 
 const WidgetContainer = styled.div`
   display: flex;
@@ -78,6 +79,9 @@ const Widget: FC = () => {
       }
       case WidgetSteps.PHONE_CONFIRMATION: {
         return <SMSConfirmationStepContainer />;
+      }
+      case WidgetSteps.DOCUMENT_VERIFICATION: {
+        return <DocumentVerificationContainer />;
       }
       case WidgetSteps.PERSONAL_INFORMATION: {
         return <PersonalInformationStep />;

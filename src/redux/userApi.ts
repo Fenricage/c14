@@ -2,6 +2,7 @@ import {
   createApi,
 } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from './utils';
+import { DocumentVerificationStatus } from '../state/applicationSlice';
 
 export type VerifyNumberRequestBody = {
   phone_number: string;
@@ -15,7 +16,7 @@ export type LoginRequestBody = {
   phone_number: string;
   verification_code: string;
 }
-
+// eslint-disable-next-line no-multiple-empty-lines
 export type UserDetails = {
   email: string;
   first_names: string;
@@ -34,13 +35,28 @@ export type EmailVerificationCodeResponse = Record<string, never>
 export type GetUserResponse = UserDetails & {
   identity_verified: boolean;
   email_verified: boolean;
+  document_verification_status: DocumentVerificationStatus;
 }
 
 export type UpdateUserResponse = {
   identity_verified: boolean;
 }
 
-export type UpdateUserRequest = UserDetails
+export type UpdateUserRequest = {
+  email: string;
+  building: string;
+  street_name: string;
+  unit_number: string;
+  city: string;
+  state_code: string;
+  postal_code: string;
+}
+
+export type VerifyDocumentsResponse = Record<string, void>
+
+export type VerifyDocumentsRequest = {
+  document_verification_token: string
+}
 
 export const userApi = createApi({
   keepUnusedDataFor: 0,
@@ -78,6 +94,13 @@ export const userApi = createApi({
         method: 'POST',
       }),
     }),
+    verifyDocuments: build.mutation<VerifyDocumentsResponse, VerifyDocumentsRequest>({
+      query: (body) => ({
+        url: '/document-verification',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -88,4 +111,5 @@ export const {
   useLazyGetUserQuery,
   useGetUserQuery,
   useLoginMutation,
+  useVerifyDocumentsMutation,
 } = userApi;

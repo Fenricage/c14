@@ -9,6 +9,7 @@ export const GET_PERSONAL_INFORMATION_VERIFIED: GetUserResponse = {
   last_names: 'Doe',
   email_verified: true,
   identity_verified: true,
+  document_verification_status: 'SUCCESS',
   postal_code: '163000',
   state_code: 'Alabama',
   street_name: 'Nevsky Prospect',
