@@ -208,7 +208,7 @@ const CurrencySelectFieldHOC: FC<CurrencySelectFieldHOCProps> = ({
                 setValue(o.value, SHOULD_VALIDATE.TRUE);
                 onHandleChange({
                   context,
-                  value,
+                  value: o.value,
                 });
                 setIsModalOpen(false);
               }}
