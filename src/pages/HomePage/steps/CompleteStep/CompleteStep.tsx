@@ -7,12 +7,13 @@ import CompleteSuccess from './CompleteSuccess/CompleteSuccess';
 import { PaymentCard } from '../../../../redux/cardsApi';
 import CompleteFailed from './CompleteFailed/CompleteFailed';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import { selectPayment } from '../../../../state/paymentSelectSlice';
 
 const CompleteStep: FC = () => {
   const application = useAppSelector(selectApp);
 
   const purchaseDetails = application.purchaseDetails as GetPurchaseDetailsResponse;
-  const selectedCard = application.selectedUserCard as PaymentCard;
+  const { selectedUserCard: selectedCard } = useAppSelector(selectPayment);
   useClearGeneralError();
 
   const renderComplete = () => {
@@ -21,7 +22,7 @@ const CompleteStep: FC = () => {
       return (
         <CompleteSuccess
           purchaseDetails={application.purchaseDetails as GetPurchaseDetailsResponse}
-          card={selectedCard}
+          card={selectedCard as PaymentCard}
         />
       );
     }

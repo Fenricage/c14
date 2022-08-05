@@ -1,24 +1,14 @@
-import React, {
-  FC, useCallback, useEffect, useState,
-} from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components/macro';
 import {
-  Frames, CardNumber, ExpiryDate, Cvv, FrameValidationChangedEvent, FrameCardTokenizedEvent,
+  CardNumber, ExpiryDate, Cvv, FrameCardTokenizedEvent, FrameValidationChangedEvent,
 } from 'frames-react';
 import { Flex } from 'rebass/styled-components';
-import { QueryStatus } from '@reduxjs/toolkit/query';
 import ReactLoading from 'react-loading';
-import { toast } from 'react-toastify';
 import WidgetHead from '../../Widget/WidgetHead';
 import { Button, FormRow } from '../../../../theme/components';
-import { alt4, red, white } from '../../../../theme';
-import { useAddUserCardMutation } from '../../../../redux/cardsApi';
-import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import {
-  incrementWidgetStep, logout, selectApp,
-} from '../../../../state/applicationSlice';
-import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
+import CheckoutFrames from '../../../../components/CheckoutFrames/CheckoutFrames';
 
 const FramesContainer = styled.div<{isVisible: boolean}>`
   display: flex;
@@ -69,128 +59,37 @@ const PaymentContainer = styled.div`
   flex: 1;
 `;
 
-const useSetCheckoutScript = () => {
-  const [scriptLoaded, setScriptLoaded] = useState(() => {
-    const checkoutScript = document.querySelector('[accesskey="checkout"]');
+interface IAddCardStep {
+  isFormValid: boolean;
+  isCardSubmitted: boolean;
+  onSubmit: () => void;
+  onGoBack: (() => void) | undefined;
+  onFrameValidationChanged: (e: FrameValidationChangedEvent) => void
+  onCardSubmitted: () => void;
+  onCardTokenized: (e: FrameCardTokenizedEvent) => void;
+}
 
-    return !!checkoutScript;
-  });
-
-  useEffect(() => {
-    if (scriptLoaded) {
-      return;
-    }
-
-    const script = document.createElement('script');
-
-    script.src = 'https://cdn.checkout.com/js/framesv2.min.js';
-    script.async = true;
-    script.title = 'checkout';
-    script.onload = () => {
-      setScriptLoaded(true);
-      script.title = 'checkout-loaded';
-    };
-
-    document.body.appendChild(script);
-  }, [scriptLoaded]);
-
-  return scriptLoaded;
-};
-
-const AddCardStep: FC = () => {
-  const dispatch = useAppDispatch();
-
+const AddCardStep: FC<IAddCardStep> = ({
+  isFormValid,
+  isCardSubmitted,
+  onSubmit,
+  onGoBack,
+  onFrameValidationChanged,
+  onCardSubmitted,
+  onCardTokenized,
+}) => {
   const [ready, setReady] = useState(false);
-  const [cardValidation, setCardValidation] = useState<
-    FrameValidationChangedEvent |
-    Record<string, never>
-    >({});
-  const [expireValidation, setExpireValidation] = useState<
-    FrameValidationChangedEvent |
-    Record<string, never>
-    >({});
-  const [cvvValidation, setCvvValidation] = useState<
-    FrameValidationChangedEvent |
-    Record<string, never>
-    >({});
-  const [cardSubmitted, setCardSubmitted] = useState(false);
-  const [tokenizedEvent, setTokenizedEvent] = useState<FrameCardTokenizedEvent | null>(null);
-
-  const {
-    isUserCardsEmpty,
-  } = useAppSelector(selectApp);
-
-  const [triggerAddCard, {
-    status, error,
-  }] = useAddUserCardMutation();
-
-  const scriptLoaded = useSetCheckoutScript();
-
-  useEffect(() => {
-    if (status === QueryStatus.rejected) {
-      // TODO(@ruslan): serialize errors
-      toast.error((error as { data: { message: string; code: number }})?.data?.message);
-      Frames.enableSubmitForm();
-      setCardSubmitted(false);
-    }
-  }, [error, status]);
-
-  useEffect(() => {
-    if (!tokenizedEvent?.token) {
-      return;
-    }
-
-    const fetchAddCard = async () => {
-      await triggerAddCard({ card_token: tokenizedEvent.token });
-    };
-
-    fetchAddCard();
-  }, [tokenizedEvent?.token, triggerAddCard]);
-
-  useClearGeneralError();
-
-  useEffect(() => {
-    if (status === QueryStatus.fulfilled) {
-      dispatch(incrementWidgetStep());
-    }
-  }, [dispatch, status]);
-
-  const handleFrameValidationChanged = useCallback((e: FrameValidationChangedEvent) => {
-    switch (e.element) {
-      case 'cvv': {
-        setCvvValidation(e);
-        break;
-      }
-      case 'expiry-date': {
-        setExpireValidation(e);
-        break;
-      }
-      case 'card-number': {
-        setCardValidation(e);
-        break;
-      }
-      default: {
-        setCardValidation({});
-      }
-    }
-  }, []);
-
-  const isFormValid = cardValidation?.isValid && expireValidation?.isValid && cvvValidation?.isValid;
 
   return (
     <Flex flexDirection="column" flex={1}>
       <WidgetHead
         text="Add New Card"
-        customBackCallback={
-        isUserCardsEmpty
-          ? (() => {
-            dispatch(logout());
-          }) : undefined
-      }
+        customBackCallback={onGoBack}
       />
       <PaymentContainer>
         <Flex flexDirection="column" flex={1}>
-          {(!ready || !scriptLoaded) && (
+          {!ready
+            && (
             <LoaderOverlay>
               <ReactLoadingContainer>
                 <ReactLoading
@@ -202,79 +101,38 @@ const AddCardStep: FC = () => {
                 />
               </ReactLoadingContainer>
             </LoaderOverlay>
-          )}
-          {scriptLoaded && (
-            <FramesContainer data-testid="FramesContainer" isVisible={ready}>
-              <Frames
-                config={{
-                  debug: true,
-                  publicKey: process.env.REACT_APP_CHECKOUT_PUBLIC_KEY as string,
-                  localization: {
-                    cardNumberPlaceholder: 'Card number',
-                    expiryMonthPlaceholder: 'MM',
-                    expiryYearPlaceholder: 'YY',
-                    cvvPlaceholder: 'CVV',
-                  },
-                  style: {
-                    base: {
-                      padding: '18px',
-                      height: '62px',
-                      borderRadius: '6px',
-                      color: 'black',
-                      fontSize: '16px',
-                      boxShadow: 'inset 0 0 0 1px #ccc',
-                      background: alt4,
-                    },
-                    focus: {
-                      color: white,
-                    },
-                    valid: {
-                      boxShadow: 'inset 0 0 0 1px green',
-                      color: white,
-                    },
-                    invalid: {
-                      boxShadow: `inset 0 0 0 1px ${red}`,
-                      color: white,
-                    },
-                    placeholder: {
-                      base: {
-                        color: 'rgb(82, 120, 141)',
-                      },
-                    },
-                  },
-                }}
-                ready={() => setReady(true)}
-                frameValidationChanged={handleFrameValidationChanged}
-                cardSubmitted={() => setCardSubmitted(true)}
-                cardTokenized={(e) => {
-                  setTokenizedEvent(e);
-                }}
-              >
+            )}
+          <FramesContainer data-testid="FramesContainer" isVisible={ready}>
+            <CheckoutFrames
+              onFrameValidationChanged={onFrameValidationChanged}
+              onReadyToDisplay={() => setReady(true)}
+              onCardSubmitted={onCardSubmitted}
+              onCardTokenized={onCardTokenized}
+            >
+              <FrameElementContainer>
+                <FrameLabel>Card Number</FrameLabel>
+                <CardNumber />
+              </FrameElementContainer>
+              <Flex>
                 <FrameElementContainer>
-                  <FrameLabel>Card Number</FrameLabel>
-                  <CardNumber />
+                  <FrameLabel>Expiry Date</FrameLabel>
+                  <ExpiryDate />
                 </FrameElementContainer>
-                <Flex>
-                  <FrameElementContainer>
-                    <FrameLabel>Expiry Date</FrameLabel>
-                    <ExpiryDate />
-                  </FrameElementContainer>
-                  <FrameElementContainer>
-                    <FrameLabel>CVV</FrameLabel>
-                    <Cvv />
-                  </FrameElementContainer>
-                </Flex>
-              </Frames>
-            </FramesContainer>
-          )}
+                <FrameElementContainer>
+                  <FrameLabel>CVV</FrameLabel>
+                  <Cvv />
+                </FrameElementContainer>
+              </Flex>
+            </CheckoutFrames>
+          </FramesContainer>
           <FormRow margin="auto 0 0 0">
             <Button
-              onClick={() => Frames.submitCard()}
-              disabled={!isFormValid || cardSubmitted}
+              onClick={onSubmit}
+              disabled={!isFormValid || isCardSubmitted}
               data-testid="submitButton"
               type="submit"
             >
-              {cardSubmitted ? <ButtonLoader /> : 'Continue'}
+              {isCardSubmitted ? <ButtonLoader /> : 'Continue'}
             </Button>
           </FormRow>
         </Flex>

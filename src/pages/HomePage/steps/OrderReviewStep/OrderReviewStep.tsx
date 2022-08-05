@@ -35,6 +35,7 @@ import Modal from '../../../../components/Modal/Modal';
 import { selectFieldModalStyles } from '../../../../components/CurrencySelectField/CurrencySelectField';
 import ModalInnerConfirm from './ModalInnerConfirm';
 import ModalInnerTooManyYears from './ModalInnerTooManyYears';
+import { selectPayment } from '../../../../state/paymentSelectSlice';
 
 export const YEARS_OLD_CAP = 60;
 
@@ -75,7 +76,6 @@ const OrderReviewStep: FC = () => {
     isQuoteLoaded,
     isQuoteLoading,
     user,
-    ...application
   } = useAppSelector(selectApp);
 
   const isUserTooManyYearsOld = user?.date_of_birth
@@ -95,7 +95,7 @@ const OrderReviewStep: FC = () => {
     setIsModalOpen(false);
   }, []);
 
-  const selectedUserCard = application.selectedUserCard as PaymentCard;
+  const { selectedUserCard, userCards } = useAppSelector(selectPayment);
   const { isFetching: isLimitsLoading } = useGetUserLimitsQuery();
   const [triggerGetQuotes] = useGetQuoteMutation();
 
@@ -175,7 +175,10 @@ const OrderReviewStep: FC = () => {
 
   const handleClickChangePersonal = () => {
     dispatch(setSkipPersonalInfoStep(false));
-    dispatch(goToWidgetStep(WidgetSteps.PERSONAL_INFORMATION));
+    dispatch(goToWidgetStep({
+      widgetStep: WidgetSteps.PERSONAL_INFORMATION,
+      shouldUpdateStepper: userCards.length > 0,
+    }));
   };
 
   const handleModalParentSelector = useCallback(() => {
@@ -246,11 +249,11 @@ const OrderReviewStep: FC = () => {
               <PreviewBadge label="Using Payment Method">
                 <Flex justifyContent="space-between" alignItems="flex-end">
                   <CardBadge
-                    paymentMethod={selectedUserCard.type}
+                    paymentMethod={(selectedUserCard as PaymentCard).type}
                     city={user?.city as string}
                     postalCode={user?.postal_code as string}
                     owner={`${user?.first_names as string} ${user?.last_names as string}`}
-                    lastNumbers={selectedUserCard.last4}
+                    lastNumbers={(selectedUserCard as PaymentCard).last4}
                   />
                   <Flex flexDirection="column">
                     <BorderButton

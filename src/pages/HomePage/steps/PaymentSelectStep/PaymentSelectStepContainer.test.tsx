@@ -4,7 +4,7 @@ import {
 } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { render } from '../../../../utils/test-utils';
-import PaymentSelectStep from './PaymentSelectStep';
+import PaymentSelectStepContainer from './PaymentSelectStepContainer';
 import { server } from '../../../../testHandlers/utils';
 import { setupUserCardsRequestServer } from '../../../../testHandlers/userCards/setupUserCardsServer';
 import { createStoreWithMiddlewares } from '../../../../app/store';
@@ -18,14 +18,14 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe('PaymentSelectStep tests', () => {
+describe('PaymentSelectStepContainer tests', () => {
   it(
     'check add cards button is rendered',
     async () => {
       setupUserCardsRequestServer(serverGetUserCardsMock);
       const {
         getByTestId,
-      } = render(<PaymentSelectStep />);
+      } = render(<PaymentSelectStepContainer />);
 
       await act(() => {
         expect(getByTestId('AddNewCardButton')).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('PaymentSelectStep tests', () => {
       setupUserCardsRequestServer(serverGetUserCardsMock);
       const {
         getByTestId,
-      } = render(<PaymentSelectStep />);
+      } = render(<PaymentSelectStepContainer />);
 
       await act(() => {
         expect(getByTestId('CardsLoader')).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe('PaymentSelectStep tests', () => {
         getByTestId,
         queryByTestId,
         getByText,
-      } = render(<PaymentSelectStep />);
+      } = render(<PaymentSelectStepContainer />);
 
       await waitFor(() => {
         expect(getByTestId('CardsLoader')).toBeInTheDocument();
@@ -93,7 +93,7 @@ describe('PaymentSelectStep tests', () => {
       const {
         getByTestId,
         queryByTestId,
-      } = render(<PaymentSelectStep />);
+      } = render(<PaymentSelectStepContainer />);
 
       await waitFor(() => {
         expect(getByTestId('CardsLoader')).toBeInTheDocument();
@@ -133,7 +133,7 @@ describe('PaymentSelectStep tests', () => {
       const {
         getByTestId,
         queryByTestId,
-      } = render(<PaymentSelectStep />);
+      } = render(<PaymentSelectStepContainer />);
 
       await waitFor(() => {
         expect(getByTestId('CardsLoader')).toBeInTheDocument();
@@ -199,7 +199,7 @@ describe('PaymentSelectStep tests', () => {
       });
 
       // element deleted
-      await waitFor(() => {
+      await act(() => {
         expect(
           queryByTestId('RadioGroupItem-2'),
         )
@@ -207,7 +207,7 @@ describe('PaymentSelectStep tests', () => {
       });
 
       // first element checked again
-      await waitFor(() => {
+      await act(() => {
         expect(firstRadioInput as HTMLInputElement).toBeChecked();
       });
     },
@@ -220,7 +220,7 @@ describe('PaymentSelectStep tests', () => {
       const store = createStoreWithMiddlewares();
       const {
         getByTestId,
-      } = render(<PaymentSelectStep />, { preloadedState: store.getState(), store });
+      } = render(<PaymentSelectStepContainer />, { preloadedState: store.getState(), store });
 
       await act(() => {
         expect(getByTestId('CardsLoader')).toBeInTheDocument();
@@ -250,7 +250,7 @@ describe('PaymentSelectStep tests', () => {
       const store = createStoreWithMiddlewares();
       const {
         getByTestId,
-      } = render(<PaymentSelectStep />, { preloadedState: store.getState(), store });
+      } = render(<PaymentSelectStepContainer />, { preloadedState: store.getState(), store });
 
       await act(() => {
         expect(getByTestId('CardsLoader')).toBeInTheDocument();

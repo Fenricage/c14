@@ -10,3 +10,4 @@ export const SHOULD_VALIDATE = {
 export const SECOND_MS = 1000;
 
 export const TOKEN = 'token';
+export const FRAMES_KEY = process.env.REACT_APP_CHECKOUT_PUBLIC_KEY as string;

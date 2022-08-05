@@ -173,13 +173,13 @@ const PersonalInformationStep: FC = () => {
       dispatch(incrementWidgetStep());
       // form is submitted but user is not verified
     } else if (isUserUpdated && isUserVerified && !isEmailVerified) {
-      dispatch(goToWidgetStep(WidgetSteps.EMAIL_VERIFICATION));
+      dispatch(goToWidgetStep({ widgetStep: WidgetSteps.EMAIL_VERIFICATION }));
     // user already exists
     } else if (isUserNotEmpty && isUserVerified && isEmailVerified) {
       dispatch(incrementWidgetStep());
     //  user exists and verified, but email is not confirmed
     } else if (isUserNotEmpty && !isEmailVerified && isUserVerified) {
-      dispatch(goToWidgetStep(WidgetSteps.EMAIL_VERIFICATION));
+      dispatch(goToWidgetStep({ widgetStep: WidgetSteps.EMAIL_VERIFICATION }));
     }
   }, [
     dispatch,

@@ -3,7 +3,7 @@ import {
   act,
 } from '@testing-library/react';
 import { render } from '../../../../utils/test-utils';
-import AddCardStep from './AddCardStep';
+import AddCardStepContainer from './AddCardStepContainer';
 
 describe('AddCardStep tests', () => {
   it(
@@ -11,7 +11,7 @@ describe('AddCardStep tests', () => {
     async () => {
       const {
         getByTestId,
-      } = render(<AddCardStep />);
+      } = render(<AddCardStepContainer />);
 
       await act(() => {
         expect(getByTestId('PaymentAddingLoader')).toBeInTheDocument();

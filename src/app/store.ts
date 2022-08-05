@@ -1,10 +1,10 @@
 import {
-  configureStore,
-  ThunkAction,
   Action,
+  configureStore,
+  isRejected,
   isRejectedWithValue,
   Middleware,
-  isRejected,
+  ThunkAction,
 } from '@reduxjs/toolkit';
 import { quotesApi } from '../redux/quotesApi';
 import { cardsApi } from '../redux/cardsApi';
@@ -14,6 +14,7 @@ import { userApi } from '../redux/userApi';
 import applicationSlice, { setGeneralError } from '../state/applicationSlice';
 import limitsSlice from '../state/limitsSlice';
 import { notify } from '../utils/toast';
+import paymentSelectSlice from '../state/paymentSelectSlice';
 
 const errors: {[p: string]: string} = {
   EMAIL_ALREADY_REGISTERED: 'Email already registered',
@@ -72,30 +73,27 @@ export const reducer = {
   [userApi.reducerPath]: userApi.reducer,
   [purchaseApi.reducerPath]: purchaseApi.reducer,
   [applicationSlice.name]: applicationSlice.reducer,
+  [paymentSelectSlice.name]: paymentSelectSlice.reducer,
   [limitsSlice.name]: limitsSlice.reducer,
 };
 
 export const createStoreWithMiddlewares = (
   initialState = {},
-) => {
-  const store = configureStore({
-    reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware(
-      {
-        serializableCheck: false,
-      },
-    )
-      .concat(quotesApi.middleware)
-      .concat(cardsApi.middleware)
-      .concat(limitsApi.middleware)
-      .concat(userApi.middleware)
-      .concat(purchaseApi.middleware)
-      .concat(rtkQueryErrorLogger),
-    preloadedState: initialState,
-  });
-
-  return store;
-};
+) => configureStore({
+  reducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(
+    {
+      serializableCheck: false,
+    },
+  )
+    .concat(quotesApi.middleware)
+    .concat(cardsApi.middleware)
+    .concat(limitsApi.middleware)
+    .concat(userApi.middleware)
+    .concat(purchaseApi.middleware)
+    .concat(rtkQueryErrorLogger),
+  preloadedState: initialState,
+});
 
 export const store = createStoreWithMiddlewares(undefined);
 

@@ -4,13 +4,11 @@ import {
   QuoteFormValues,
 } from '../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
 import { RootState } from '../app/store';
-import { cardsApi, GetUserCardsResponse, PaymentCard } from '../redux/cardsApi';
-import { PaymentSelectFormValues } from '../pages/HomePage/steps/PaymentSelectStep/PaymentSelectStep';
+
 import { GetPurchaseDetailsResponse, purchaseApi } from '../redux/purchaseApi';
 import { LoginResponse, userApi, UserDetails } from '../redux/userApi';
 
 export const CALCULATOR_FORM_NAME = 'calculator-form';
-export const PAYMENT_SELECT_FORM_NAME = 'payment-select-form';
 
 export enum StepperSteps {
   QUOTES,
@@ -33,6 +31,11 @@ export enum WidgetSteps {
   REVIEW_ORDER = 6,
   PROCESS = 7,
   COMPLETE= 8,
+}
+
+export type GoToWidgetAction = {
+  widgetStep: WidgetSteps,
+  shouldUpdateStepper?: boolean,
 }
 
 const getPrevStepperStep = (currentStep: StepperSteps) => {
@@ -172,7 +175,6 @@ export type QuoteInputName = 'quoteSourceAmount' | 'quoteTargetAmount';
 export type AppState = {
   isQuoteLoaded: boolean
   isQuoteLoading: boolean
-  isUserCardsEmpty: boolean
   generalError: GeneralError
   user: null | UserDetails
   isUserLoading: boolean
@@ -193,18 +195,14 @@ export type AppState = {
     currentStep: WidgetSteps
   }
   wizard: {
-    [PAYMENT_SELECT_FORM_NAME]: {
-      initialValues: PaymentSelectFormValues | Record<string, never>
-      snapshot: PaymentSelectFormValues | Record<string, never>
-    }
+    [CALCULATOR_FORM_NAME]: {
+      initialValues: QuoteFormValues
+      snapshot: QuoteFormValues
+    },
   },
-  userCards: GetUserCardsResponse
-  selectedUserCard: PaymentCard | null
-  isUserCardsLoading: boolean
-  isUserCardsLoaded: boolean
-  userCardsError: string | null
+
   purchaseDetails: GetPurchaseDetailsResponse | null
-  deletingCards: string[]
+
   jwtToken: LoginResponse | null;
   isSMSSended: boolean;
   isSMSSending: boolean;
@@ -226,9 +224,6 @@ export const initialQuotesValuesForm: QuoteFormValues = {
 type InitialFormValuesPayload = {
   formName: typeof CALCULATOR_FORM_NAME
   state: Partial<QuoteFormValues>
-} | {
-  formName: typeof PAYMENT_SELECT_FORM_NAME
-  state: Partial<PaymentSelectFormValues>
 }
 
 export const initialState = {
@@ -256,20 +251,12 @@ export const initialState = {
     currentStep: WidgetSteps.QUOTES,
   },
   wizard: {
-    [PAYMENT_SELECT_FORM_NAME]: {
-      initialValues: {},
-      snapshot: {},
+    [CALCULATOR_FORM_NAME]: {
+      initialValues: initialQuotesValuesForm,
+      snapshot: initialQuotesValuesForm,
     },
   },
-  userCards: {
-    customer_cards: [],
-  },
-  selectedUserCard: null,
-  isUserCardsLoading: true,
-  isUserCardsLoaded: false,
-  userCardsError: null,
   purchaseDetails: null,
-  deletingCards: [],
   isSMSSended: false,
   // jwtToken: localStorage.getItem(TOKEN) ? JSON.parse(localStorage.getItem(TOKEN) as string) : null,
   jwtToken: null,
@@ -290,17 +277,14 @@ const applicationSlice = createSlice({
     setQuote(state, action: PayloadAction<QuoteResponse>) {
       state.quotes = action.payload;
     },
-    setUserCardsEmpty(state, action: PayloadAction<boolean>) {
-      state.isUserCardsEmpty = action.payload;
-    },
     incrementWidgetStep(state) {
       state.widgetSteps.currentStep = getNextWidgetStep(state.widgetSteps.currentStep);
     },
     decrementWidgetStep(state) {
       state.widgetSteps.currentStep = getPrevWidgetStep(state.widgetSteps.currentStep);
     },
-    goToWidgetStep(state, action: PayloadAction<WidgetSteps>) {
-      state.widgetSteps.currentStep = action.payload;
+    goToWidgetStep(state, action: PayloadAction<GoToWidgetAction>) {
+      state.widgetSteps.currentStep = action.payload.widgetStep;
     },
     incrementStepperStep(state) {
       state.stepperSteps.currentStep = getNextStepperStep(state.stepperSteps.currentStep);
@@ -317,28 +301,21 @@ const applicationSlice = createSlice({
     setQuotesLoaded(state, action: PayloadAction<boolean>) {
       state.isQuoteLoaded = action.payload;
     },
-    setSelectedUserCard(state, action: PayloadAction<PaymentCard>) {
-      state.selectedUserCard = action.payload;
-    },
-    clearSelectedUserCard(state) {
-      state.selectedUserCard = null;
+    setInitialValuesForm(state, action: PayloadAction<InitialFormValuesPayload>) {
+      if (action.payload.formName === CALCULATOR_FORM_NAME) {
+        state.wizard[action.payload.formName].initialValues = {
+          ...state.wizard[action.payload.formName].initialValues,
+          ...action.payload.state,
+        };
+      }
     },
     setSnapshotValuesForm(state, action: PayloadAction<InitialFormValuesPayload>) {
-      if (action.payload.formName === PAYMENT_SELECT_FORM_NAME) {
+      if (action.payload.formName === CALCULATOR_FORM_NAME) {
         state.wizard[action.payload.formName].snapshot = {
           ...state.wizard[action.payload.formName].snapshot,
           ...action.payload.state,
         };
       }
-    },
-    resetUserCards(state) {
-      state.userCards = {
-        customer_cards: [],
-      };
-      state.isUserCardsLoading = true;
-      // state.isUserCardsEmpty = false;
-      state.isUserCardsLoaded = false;
-      state.userCardsError = null;
     },
     resetApplication: () => initialState,
     logout: () => initialState,
@@ -425,10 +402,10 @@ const applicationSlice = createSlice({
 
     builder.addMatcher(
       applicationSlice.actions.goToWidgetStep.match,
-      (state) => {
+      (state, action) => {
         switch (state.widgetSteps.currentStep) {
           case WidgetSteps.PERSONAL_INFORMATION: {
-            if (!state.isUserCardsEmpty) {
+            if (action.payload.shouldUpdateStepper === false) {
               return;
             }
             state.stepperSteps.currentStep = StepperSteps.PERSONAL_INFORMATION;
@@ -469,50 +446,6 @@ const applicationSlice = createSlice({
           target_amount: payload.target_amount,
           source_amount: payload.source_amount,
         };
-      },
-    );
-
-    builder.addMatcher(
-      cardsApi.endpoints.getUserCards.matchPending,
-      (state) => {
-        state.isUserCardsLoading = true;
-      },
-    );
-
-    builder.addMatcher(
-      cardsApi.endpoints.getUserCards.matchRejected,
-      (state) => {
-        state.isUserCardsLoading = false;
-        state.isUserCardsLoaded = true;
-        state.userCardsError = 'Request is failed';
-      },
-    );
-
-    builder.addMatcher(
-      cardsApi.endpoints.getUserCards.matchFulfilled,
-      (state, { payload }) => {
-        state.isUserCardsLoading = false;
-        state.isUserCardsLoaded = true;
-        state.userCardsError = '';
-        state.userCards = payload;
-      },
-    );
-
-    builder.addMatcher(
-      cardsApi.endpoints.deleteUserCard.matchPending,
-      (state, { meta }) => {
-        const toDeleteCardId = meta.arg.originalArgs;
-        state.deletingCards = [...state.deletingCards, toDeleteCardId];
-      },
-    );
-
-    builder.addMatcher(
-      cardsApi.endpoints.deleteUserCard.matchFulfilled,
-      (state, { meta }) => {
-        const toDeleteCardId = meta.arg.originalArgs;
-        state.userCards.customer_cards = state.userCards.customer_cards
-          .filter((c) => c.card_id !== toDeleteCardId);
-        state.deletingCards = state.deletingCards.filter((c) => c !== toDeleteCardId);
       },
     );
 
@@ -657,12 +590,9 @@ export const {
   incrementStepperStep,
   logout,
   goToStepperStep,
-  setSelectedUserCard,
   setQuotesLoading,
-  setUserCardsEmpty,
   setQuotesLoaded,
   setSnapshotValuesForm,
-  resetUserCards,
   resetApplication,
   setUserUpdated,
   setSkipPaymentStep,

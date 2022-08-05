@@ -23,7 +23,6 @@ export const mockStore: Partial<RootState> = {
     isUserVerified: false,
     isEmailVerified: false,
     isQuoteLoading: false,
-    isUserCardsEmpty: false,
     stepperSteps: {
       currentStep: 2,
     },
@@ -31,20 +30,22 @@ export const mockStore: Partial<RootState> = {
       currentStep: 2,
     },
     wizard: {
-      'payment-select-form': {
-        initialValues: {},
-        snapshot: {},
+      'calculator-form': {
+        initialValues: {
+          quoteSourceAmount: '100',
+          quoteTargetAmount: '',
+          sourceCurrency: 'USD',
+          targetCurrency: 'b2384bf2-b14d-4916-aa97-85633ef05742',
+        },
+        snapshot: {
+          quoteSourceAmount: '100',
+          quoteTargetAmount: '',
+          sourceCurrency: 'USD',
+          targetCurrency: 'b2384bf2-b14d-4916-aa97-85633ef05742',
+        },
       },
     },
-    userCards: {
-      customer_cards: [],
-    },
-    selectedUserCard: null,
-    isUserCardsLoading: true,
-    isUserCardsLoaded: false,
-    userCardsError: null,
     purchaseDetails: null,
-    deletingCards: [],
     isSMSSended: false,
     jwtToken: null,
     isSMSSending: false,

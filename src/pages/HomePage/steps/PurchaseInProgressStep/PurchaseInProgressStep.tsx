@@ -12,16 +12,18 @@ import {
 } from '../../../../redux/purchaseApi';
 import { Subtitle, Title } from '../../../../theme/components';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import { selectPayment } from '../../../../state/paymentSelectSlice';
 
 const PurchaseInProgressStep: FC = () => {
   const dispatch = useAppDispatch();
 
   const application = useAppSelector(selectApp);
+  const { selectedUserCard } = useAppSelector(selectPayment);
 
   const { purchaseDetails } = application;
 
   const quoteId = application.quotes.id;
-  const cardId = (application.selectedUserCard as PaymentCard).card_id;
+  const cardId = (selectedUserCard as PaymentCard).card_id;
 
   const targetAddress = application.blockChainTargetAddress;
 

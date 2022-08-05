@@ -55,10 +55,6 @@ const store = createStoreWithMiddlewares({
           targetCurrency: targetAssetId,
         },
       },
-      'payment-select-form': {
-        initialValues: {},
-        snapshot: {},
-      },
     },
   },
 });

@@ -11,8 +11,9 @@ import { setupServerQuoteRequest } from '../../../../testHandlers/quotes/setupSe
 import { server } from '../../../../testHandlers/utils';
 import { createStoreWithMiddlewares } from '../../../../app/store';
 import { setupServerLimits } from '../../../../testHandlers/limits/setupServerLimits';
-import { goToWidgetStep, setSelectedUserCard, WidgetSteps } from '../../../../state/applicationSlice';
+import { goToWidgetStep, WidgetSteps } from '../../../../state/applicationSlice';
 import { serverQuoteRequestMock } from '../../../../testHandlers/quotes/mocks';
+import { setSelectedUserCard } from '../../../../state/paymentSelectSlice';
 
 beforeAll(() => server.listen());
 beforeEach(() => {
@@ -89,7 +90,7 @@ describe('OrderReviewStep tests', () => {
       });
 
       await act(async () => {
-        await store.dispatch(goToWidgetStep(WidgetSteps.REVIEW_ORDER));
+        await store.dispatch(goToWidgetStep({ widgetStep: WidgetSteps.REVIEW_ORDER }));
       });
 
       await waitFor(() => {
@@ -155,6 +156,8 @@ describe('OrderReviewStep tests', () => {
           widgetSteps: {
             currentStep: WidgetSteps.REVIEW_ORDER,
           },
+        },
+        paymentSelect: {
           selectedUserCard: cardToSelect,
         },
       };

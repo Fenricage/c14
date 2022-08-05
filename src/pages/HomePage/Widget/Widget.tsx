@@ -8,8 +8,8 @@ import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { selectApp, setBlockchainTargetAddress, WidgetSteps } from '../../../state/applicationSlice';
 import QuotesStepContainer from '../steps/QuotesStep/QuotesStepContainer';
 import PhoneInputStepContainer from '../steps/PhoneInputStep/PhoneInputStepContainer';
-import AddCardStep from '../steps/AddCardStep/AddCardStep';
-import PaymentSelectStep from '../steps/PaymentSelectStep/PaymentSelectStep';
+import AddCardStepContainer from '../steps/AddCardStep/AddCardStepContainer';
+import PaymentSelectStepContainer from '../steps/PaymentSelectStep/PaymentSelectStepContainer';
 import PersonalInformationStep from '../steps/PersonalInformationStep/PersonalInformationStep';
 import OrderReviewStep from '../steps/OrderReviewStep/OrderReviewStep';
 import SMSConfirmationStepContainer from '../steps/SMSConfirmationStep/SMSConfirmationStepContainer';
@@ -90,10 +90,10 @@ const Widget: FC = () => {
         return <EmailVerificationStep />;
       }
       case WidgetSteps.PAYMENT_ADDING: {
-        return <AddCardStep />;
+        return <AddCardStepContainer />;
       }
       case WidgetSteps.PAYMENT_SELECT: {
-        return <PaymentSelectStep />;
+        return <PaymentSelectStepContainer />;
       }
       case WidgetSteps.REVIEW_ORDER: {
         return <OrderReviewStep />;
