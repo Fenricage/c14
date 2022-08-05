@@ -2,6 +2,7 @@ import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components/macro';
+import { ErrorBoundary, Provider } from '@rollbar/react';
 import HomePage from './pages/HomePage/HomePage';
 
 const StyledContainer = styled(ToastContainer)`
@@ -16,23 +17,39 @@ const StyledContainer = styled(ToastContainer)`
     word-break: break-all;
   }
 `;
+const rollbarConfig = {
+  accessToken: process.env.REACT_APP_ROLLBAR_TOKEN,
+  environment: process.env.REACT_APP_ENV,
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+  payload: {
+    client: {
+      javascript: {
+        code_version: '1.0.0',
+        source_map_enabled: true,
+      },
+    },
+  },
+};
 
 function App(): JSX.Element {
   return (
-    <>
-      <StyledContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      <HomePage />
-    </>
+    <Provider config={rollbarConfig}>
+      <ErrorBoundary>
+        <StyledContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        <HomePage />
+      </ErrorBoundary>
+    </Provider>
   );
 }
 

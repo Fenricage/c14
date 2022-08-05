@@ -7,6 +7,7 @@
     "@fontsource/lato": "^4.5.8",
     "@fontsource/space-mono": "^4.5.8",
     "@reduxjs/toolkit": "^1.8.1",
+    "@rollbar/react": "^0.11.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.2.1",
@@ -44,6 +45,7 @@
     "react-toastify": "^8.2.0",
     "react-transition-group": "^4.4.2",
     "rebass": "^4.0.7",
+    "rollbar": "^2.25.1",
     "styled-components": "^5.3.5",
     "styled-normalize": "^8.0.7",
     "ts-node": "^10.8.1",
@@ -54,6 +56,7 @@
   },
   "scripts": {
     "start": "env-cmd -f .env react-scripts start",
+    "build:local": "env-cmd -f .env react-scripts build",
     "build:dev": "env-cmd -f .env.dev react-scripts build",
     "build:prod": "env-cmd -f .env.prod react-scripts build",
     "lint:global": "eslint --fix --ext .ts,.tsx ./src",
