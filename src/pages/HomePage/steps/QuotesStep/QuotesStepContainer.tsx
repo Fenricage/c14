@@ -77,6 +77,8 @@ const QuotesStepContainer: FC = () => {
   const [networkFee, setNetworkFee] = useState('');
   const [totalFee, setTotalFee] = useState('');
 
+  const [isPristine, setIsPristine] = useState(false);
+
   const request = useRef<any>(null);
 
   useClearGeneralError();
@@ -120,6 +122,10 @@ const QuotesStepContainer: FC = () => {
       return;
     }
 
+    if (isPristine) {
+      return;
+    }
+
     if (request.current) {
       request.current.abort();
     }
@@ -134,10 +140,6 @@ const QuotesStepContainer: FC = () => {
     // deny request only on invalid form and last changed source input
     if (!isValidInput && lastChangedQuoteInputName === 'quoteSourceAmount') {
       return;
-    }
-
-    if (request.current) {
-      request.current.abort();
     }
 
     if (lastChangedQuoteInputName === 'quoteTargetAmount') {
@@ -163,9 +165,11 @@ const QuotesStepContainer: FC = () => {
       setNetworkFee(json_response.fiat_blockchain_fee);
       setTotalFee(json_response.total_fee);
       dispatch(setQuote(json_response));
+      setIsPristine(true);
     }
   }, [
     dispatch,
+    isPristine,
     quoteSourceAmount,
     quoteTargetAmount,
     sourceCurrencyId,
@@ -177,8 +181,9 @@ const QuotesStepContainer: FC = () => {
 
   useEffect(() => {
     runUpdateQuotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    runUpdateQuotes,
+    // do not add runUpdateQuotes as a dependency, otherwise makes two calls to /quotes,
     sourceCurrencyId,
     targetCurrencyId,
     quoteSourceAmount,
@@ -189,6 +194,7 @@ const QuotesStepContainer: FC = () => {
     type: QuoteInputName,
     value: string,
   ) => {
+    setIsPristine(false);
     setQuoteSourceAmount(value);
     setLastChangedQuoteInputName(type);
   });
@@ -197,6 +203,7 @@ const QuotesStepContainer: FC = () => {
     type: QuoteInputName,
     value: string,
   ) => {
+    setIsPristine(false);
     setQuoteTargetAmount(value);
     setLastChangedQuoteInputName(type);
   });
@@ -205,10 +212,12 @@ const QuotesStepContainer: FC = () => {
   };
 
   const onSourceCurrencyChange = (target_currency_id: string) => {
+    setIsPristine(false);
     setSourceCurrencyId(target_currency_id);
   };
 
   const onTargetCurrencyChange = (target_currency_id: string) => {
+    setIsPristine(false);
     setTargetCurrencyId(target_currency_id);
   };
 
