@@ -274,7 +274,7 @@ describe('PaymentSelectStepContainer tests', () => {
         await user.click(deleteButton);
       });
 
-      await act(() => {
+      await waitFor(() => {
         expect(
           within(getByTestId('RadioGroupItem-0')).queryByTestId('CardRadioFieldLoading'),
         )
