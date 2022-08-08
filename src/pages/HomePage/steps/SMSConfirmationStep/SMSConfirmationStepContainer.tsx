@@ -7,6 +7,7 @@ import {
 import { useLoginMutation } from '../../../../redux/userApi';
 import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import SMSConfirmationStep from './SMSConfirmationStep';
+import { selectUserDetails } from '../../../../state/userDetailsSlice';
 
 export type ConfirmationFormValues = {
   code: string;
@@ -28,7 +29,7 @@ const SMSConfirmationStepContainer: FC = () => {
   const { isAuthenticated } = useAppSelector(selectApp);
   const {
     phoneNumber,
-  } = useAppSelector(selectApp);
+  } = useAppSelector(selectUserDetails);
 
   const submitForm = async (values: ConfirmationFormValues) => {
     await triggerLogin({

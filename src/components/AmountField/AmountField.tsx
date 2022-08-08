@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
-import CurrencyInputField from '../InputFieldContainer/InputFieldContainer';
+import InputField from '../inputs/InputField/InputField';
 import CurrencySelect, {
   Currency, CurrencySelectContainer,
-  SelectOption,
+  CurrencySelectOption,
 } from '../CurrencySelectField/CurrencySelectField';
 import FormFieldErrorMessage, {
   FormFieldErrorMessageText,
   FormFieldErrorMessageWrapper,
 } from '../FormFieldErrorMessage/FormFieldErrorMessage';
-import { OnChangeInputField } from '../InputField/InputField';
+import { OnChangeInputField } from '../inputs/BaseInputField/BaseInputField';
 
 interface IAmountField {
   readOnly: boolean;
@@ -20,19 +20,21 @@ interface IAmountField {
   amountValue?: string,
   currencyType?: string,
   placeholder?: string;
-  currencyOptions: SelectOption[];
+  currencyOptions: CurrencySelectOption[];
   hasError?: boolean;
+  debounceMs?: number;
   onAmountChange?: OnChangeInputField;
   onCurrencyChange?: (currency_id: string) => void;
 }
 
-export const InputRow = styled.div`
+export const AmountFieldRow = styled.div`
   display: flex;
   align-items: center;
 `;
 
-export const InputBox = styled.div<{ hasError?: boolean }>`
+export const AmountFieldBox = styled.div<{ hasError?: boolean }>`
   display: flex;
+  font-size: 24px;
   width: 100%;
   overflow: hidden;
   flex-flow: column nowrap;
@@ -78,11 +80,13 @@ const AmountField: FC<IAmountField> = ({
   hasError,
   onAmountChange,
   onCurrencyChange,
+  debounceMs,
 }) => (
-  <InputBox hasError={hasError}>
-    <InputRow data-testid={`${amountFieldName}Container`}>
-      <CurrencyInputField
+  <AmountFieldBox hasError={hasError}>
+    <AmountFieldRow data-testid={`${amountFieldName}Container`}>
+      <InputField
         disabled={readOnly || disabled}
+        debounceMs={debounceMs}
         value={amountValue}
         label={label}
         name={amountFieldName}
@@ -97,13 +101,13 @@ const AmountField: FC<IAmountField> = ({
         options={currencyOptions}
         onHandleChange={(v) => onCurrencyChange && onCurrencyChange(v.value)}
       />
-    </InputRow>
+    </AmountFieldRow>
     {!readOnly && (
     <FormFieldErrorMessage
       name={amountFieldName}
     />
     )}
-  </InputBox>
+  </AmountFieldBox>
 );
 
 export default AmountField;

@@ -6,14 +6,14 @@ import WidgetHead from '../../Widget/WidgetHead';
 import { ReactComponent as PhoneIcon } from '../../../../assets/phone_icon.svg';
 import PhoneInputField, {
   PhoneInputFieldContainer,
-} from '../../../../components/PhoneInputField/PhoneInputField';
+} from '../../../../components/inputs/PhoneInputField/PhoneInputField';
 import FormFieldErrorMessage, {
   FormFieldErrorMessageText,
   FormFieldErrorMessageWrapper,
 } from '../../../../components/FormFieldErrorMessage/FormFieldErrorMessage';
 import { Button, FormRow } from '../../../../theme/components';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
-import { PRIMARY_BORDER_RADIUS } from '../../../../components/PrimaryInputField/PrimaryInputField';
+import { PRIMARY_BORDER_RADIUS } from '../../../../components/inputs/PrimaryInputField/PrimaryInputField';
 import { PhoneFormValues } from './PhoneInputStepContainer';
 
 interface IPhoneInputStep {

@@ -20,9 +20,12 @@ import {
   setGeneralError,
   setQuotesLoaded,
   setSkipPaymentStep,
-  setSkipPersonalInfoStep,
   WidgetSteps,
 } from '../../../../state/applicationSlice';
+import {
+  selectUserDetails,
+  setSkipPersonalInfoStep,
+} from '../../../../state/userDetailsSlice';
 import useCallOnExpireTimer from '../../../../hooks/useCallOnExpireTimer';
 import { sourceOptions, targetOptions } from '../QuotesStep/QuotesStepContainer';
 import AmountField from '../../../../components/AmountField/AmountField';
@@ -75,8 +78,11 @@ const OrderReviewStep: FC = () => {
     },
     isQuoteLoaded,
     isQuoteLoading,
-    user,
   } = useAppSelector(selectApp);
+
+  const {
+    user,
+  } = useAppSelector(selectUserDetails);
 
   const isUserTooManyYearsOld = user?.date_of_birth
     ? differenceInYears(new Date(), new Date(user?.date_of_birth)) >= YEARS_OLD_CAP

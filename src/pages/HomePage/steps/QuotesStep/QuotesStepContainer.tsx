@@ -4,7 +4,7 @@ import React, {
 
 import {
   Currency,
-  SelectOption,
+  CurrencySelectOption,
 } from '../../../../components/CurrencySelectField/CurrencySelectField';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
@@ -37,7 +37,7 @@ const countDecimals = (value: string) => {
 };
 type FormAmounts = Pick<QuoteFormValues, 'quoteSourceAmount'>
 
-export const sourceOptions: SelectOption[] = [
+export const sourceOptions: CurrencySelectOption[] = [
   {
     value: 'USD',
     label: 'USD',
@@ -45,7 +45,7 @@ export const sourceOptions: SelectOption[] = [
   },
 ];
 
-export const targetOptions: SelectOption[] = [
+export const targetOptions: CurrencySelectOption[] = [
   {
     value: 'b2384bf2-b14d-4916-aa97-85633ef05742',
     label: 'USDC',
@@ -240,6 +240,7 @@ const QuotesStepContainer: FC = () => {
       initialQuotesValuesForm={quotesValues}
       submitForm={submitForm}
       validate={validate}
+      amountUpdateDebounceMs={650}
       initialTouched={initialTouched}
       isQuoteInputDisabled={isQuoteInputDisabled}
       onSourceAmountChange={onSourceAmountChange}

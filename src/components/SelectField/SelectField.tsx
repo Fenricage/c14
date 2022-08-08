@@ -16,7 +16,7 @@ import {
 import styled from 'styled-components/macro';
 import { InputLabel } from '../../theme/components';
 import { SHOULD_VALIDATE } from '../../constants';
-import { sharedInputStyle } from '../InputField/InputField';
+import { sharedBaseInputStyle } from '../../theme/sharedStyles';
 
 export const SelectContainer = styled.div`
   width: 100%;
@@ -40,7 +40,7 @@ export const SelectInner = styled.div`
 `;
 
 export const Select = styled.select`
-  ${sharedInputStyle};
+  ${sharedBaseInputStyle};
 `;
 
 export type SelectOption = {
@@ -60,6 +60,7 @@ export type OnChangeSelectField = ({
 
 export type SelectFieldProps<FormValues = unknown> = {
   label?: string;
+  placeholder: string;
   options: SelectOption[];
   onHandleChange?: OnChangeSelectField;
 } &
@@ -136,6 +137,7 @@ const SelectField = forwardRef<HTMLDivElement, PropsWithChildren<SelectFieldProp
               onChange={handleSelectChange}
               disabled={disabled}
             >
+              <option disabled value="">{placeholder}</option>
               {options.map((option) => (
                 <option
                   key={option.value}

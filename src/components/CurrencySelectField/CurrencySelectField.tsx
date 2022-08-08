@@ -12,7 +12,7 @@ import Modal from '../Modal/Modal';
 
 export type Currency = 'USD' | 'b2384bf2-b14d-4916-aa97-85633ef05742' | 'c00b9be1-9472-44cc-b384-7f549274de3b'
 
-export type SelectOption = {
+export type CurrencySelectOption = {
   value: Currency
   description?: string;
   label: string
@@ -28,14 +28,14 @@ export type OnChangeCurrencySelectField = ({
 
 type CurrencySelectFieldHOCProps = {
   name: string;
-  options: SelectOption[];
+  options: CurrencySelectOption[];
   onHandleChange: OnChangeCurrencySelectField;
   disabled?: boolean;
 }
 
 type CurrencySelectFieldProps = {
   value: Currency;
-  options: SelectOption[];
+  options: CurrencySelectOption[];
   onOpenModalClick?: () => void;
   disabled?: boolean;
   children?: React.ReactElement;

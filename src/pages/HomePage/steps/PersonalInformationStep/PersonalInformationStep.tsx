@@ -1,43 +1,26 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { Flex } from 'rebass/styled-components';
 import { Form, Formik } from 'formik';
 import styled from 'styled-components/macro';
-import * as Yup from 'yup';
-// eslint-disable-next-line import/no-duplicates
-import isDateFormatMatch from 'date-fns/isMatch';
 // eslint-disable-next-line import/no-duplicates
 import formatDate from 'date-fns/format';
 import { use100vh } from 'react-div-100vh';
 // eslint-disable-next-line import/no-duplicates
 import subDate from 'date-fns/sub';
 import ReactLoading from 'react-loading';
+import * as Yup from 'yup';
+// eslint-disable-next-line import/no-duplicates
+import isDateFormatMatch from 'date-fns/isMatch';
 import WidgetHead from '../../Widget/WidgetHead';
 import { Button, FormRow } from '../../../../theme/components';
-import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import {
-  goToWidgetStep,
-  incrementWidgetStep,
-  logout,
-  selectApp,
-  setGeneralError,
-  setSkipPersonalInfoStep,
-  setUserUpdated,
-  WidgetSteps,
-} from '../../../../state/applicationSlice';
-import PrimaryInputField, {
-  PrimaryInputBox,
-} from '../../../../components/PrimaryInputField/PrimaryInputField';
-import { Input } from '../../../../components/InputField/InputField';
+import PrimaryInputField from '../../../../components/inputs/PrimaryInputField/PrimaryInputField';
 import FormFieldErrorMessage from '../../../../components/FormFieldErrorMessage/FormFieldErrorMessage';
-import { useGetUserQuery, useLazyGetUserQuery, useUpdateUserMutation } from '../../../../redux/userApi';
 import PrimarySelectField from '../../../../components/PrimarySelectField/PrimarySelectField';
-import { emailRegEx } from '../../../../constants/regex';
-import { Select } from '../../../../components/SelectField/SelectField';
-import statesUS from './statesUS';
-import useClearGeneralError from '../../../../hooks/useClearGeneralError';
+import { Select, SelectOption } from '../../../../components/SelectField/SelectField';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
-
-const stateOptions = statesUS.map((value) => ({ value, label: value }));
+import { PrimaryInputBox } from '../../../../theme/formComponents';
+import { PersonalFormValues } from './PersonalInformationStepContainer';
+import { emailRegEx } from '../../../../constants/regex';
 
 const StyledForm = styled(Form)`
   flex: 1;
@@ -48,7 +31,7 @@ const StyledForm = styled(Form)`
     margin: 0;
   }
   
-  ${Input}, ${Select} {
+  ${Select}, input {
     padding: 10px;
   }
 `;
@@ -63,21 +46,15 @@ const WIDGET_BOTTOM_PADDING = 30;
 
 const OFFSETS = WIDGET_TITLE_HEIGHT + WIDGET_TITLE_MARGIN + WIDGET_TOP_PADDING + WIDGET_BOTTOM_PADDING;
 
-type PersonalFormValues = {
-  firstNames: string;
-  lastNames: string;
-  building: string;
-  streetName: string;
-  country: string;
-  email: string;
-  stateCode: string;
-  city: string;
-  postalCode: string;
-  dob: string;
-  unitNumber: string;
+type PersonalInformationStepProps = {
+  initialValues: PersonalFormValues;
+  isLoading: boolean;
+  submitForm: (values: PersonalFormValues) => Promise<void>;
+  stateOptions: SelectOption[];
+  onClickNavigateBack: () => void;
 }
 
-const validationSchema = Yup.object({
+export const personalInformationValidationSchema = Yup.object({
   firstNames: Yup.string().required('Required'),
   lastNames: Yup.string().required('Required'),
   building: Yup.string().required('Required'),
@@ -97,107 +74,16 @@ const validationSchema = Yup.object({
     ),
 });
 
-const PersonalInformationStep: FC = () => {
-  const dispatch = useAppDispatch();
-
+const PersonalInformationStep: FC<PersonalInformationStepProps> = ({
+  isLoading,
+  submitForm,
+  initialValues,
+  stateOptions,
+  onClickNavigateBack,
+}) => {
   const final100Vh = use100vh();
 
-  const {
-    isUserUpdated,
-    isUserVerified,
-    isEmailVerified,
-    isUserLoaded,
-    user,
-    skipPersonalInfoStep,
-  } = useAppSelector(selectApp);
-
-  const { isLoading: isUserLoading, isFetching: isUserFetching } = useGetUserQuery();
-  const [triggerLazyGetUser] = useLazyGetUserQuery();
-  const [triggerUpdateUser] = useUpdateUserMutation();
-
-  const initialFormValues: PersonalFormValues = {
-    firstNames: user?.first_names || '',
-    lastNames: user?.last_names || '',
-    country: 'United States',
-    email: user?.email || '',
-    stateCode: user?.state_code || '',
-    dob: user?.date_of_birth || '',
-    city: user?.city || '',
-    postalCode: user?.postal_code || '',
-    streetName: user?.street_name || '',
-    building: user?.building || '',
-    unitNumber: user?.unit_number || '',
-  };
-
-  const submitForm = async (values: PersonalFormValues) => {
-    try {
-      await triggerUpdateUser({
-        city: values.city,
-        email: values.email,
-        building: values.building,
-        // date_of_birth: values.dob,
-        // first_names: values.firstNames,
-        // last_names: values.lastNames,
-        postal_code: values.postalCode,
-        state_code: values.stateCode,
-        street_name: values.streetName,
-        unit_number: values.unitNumber,
-      }).unwrap();
-    } catch {
-      return;
-    }
-
-    await triggerLazyGetUser();
-    dispatch(setSkipPersonalInfoStep(true));
-  };
-
-  useEffect(() => {
-    if (!isUserVerified && isUserUpdated) {
-      dispatch(setGeneralError({
-        type: 'error',
-        message: 'Unable to verify your identity. Please check that provided details are correct.',
-      }));
-    }
-  }, [dispatch, isUserUpdated, isUserVerified]);
-
-  /* NAVIGATION */
-  useEffect(() => {
-    if (!skipPersonalInfoStep) {
-      return;
-    }
-
-    const isUserNotEmpty = isUserLoaded && user && Object.values(user).length;
-
-    // form submitted, user updated and email verified
-    if (isUserUpdated && isUserVerified && isEmailVerified) {
-      dispatch(incrementWidgetStep());
-      // form is submitted but user is not verified
-    } else if (isUserUpdated && isUserVerified && !isEmailVerified) {
-      dispatch(goToWidgetStep({ widgetStep: WidgetSteps.EMAIL_VERIFICATION }));
-    // user already exists
-    } else if (isUserNotEmpty && isUserVerified && isEmailVerified) {
-      dispatch(incrementWidgetStep());
-    //  user exists and verified, but email is not confirmed
-    } else if (isUserNotEmpty && !isEmailVerified && isUserVerified) {
-      dispatch(goToWidgetStep({ widgetStep: WidgetSteps.EMAIL_VERIFICATION }));
-    }
-  }, [
-    dispatch,
-    isEmailVerified,
-    isUserLoaded,
-    isUserUpdated,
-    isUserVerified,
-    skipPersonalInfoStep,
-    user,
-  ]);
-
-  useClearGeneralError();
-
-  useEffect(() => () => {
-    dispatch(setUserUpdated(false));
-  }, [dispatch]);
-
-  if (isUserLoading || isUserFetching) {
+  if (isLoading) {
     return (
       <Flex flex={1} height="100%" alignItems="center" justifyContent="center">
         <ReactLoading
@@ -220,9 +106,7 @@ const PersonalInformationStep: FC = () => {
     >
       <WidgetHead
         text="Enter the Personal Informations"
-        customBackCallback={() => {
-          dispatch(logout());
-        }}
+        customBackCallback={onClickNavigateBack}
       />
       <Flex height={[
         final100Vh ? `${final100Vh - OFFSETS}px` : 'calc(100% - 120px)',
@@ -230,12 +114,12 @@ const PersonalInformationStep: FC = () => {
       ]}
       >
         <Formik
-          initialValues={initialFormValues}
+          initialValues={initialValues}
           onSubmit={submitForm}
           initialTouched={{
-            stateCode: true,
+            stateCode: !!initialValues?.stateCode,
           }}
-          validationSchema={validationSchema}
+          validationSchema={personalInformationValidationSchema}
           validateOnMount
           enableReinitialize
         >
@@ -250,38 +134,26 @@ const PersonalInformationStep: FC = () => {
                 <FormRow margin={ROW_MARGIN}>
                   <Flex width="100%" justifyContent="space-between">
                     <Flex>
-                      <PrimaryInputBox hasError={!!errors.firstNames && !!touched.firstNames}>
-                        <PrimaryInputField
-                          disabled
-                          label="First Name"
-                          name="firstNames"
-                        />
-                        <FormFieldErrorMessage name="firstNames" />
-                      </PrimaryInputBox>
+                      <PrimaryInputField
+                        disabled
+                        label="First Name"
+                        name="firstNames"
+                      />
                     </Flex>
                     <Flex marginLeft={GAP}>
-                      <PrimaryInputBox hasError={!!errors.lastNames && !!touched.lastNames}>
-                        <PrimaryInputField
-                          disabled
-                          label="Last Name"
-                          name="lastNames"
-                        />
-                        <FormFieldErrorMessage name="lastNames" />
-                      </PrimaryInputBox>
+                      <PrimaryInputField
+                        disabled
+                        label="Last Name"
+                        name="lastNames"
+                      />
                     </Flex>
                   </Flex>
                 </FormRow>
                 <FormRow margin={ROW_MARGIN}>
-                  <PrimaryInputBox hasError={!!errors.email && !!touched.email}>
-                    <PrimaryInputField name="email" label="Email" />
-                    <FormFieldErrorMessage name="email" />
-                  </PrimaryInputBox>
+                  <PrimaryInputField name="email" label="Email" />
                 </FormRow>
                 <FormRow margin={ROW_MARGIN}>
-                  <PrimaryInputBox hasError={!!errors.country && !!touched.country}>
-                    <PrimaryInputField disabled name="country" label="Country" />
-                    <FormFieldErrorMessage name="country" />
-                  </PrimaryInputBox>
+                  <PrimaryInputField disabled name="country" label="Country" />
                 </FormRow>
                 <FormRow margin={ROW_MARGIN}>
                   <Flex width="100%" justifyContent="space-between">
@@ -289,6 +161,7 @@ const PersonalInformationStep: FC = () => {
                       <PrimaryInputBox hasError={!!errors.stateCode && !!touched.stateCode}>
                         <PrimarySelectField
                           label="State"
+                          placeholder="Select state"
                           options={stateOptions}
                           name="stateCode"
                         />
@@ -296,13 +169,12 @@ const PersonalInformationStep: FC = () => {
                       </PrimaryInputBox>
                     </Flex>
                     <Flex flex={1} marginLeft={GAP}>
-                      <PrimaryInputBox hasError={!!errors.dob && !!touched.dob}>
-                        <PrimaryInputField
-                          label="DOB"
-                          name="dob"
-                          disabled
-                          type="date"
-                          max={
+                      <PrimaryInputField
+                        label="DOB"
+                        name="dob"
+                        disabled
+                        type="date"
+                        max={
                           formatDate(
                             subDate(
                               new Date(),
@@ -311,59 +183,45 @@ const PersonalInformationStep: FC = () => {
                             'yyyy-MM-dd',
                           )
                         }
-                        />
-                        <FormFieldErrorMessage name="dob" />
-                      </PrimaryInputBox>
+                      />
                     </Flex>
                   </Flex>
                 </FormRow>
                 <FormRow margin={ROW_MARGIN}>
                   <Flex width="100%" justifyContent="space-between">
                     <Flex>
-                      <PrimaryInputBox hasError={!!errors.unitNumber && !!touched.unitNumber}>
-                        <PrimaryInputField name="unitNumber" label="Unit number" />
-                        <FormFieldErrorMessage name="unitNumber" />
-                      </PrimaryInputBox>
+                      <PrimaryInputField
+                        name="unitNumber"
+                        label="Unit number"
+                      />
                     </Flex>
                     <Flex marginLeft={GAP}>
-                      <PrimaryInputBox hasError={!!errors.building && !!touched.building}>
-                        <PrimaryInputField
-                          label="Building"
-                          name="building"
-                        />
-                        <FormFieldErrorMessage name="building" />
-                      </PrimaryInputBox>
+                      <PrimaryInputField
+                        label="Building"
+                        name="building"
+                      />
                     </Flex>
                   </Flex>
                 </FormRow>
                 <FormRow margin={ROW_MARGIN}>
-                  <PrimaryInputBox hasError={!!errors.streetName && !!touched.streetName}>
-                    <PrimaryInputField
-                      label="Street name"
-                      name="streetName"
-                    />
-                    <FormFieldErrorMessage name="streetName" />
-                  </PrimaryInputBox>
+                  <PrimaryInputField
+                    label="Street name"
+                    name="streetName"
+                  />
                 </FormRow>
                 <FormRow margin={ROW_MARGIN}>
                   <Flex width="100%" justifyContent="space-between">
                     <Flex>
-                      <PrimaryInputBox hasError={!!errors.city && !!touched.city}>
-                        <PrimaryInputField
-                          label="City"
-                          name="city"
-                        />
-                        <FormFieldErrorMessage name="city" />
-                      </PrimaryInputBox>
+                      <PrimaryInputField
+                        label="City"
+                        name="city"
+                      />
                     </Flex>
                     <Flex marginLeft={GAP}>
-                      <PrimaryInputBox hasError={!!errors.postalCode && !!touched.postalCode}>
-                        <PrimaryInputField
-                          label="Postal code"
-                          name="postalCode"
-                        />
-                        <FormFieldErrorMessage name="postalCode" />
-                      </PrimaryInputBox>
+                      <PrimaryInputField
+                        label="Postal code"
+                        name="postalCode"
+                      />
                     </Flex>
                   </Flex>
                 </FormRow>

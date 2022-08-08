@@ -3,14 +3,14 @@ import { Flex } from 'rebass/styled-components';
 import { ReactComponent as PurchaseFailedIcon } from '../../../../../assets/purchase_failed_icon.svg';
 import { Button, Subtitle, Title } from '../../../../../theme/components';
 import { useAppDispatch } from '../../../../../app/hooks';
-import { resetApplication } from '../../../../../state/applicationSlice';
+import { logout } from '../../../../../state/applicationSlice';
 import StepIcon from '../../../../../components/StepIcon/StepIcon';
 
 const CompleteFailed: FC = () => {
   const dispatch = useAppDispatch();
 
   const handleClickTryAgain = () => {
-    dispatch(resetApplication());
+    dispatch(logout());
   };
 
   return (

@@ -6,7 +6,7 @@ import AmountField from './AmountField';
 import { sourceOptions } from '../../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
 import { createStoreWithMiddlewares } from '../../app/store';
 import { mockFn, withProvider } from '../../utils/storybook';
-import { SelectOption } from '../CurrencySelectField/CurrencySelectField';
+import { CurrencySelectOption } from '../CurrencySelectField/CurrencySelectField';
 
 export default {
   component: AmountField,
@@ -27,7 +27,7 @@ ReadOnly.args = {
   currencyType: 'USD',
 };
 
-const currencyOptions: SelectOption[] = [
+const currencyOptions: CurrencySelectOption[] = [
   {
     value: 'b2384bf2-b14d-4916-aa97-85633ef05742',
     label: 'USDC',

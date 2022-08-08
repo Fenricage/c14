@@ -9,9 +9,12 @@ export type LimitsState = {
   error: null | string;
 }
 
-export const initialState = {
+export const initialState: LimitsState = {
   limits: null,
-} as LimitsState;
+  isLimitsLoaded: false,
+  isLimitsLoading: false,
+  error: null,
+};
 
 const limitsSlice = createSlice({
   name: 'limits',

@@ -4,11 +4,10 @@ import { Form, Formik } from 'formik';
 import styled from 'styled-components/macro';
 import WidgetHead from '../../Widget/WidgetHead';
 import { ReactComponent as PhoneIcon } from '../../../../assets/phone_icon.svg';
-import { Button, FormRow, Subtitle } from '../../../../theme/components';
-import PrimaryInputField, {
-  PrimaryInputBox,
-} from '../../../../components/PrimaryInputField/PrimaryInputField';
-import FormFieldErrorMessage from '../../../../components/FormFieldErrorMessage/FormFieldErrorMessage';
+import {
+  Button, FormRow, Subtitle,
+} from '../../../../theme/components';
+import PrimaryInputField from '../../../../components/inputs/PrimaryInputField/PrimaryInputField';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 import { ConfirmationFormValues } from './SMSConfirmationStepContainer';
 
@@ -43,17 +42,14 @@ const SMSConfirmationStep: FC<ISMSConfirmationStep> = ({
         enableReinitialize
       >
         {({
-          isValid, isSubmitting, errors, touched,
+          isValid, isSubmitting,
         }) => (
           <StyledForm name="confirm-form">
             <Flex flexDirection="column" flex={1} justifyContent="center">
               <Subtitle margin="0 0 24px 0">
                 Enter SMS verification code
               </Subtitle>
-              <PrimaryInputBox hasError={!!errors.code && !!touched.code}>
-                <PrimaryInputField name="code" type="tel" />
-                <FormFieldErrorMessage name="code" />
-              </PrimaryInputBox>
+              <PrimaryInputField name="code" type="tel" />
             </Flex>
             <FormRow>
               <Button

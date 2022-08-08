@@ -6,7 +6,7 @@ import WidgetHead from '../../Widget/WidgetHead';
 import { CALCULATOR_FORM_NAME, QuoteInputName } from '../../../../state/applicationSlice';
 import { Button, FormRow } from '../../../../theme/components';
 import {
-  SelectOption,
+  CurrencySelectOption,
 } from '../../../../components/CurrencySelectField/CurrencySelectField';
 import Fee from './Fee';
 import {
@@ -30,6 +30,7 @@ interface IQuotesStep {
   c14Fee?: string;
   networkFee?: string;
   totalFee?: string;
+  amountUpdateDebounceMs: number;
 }
 
 const ButtonBox = styled.div`
@@ -106,6 +107,7 @@ const QuotesStep: FC<IQuotesStep> = ({
   c14Fee,
   networkFee,
   totalFee,
+  amountUpdateDebounceMs,
 }) => (
   <Flex
     flexDirection="column"
@@ -138,6 +140,7 @@ const QuotesStep: FC<IQuotesStep> = ({
             <AmountField
               readOnly={false}
               disabled={isQuoteInputDisabled}
+              debounceMs={amountUpdateDebounceMs}
               label="You Pay"
               amountFieldName="quoteSourceAmount"
               currencyFieldName="sourceCurrency"
@@ -164,7 +167,8 @@ const QuotesStep: FC<IQuotesStep> = ({
                     c14Fee={c14Fee || '0'}
                     networkFee={networkFee || '0'}
                     currencyCode={
-                        (sourceOptions.find((o) => o.value === values.sourceCurrency) as SelectOption).value
+                        (sourceOptions
+                          .find((o) => o.value === values.sourceCurrency) as CurrencySelectOption).value
                       }
                     totalFee={totalFee || '0'}
                   />
@@ -176,6 +180,7 @@ const QuotesStep: FC<IQuotesStep> = ({
             <AmountField
               readOnly={false}
               disabled={isQuoteInputDisabled}
+              debounceMs={amountUpdateDebounceMs}
               label="You Receive"
               amountFieldName="quoteTargetAmount"
               currencyFieldName="targetCurrency"

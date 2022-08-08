@@ -3,7 +3,7 @@ import { Flex } from 'rebass';
 import ReactLoading from 'react-loading';
 import styled from 'styled-components/macro';
 import WidgetHead from '../../Widget/WidgetHead';
-import { DocumentVerificationStatus, resetApplication } from '../../../../state/applicationSlice';
+import { DocumentVerificationStatus, logout } from '../../../../state/applicationSlice';
 import StepIcon from '../../../../components/StepIcon/StepIcon';
 import { ReactComponent as FailedIcon } from '../../../../assets/purchase_failed_icon.svg';
 import { Button, FormRow, Subtitle } from '../../../../theme/components';
@@ -11,6 +11,7 @@ import { useAppDispatch } from '../../../../app/hooks';
 
 interface IDocumentVerificationStep {
   documentVerificationStatus: DocumentVerificationStatus | null;
+  onClickNavigateBack: () => void;
 }
 
 const TruliooOverlay = styled.div`
@@ -34,11 +35,12 @@ const DocumentVerificationStepInner = styled.div`
 
 const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
   documentVerificationStatus,
+  onClickNavigateBack,
 }) => {
   const dispatch = useAppDispatch();
 
   const handleClickTryAgain = () => {
-    dispatch(resetApplication());
+    dispatch(logout());
   };
 
   const renderInnerContent = () => {
@@ -107,7 +109,10 @@ const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
 
   return (
     <Flex flexDirection="column" flexWrap="nowrap" flex={1}>
-      <WidgetHead text="Verify Your Documents" />
+      <WidgetHead
+        text="Verify Your Documents"
+        customBackCallback={onClickNavigateBack}
+      />
       {renderInnerContent()}
     </Flex>
   );

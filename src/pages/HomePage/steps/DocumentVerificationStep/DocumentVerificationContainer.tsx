@@ -5,7 +5,8 @@ import useClearGeneralError from '../../../../hooks/useClearGeneralError';
 import DocumentVerificationStep from './DocumentVerificationStep';
 import { useGetUserQuery, useLazyGetUserQuery, useVerifyDocumentsMutation } from '../../../../redux/userApi';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
-import { incrementWidgetStep, selectApp, setGeneralError } from '../../../../state/applicationSlice';
+import { incrementWidgetStep, logout, setGeneralError } from '../../../../state/applicationSlice';
+import { selectUserDetails } from '../../../../state/userDetailsSlice';
 
 type TruliooResponse = {
   experienceTransactionId: string;
@@ -22,7 +23,7 @@ const DocumentVerificationContainer: FC = () => {
   const [triggerVerifyDocuments] = useVerifyDocumentsMutation();
   const [triggerLazyGetUser] = useLazyGetUserQuery({ pollingInterval: 5000 });
 
-  const { documentVerificationStatus } = useAppSelector(selectApp);
+  const { documentVerificationStatus } = useAppSelector(selectUserDetails);
   const dispatch = useAppDispatch();
 
   const {
@@ -49,21 +50,6 @@ const DocumentVerificationContainer: FC = () => {
       dispatch(incrementWidgetStep());
     }
   }, [dispatch, documentVerificationStatus]);
-
-  // TODO(@ruslan): apply styles to iframe testing
-  // const applyStylesToTruliooIFrame = () => {
-  //   const truliooIframe = document.getElementById('embedid-module');
-  //
-  //   if (truliooIframe) {
-  //     const doc = (truliooIframe as HTMLIFrameElement).contentDocument;
-  //     doc!.body.innerHTML = `
-  //       ${doc!.body.innerHTML}
-  //       <style>
-  //
-  //       </style>
-  //     `;
-  //   }
-  // };
 
   const handleResponse = useCallback(async (args: TruliooResponse) => {
     const {
@@ -132,9 +118,14 @@ const DocumentVerificationContainer: FC = () => {
     return null;
   }
 
+  const onClickNavigateBack = () => {
+    dispatch(logout());
+  };
+
   return (
     <DocumentVerificationStep
       documentVerificationStatus={documentVerificationStatus}
+      onClickNavigateBack={onClickNavigateBack}
     />
   );
 };

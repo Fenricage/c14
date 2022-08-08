@@ -1,9 +1,11 @@
 import {
-  Action,
   configureStore,
-  isRejected,
+  Action,
   isRejectedWithValue,
   Middleware,
+  isRejected,
+  AnyAction,
+  combineReducers,
   ThunkAction,
 } from '@reduxjs/toolkit';
 import { quotesApi } from '../redux/quotesApi';
@@ -11,8 +13,9 @@ import { cardsApi } from '../redux/cardsApi';
 import { purchaseApi } from '../redux/purchaseApi';
 import { limitsApi } from '../redux/limitsApi';
 import { userApi } from '../redux/userApi';
-import applicationSlice, { setGeneralError } from '../state/applicationSlice';
+import applicationSlice, { logout, setGeneralError } from '../state/applicationSlice';
 import limitsSlice from '../state/limitsSlice';
+import userDetailsSlice from '../state/userDetailsSlice';
 import { notify } from '../utils/toast';
 import paymentSelectSlice from '../state/paymentSelectSlice';
 
@@ -66,34 +69,49 @@ export const rtkQueryErrorLogger: Middleware = ({ dispatch }) => (next) => (acti
   return next(action);
 };
 
-export const reducer = {
+export const reducers = {
   [quotesApi.reducerPath]: quotesApi.reducer,
   [cardsApi.reducerPath]: cardsApi.reducer,
   [limitsApi.reducerPath]: limitsApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [purchaseApi.reducerPath]: purchaseApi.reducer,
   [applicationSlice.name]: applicationSlice.reducer,
+  [userDetailsSlice.name]: userDetailsSlice.reducer,
   [paymentSelectSlice.name]: paymentSelectSlice.reducer,
   [limitsSlice.name]: limitsSlice.reducer,
 };
 
+const rootReducer = combineReducers(reducers);
+
+const resettableRootReducer = (state: ReturnType<typeof rootReducer> | undefined, action: AnyAction) => {
+  if (action.type === logout.type) {
+    return rootReducer(undefined, action);
+  }
+
+  return rootReducer(state, action);
+};
+
 export const createStoreWithMiddlewares = (
   initialState = {},
-) => configureStore({
-  reducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(
-    {
-      serializableCheck: false,
-    },
-  )
-    .concat(quotesApi.middleware)
-    .concat(cardsApi.middleware)
-    .concat(limitsApi.middleware)
-    .concat(userApi.middleware)
-    .concat(purchaseApi.middleware)
-    .concat(rtkQueryErrorLogger),
-  preloadedState: initialState,
-});
+) => {
+  const store = configureStore({
+    reducer: resettableRootReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(
+      {
+        serializableCheck: false,
+      },
+    )
+      .concat(quotesApi.middleware)
+      .concat(cardsApi.middleware)
+      .concat(limitsApi.middleware)
+      .concat(userApi.middleware)
+      .concat(purchaseApi.middleware)
+      .concat(rtkQueryErrorLogger),
+    preloadedState: initialState,
+  });
+
+  return store;
+};
 
 export const store = createStoreWithMiddlewares(undefined);
 

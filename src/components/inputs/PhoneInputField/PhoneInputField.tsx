@@ -16,7 +16,7 @@ import { Flex } from 'rebass/styled-components';
 import { useField } from 'formik';
 import CountrySelect, { CountrySelectElement } from './CountrySelect';
 import Flag, { FlagContainer } from './Flag';
-import { SHOULD_VALIDATE } from '../../constants';
+import { SHOULD_VALIDATE } from '../../../constants';
 import { PRIMARY_BORDER_RADIUS } from '../PrimaryInputField/PrimaryInputField';
 
 const labelEntries = Object.entries(en)

@@ -1,4 +1,5 @@
-export default ['Alabama',
+export default [
+  'Alabama',
   'Alaska',
   'American Samoa',
   'Arizona',

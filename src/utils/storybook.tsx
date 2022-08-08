@@ -6,22 +6,29 @@ import { createStoreWithMiddlewares, RootState } from '../app/store';
 
 // TODO(@ruslan) - duplicated code, import store from app to here
 export const mockStore: Partial<RootState> = {
+  userDetails: {
+    user: null,
+    isEmailVerified: false,
+    // TODO(@ruslan): set to NOT_STARTED, whole app
+    documentVerificationStatus: null,
+    skipPersonalInfoStep: true,
+    isUserUpdated: false,
+    isUserUpdating: false,
+    isUserVerified: false,
+    isUserLoading: false,
+    isUserLoaded: false,
+    isSMSSended: false,
+    isSMSSending: false,
+    phoneNumber: null,
+    isEmailVerificationSent: false,
+    isEmailVerificationSending: false,
+  },
   application: {
     isQuoteLoaded: true,
     quoteError: '',
     quotes: {},
-    user: null,
     generalError: null,
-    // TODO(@ruslan): set to NOT_STARTED, whole app
-    documentVerificationStatus: null,
     skipPaymentStep: true,
-    skipPersonalInfoStep: true,
-    isUserLoading: false,
-    isUserLoaded: false,
-    isUserUpdating: false,
-    isUserUpdated: false,
-    isUserVerified: false,
-    isEmailVerified: false,
     isQuoteLoading: false,
     stepperSteps: {
       currentStep: 2,
@@ -46,14 +53,9 @@ export const mockStore: Partial<RootState> = {
       },
     },
     purchaseDetails: null,
-    isSMSSended: false,
     jwtToken: null,
-    isSMSSending: false,
     isAuthenticated: false,
     isAuthenticating: false,
-    phoneNumber: null,
-    isEmailVerificationSent: false,
-    isEmailVerificationSending: false,
     blockChainTargetAddress: '123',
   },
 };

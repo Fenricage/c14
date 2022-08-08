@@ -6,7 +6,7 @@ import {
 import { RootState } from '../app/store';
 
 import { GetPurchaseDetailsResponse, purchaseApi } from '../redux/purchaseApi';
-import { LoginResponse, userApi, UserDetails } from '../redux/userApi';
+import { LoginResponse, userApi } from '../redux/userApi';
 
 export const CALCULATOR_FORM_NAME = 'calculator-form';
 
@@ -176,16 +176,7 @@ export type AppState = {
   isQuoteLoaded: boolean
   isQuoteLoading: boolean
   generalError: GeneralError
-  user: null | UserDetails
-  isUserLoading: boolean
   skipPaymentStep: boolean
-  skipPersonalInfoStep: boolean
-  isUserLoaded: boolean
-  isUserUpdating: boolean
-  isUserUpdated: boolean
-  isUserVerified: boolean;
-  isEmailVerified: boolean;
-  documentVerificationStatus: DocumentVerificationStatus | null;
   quoteError: null | string
   quotes: QuoteResponse | Record<string, never>
   stepperSteps: {
@@ -204,13 +195,8 @@ export type AppState = {
   purchaseDetails: GetPurchaseDetailsResponse | null
 
   jwtToken: LoginResponse | null;
-  isSMSSended: boolean;
-  isSMSSending: boolean;
   isAuthenticated: boolean;
   isAuthenticating: boolean;
-  phoneNumber: string | null;
-  isEmailVerificationSent: boolean;
-  isEmailVerificationSending: boolean;
   blockChainTargetAddress: string | null
 }
 
@@ -226,24 +212,13 @@ type InitialFormValuesPayload = {
   state: Partial<QuoteFormValues>
 }
 
-export const initialState = {
+export const initialState: AppState = {
   isQuoteLoaded: false,
   quoteError: null,
   quotes: {},
-  user: null,
   generalError: null,
   skipPaymentStep: true,
-  skipPersonalInfoStep: true,
-  isUserLoading: false,
-  isUserLoaded: false,
-  isUserUpdating: false,
-  isUserUpdated: false,
-  isUserVerified: false,
-  isEmailVerified: false,
-  documentVerificationStatus: null,
   isQuoteLoading: false,
-  isUserCardsEmpty: false,
-  requestCounter: 0,
   stepperSteps: {
     currentStep: StepperSteps.QUOTES,
   },
@@ -257,18 +232,13 @@ export const initialState = {
     },
   },
   purchaseDetails: null,
-  isSMSSended: false,
   // jwtToken: localStorage.getItem(TOKEN) ? JSON.parse(localStorage.getItem(TOKEN) as string) : null,
   jwtToken: null,
-  isSMSSending: false,
   // isAuthenticated: localStorage.getItem(TOKEN) !== null,
   isAuthenticated: false,
   isAuthenticating: false,
-  phoneNumber: null,
-  isEmailVerificationSent: false,
-  isEmailVerificationSending: false,
   blockChainTargetAddress: '',
-} as AppState;
+};
 
 const applicationSlice = createSlice({
   name: 'application',
@@ -319,21 +289,14 @@ const applicationSlice = createSlice({
     },
     resetApplication: () => initialState,
     logout: () => initialState,
-    setUserUpdated: (state, action: PayloadAction<boolean>) => {
-      state.isUserUpdated = action.payload;
-    },
+
     setGeneralError: (state, action: PayloadAction<GeneralError>) => {
       state.generalError = action.payload;
     },
     setSkipPaymentStep: (state, { payload }: PayloadAction<boolean>) => {
       state.skipPaymentStep = payload;
     },
-    setSkipPersonalInfoStep: (state, { payload }: PayloadAction<boolean>) => {
-      state.skipPersonalInfoStep = payload;
-    },
-    setEmailVerificationSent: (state, { payload }: PayloadAction<boolean>) => {
-      state.isEmailVerificationSent = payload;
-    },
+
     setBlockchainTargetAddress: (state, { payload }: PayloadAction<string | null>) => {
       state.blockChainTargetAddress = payload;
     },
@@ -457,30 +420,6 @@ const applicationSlice = createSlice({
     );
 
     builder.addMatcher(
-      userApi.endpoints.verifyPhoneNumber.matchPending,
-      (state) => {
-        state.isSMSSending = true;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.verifyPhoneNumber.matchFulfilled,
-      (state, { meta }) => {
-        state.isSMSSending = false;
-        state.phoneNumber = meta.arg.originalArgs.phone_number;
-
-        state.isSMSSended = true;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.verifyPhoneNumber.matchRejected,
-      (state) => {
-        state.isSMSSending = false;
-      },
-    );
-
-    builder.addMatcher(
       userApi.endpoints.login.matchPending,
       (state) => {
         state.isAuthenticating = true;
@@ -507,76 +446,6 @@ const applicationSlice = createSlice({
       state.widgetSteps.currentStep = WidgetSteps.QUOTES;
       state.stepperSteps.currentStep = StepperSteps.QUOTES;
     });
-
-    builder.addMatcher(
-      userApi.endpoints.getUser.matchPending,
-      (state) => {
-        state.isUserLoading = true;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.getUser.matchFulfilled,
-      (state, { payload }) => {
-        state.user = payload;
-        state.isUserVerified = payload.identity_verified;
-        state.isEmailVerified = payload.email_verified;
-        state.documentVerificationStatus = payload.document_verification_status;
-        state.isUserLoaded = true;
-        state.isUserLoading = false;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.getUser.matchRejected,
-      (state) => {
-        state.isUserLoading = false;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.updateUser.matchPending,
-      (state) => {
-        state.isUserUpdating = true;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.updateUser.matchFulfilled,
-      (state) => {
-        state.isUserUpdated = true;
-        state.isUserUpdating = false;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.updateUser.matchRejected,
-      (state) => {
-        state.isUserUpdating = false;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.sendEmailVerification.matchPending,
-      (state) => {
-        state.isEmailVerificationSending = true;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.sendEmailVerification.matchFulfilled,
-      (state) => {
-        state.isEmailVerificationSent = true;
-        state.isEmailVerificationSending = false;
-      },
-    );
-
-    builder.addMatcher(
-      userApi.endpoints.sendEmailVerification.matchRejected,
-      (state) => {
-        state.isEmailVerificationSending = false;
-      },
-    );
   },
 });
 
@@ -593,12 +462,8 @@ export const {
   setQuotesLoading,
   setQuotesLoaded,
   setSnapshotValuesForm,
-  resetApplication,
-  setUserUpdated,
   setSkipPaymentStep,
   setGeneralError,
-  setSkipPersonalInfoStep,
-  setEmailVerificationSent,
   setBlockchainTargetAddress,
 } = applicationSlice.actions;
 

@@ -9,11 +9,12 @@ import { render } from '../../../../utils/test-utils';
 import OrderReviewStep, { YEARS_OLD_CAP } from './OrderReviewStep';
 import { setupServerQuoteRequest } from '../../../../testHandlers/quotes/setupServerQuotes';
 import { server } from '../../../../testHandlers/utils';
-import { createStoreWithMiddlewares } from '../../../../app/store';
+import { createStoreWithMiddlewares, RootState } from '../../../../app/store';
 import { setupServerLimits } from '../../../../testHandlers/limits/setupServerLimits';
 import { goToWidgetStep, WidgetSteps } from '../../../../state/applicationSlice';
 import { serverQuoteRequestMock } from '../../../../testHandlers/quotes/mocks';
 import { setSelectedUserCard } from '../../../../state/paymentSelectSlice';
+import { NestedPartial } from '../../../../utils/generics';
 
 beforeAll(() => server.listen());
 beforeEach(() => {
@@ -148,14 +149,17 @@ describe('OrderReviewStep tests', () => {
         expiry_month: '10',
       };
 
-      const updatedStoreState = {
+      const updatedStoreState: NestedPartial<RootState> = {
         ...initialStore.getState(),
         application: {
           ...initialStore.getState().application,
-          user: userMock,
           widgetSteps: {
             currentStep: WidgetSteps.REVIEW_ORDER,
           },
+        },
+        userDetails: {
+          ...initialStore.getState().userDetails,
+          user: userMock,
         },
         paymentSelect: {
           selectedUserCard: cardToSelect,

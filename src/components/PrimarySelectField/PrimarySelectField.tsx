@@ -12,12 +12,8 @@ import { FORM_CONTROLS_LINE_HEIGHT } from '../../theme';
 
 export const PRIMARY_BORDER_RADIUS = '10px';
 
-const PrimaryInputFieldContainer = styled.div`
+export const PrimarySelectFieldContainer = styled.div`
   width: 100%;
-
-  ${SelectContainer} {
-    margin-bottom: 6px;
-  }
 
   ${Select} {
     border-radius: ${PRIMARY_BORDER_RADIUS};
@@ -90,9 +86,9 @@ export const PrimarySelectBox = styled.div<{ hasError: boolean }>`
 `;
 
 const PrimarySelectField = forwardRef<HTMLDivElement, PropsWithChildren<SelectFieldProps>>((props, ref) => (
-  <PrimaryInputFieldContainer>
+  <PrimarySelectFieldContainer>
     <SelectField {...props} ref={ref} />
-  </PrimaryInputFieldContainer>
+  </PrimarySelectFieldContainer>
 ));
 
 export default PrimarySelectField;

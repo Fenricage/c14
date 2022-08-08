@@ -9,10 +9,12 @@ import { useLazyGetUserQuery, useSendEmailVerificationMutation } from '../../../
 import {
   decrementWidgetStep,
   incrementWidgetStep,
-  selectApp,
+} from '../../../../state/applicationSlice';
+import {
+  selectUserDetails,
   setEmailVerificationSent,
   setSkipPersonalInfoStep,
-} from '../../../../state/applicationSlice';
+} from '../../../../state/userDetailsSlice';
 import { BorderButton } from '../../../../theme/components';
 import useCallOnExpireTimer from '../../../../hooks/useCallOnExpireTimer';
 import { ReactComponent as EmailIcon } from '../../../../assets/email_icon.svg';
@@ -32,11 +34,12 @@ const EmailText = styled.p`
 
 const EmailVerificationStep: FC = () => {
   const dispatch = useAppDispatch();
+
   const {
     isEmailVerified,
     isEmailVerificationSending,
     isEmailVerificationSent,
-  } = useAppSelector(selectApp);
+  } = useAppSelector(selectUserDetails);
 
   const [triggerSendEmailVerification] = useSendEmailVerificationMutation();
 

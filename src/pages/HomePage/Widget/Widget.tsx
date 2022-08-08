@@ -10,13 +10,14 @@ import QuotesStepContainer from '../steps/QuotesStep/QuotesStepContainer';
 import PhoneInputStepContainer from '../steps/PhoneInputStep/PhoneInputStepContainer';
 import AddCardStepContainer from '../steps/AddCardStep/AddCardStepContainer';
 import PaymentSelectStepContainer from '../steps/PaymentSelectStep/PaymentSelectStepContainer';
-import PersonalInformationStep from '../steps/PersonalInformationStep/PersonalInformationStep';
 import OrderReviewStep from '../steps/OrderReviewStep/OrderReviewStep';
 import SMSConfirmationStepContainer from '../steps/SMSConfirmationStep/SMSConfirmationStepContainer';
 import PurchaseInProgressStep from '../steps/PurchaseInProgressStep/PurchaseInProgressStep';
 import CompleteStep from '../steps/CompleteStep/CompleteStep';
 import EmailVerificationStep from '../steps/EmailVerificationStep/EmailVerificationStep';
 import DocumentVerificationContainer from '../steps/DocumentVerificationStep/DocumentVerificationContainer';
+// eslint-disable-next-line max-len
+import PersonalInformationStepContainer from '../steps/PersonalInformationStep/PersonalInformationStepContainer';
 
 const WidgetContainer = styled.div`
   display: flex;
@@ -84,7 +85,7 @@ const Widget: FC = () => {
         return <DocumentVerificationContainer />;
       }
       case WidgetSteps.PERSONAL_INFORMATION: {
-        return <PersonalInformationStep />;
+        return <PersonalInformationStepContainer />;
       }
       case WidgetSteps.EMAIL_VERIFICATION: {
         return <EmailVerificationStep />;

@@ -258,7 +258,7 @@ describe('PaymentSelectStepContainer tests', () => {
 
       await waitForElementToBeRemoved(getByTestId('CardsLoader'));
 
-      await act(() => {
+      await waitFor(() => {
         expect(getByTestId('RadioGroupItem-0')).toBeInTheDocument();
       });
 

@@ -1,55 +1,15 @@
-import React, { forwardRef, PropsWithChildren } from 'react';
 import styled from 'styled-components/macro';
-import InputField, {
-  Input, InputContainer, InputFieldProps,
-} from '../InputField/InputField';
-import { InputLabel } from '../../theme/components';
+import {
+  BaseInputContainer,
+} from '../components/inputs/BaseInputField/BaseInputField';
 import {
   FormFieldErrorMessageText,
   FormFieldErrorMessageWrapper,
-} from '../FormFieldErrorMessage/FormFieldErrorMessage';
-import { FORM_CONTROLS_LINE_HEIGHT } from '../../theme';
+} from '../components/FormFieldErrorMessage/FormFieldErrorMessage';
+import { Select } from '../components/SelectField/SelectField';
 
-export const PRIMARY_BORDER_RADIUS = '10px';
-
-const PrimaryInputFieldContainer = styled.div`
-  width: 100%;
-
-  ${InputContainer} {
-    margin-bottom: 6px;
-  }
-
-  ${Input} {
-    border-radius: ${PRIMARY_BORDER_RADIUS};
-    border: 1px solid transparent;
-    padding: 15px;
-    line-height: ${FORM_CONTROLS_LINE_HEIGHT}px;
-    background-color: ${({ theme }) => theme.alt4};
-    color: ${({ theme }) => theme.white};
-    
-    /* TODO(@ruslan): date input has another default height, to fix this -  
-        rewrite all input, select controls to box-sizing: content-box */
-    &[type=date] {
-      height: 42px;
-    }
-    
-    &:hover {
-      border-color: ${({ theme }) => theme.alt6};
-    }
-
-    &::placeholder {
-      color: rgb(82, 120, 141);
-    }
-  }
-
-  ${InputLabel} {
-    font-size: 14px;
-    font-weight: 400;
-    padding-bottom: 4px;
-  }
-
-`;
-
+const PRIMARY_BORDER_RADIUS = '10px';
+/* Primary Controls Theme */
 export const PrimaryInputBox = styled.div<{ hasError: boolean }>`
   display: flex;
   width: 100%;
@@ -59,14 +19,16 @@ export const PrimaryInputBox = styled.div<{ hasError: boolean }>`
   margin-bottom: 12px;
   padding-bottom: 12px;
   
-  ${InputContainer} {
+  ${BaseInputContainer} {
     margin-bottom: 0;
   }
 
-  ${Input} {
+  ${Select}, input {
     border-bottom-left-radius: ${({ hasError }) => (hasError ? '0' : '10px')};
     border-bottom-right-radius: ${({ hasError }) => (hasError ? '0' : '10px')};
-    border-top: 1px solid transparent;
+    border-top-right-radius: ${PRIMARY_BORDER_RADIUS};
+    border-top-left-radius: ${PRIMARY_BORDER_RADIUS};
+    border-bottom: 1px solid transparent;
     border-left: 1px solid ${({ theme, hasError }) => (hasError ? theme.red : 'transparent')};
     border-right: 1px solid ${({ theme, hasError }) => (hasError ? theme.red : 'transparent')};
     border-top: 1px solid ${({ theme, hasError }) => (hasError ? theme.red : 'transparent')};
@@ -94,11 +56,3 @@ export const PrimaryInputBox = styled.div<{ hasError: boolean }>`
     font-size: 14px;
   }
 `;
-
-const PrimaryInputField = forwardRef<HTMLDivElement, PropsWithChildren<InputFieldProps>>((props, ref) => (
-  <PrimaryInputFieldContainer>
-    <InputField {...props} ref={ref} />
-  </PrimaryInputFieldContainer>
-));
-
-export default PrimaryInputField;
