@@ -3,16 +3,19 @@ import { rest } from 'msw';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import { createStoreWithMiddlewares, RootState } from '../../../../app/store';
-import { WidgetSteps } from '../../../../state/applicationSlice';
+import { StepperSteps, WidgetSteps } from '../../../../state/applicationSlice';
 import { withProvider } from '../../../../utils/storybook';
-import Widget from '../../Widget/Widget';
 import { GetUserCardsResponse } from '../../../../redux/cardsApi';
 import { NestedPartial } from '../../../../utils/generics';
+import App from '../../../../App';
 
 const initialStore: NestedPartial<RootState> = {
   application: {
     widgetSteps: {
       currentStep: WidgetSteps.PAYMENT_SELECT,
+    },
+    stepperSteps: {
+      currentStep: StepperSteps.PAYMENT_DETAILS,
     },
   },
   paymentSelect: {
@@ -45,12 +48,17 @@ const initialStore: NestedPartial<RootState> = {
 const store = createStoreWithMiddlewares(initialStore);
 
 export default {
-  component: Widget,
-  decorators: [withProvider.bind(null, store)],
-} as ComponentMeta<typeof Widget>;
+  component: App,
+  decorators: [
+    withProvider.bind(null, store),
+  ],
+  parameters: {
+    layout: 'fullscreen',
+  },
+} as ComponentMeta<typeof App>;
 
-export const Default: ComponentStory<typeof Widget> = (args) => (
-  <Widget {...args} />
+export const Default: ComponentStory<typeof App> = () => (
+  <App />
 );
 
 Default.parameters = {

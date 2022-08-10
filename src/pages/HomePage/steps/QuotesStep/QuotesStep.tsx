@@ -52,6 +52,7 @@ const TreeContainerInner = styled.div`
 const StyledForm = styled(Form)`
   display: flex;
   flex-flow: column;
+  justify-content: center;
   flex: 1;
 `;
 
@@ -136,67 +137,69 @@ const QuotesStep: FC<IQuotesStep> = ({
           data-testid="QuotesForm"
           name={CALCULATOR_FORM_NAME}
         >
-          <FormRow>
-            <AmountField
-              readOnly={false}
-              disabled={isQuoteInputDisabled}
-              debounceMs={amountUpdateDebounceMs}
-              label="You Pay"
-              amountFieldName="quoteSourceAmount"
-              currencyFieldName="sourceCurrency"
-              currencyOptions={sourceOptions}
-              placeholder="You Pay..."
-              hasError={!!errors.quoteSourceAmount && !!touched.quoteSourceAmount}
-              onAmountChange={({
-                value,
-                event,
-              }) => onSourceAmountChange(
-                'quoteSourceAmount',
-                value,
-                event,
-              )}
-              onCurrencyChange={(currency_id) => onSourceCurrencyChange(currency_id)}
-            />
-          </FormRow>
-          <TreeContainer>
-            <TreeContainerInner>
-              <TreeTitle>Fees</TreeTitle>
-              <TreeContainerItem margin="0 0 0 0">
-                <QuotesFeeBox>
-                  <Fee
-                    c14Fee={c14Fee || '0'}
-                    networkFee={networkFee || '0'}
-                    currencyCode={
+          <Flex flexDirection="column" justifyContent="center" flex={1}>
+            <FormRow>
+              <AmountField
+                readOnly={false}
+                disabled={isQuoteInputDisabled}
+                debounceMs={amountUpdateDebounceMs}
+                label="You Pay"
+                amountFieldName="quoteSourceAmount"
+                currencyFieldName="sourceCurrency"
+                currencyOptions={sourceOptions}
+                placeholder="You Pay..."
+                hasError={!!errors.quoteSourceAmount && !!touched.quoteSourceAmount}
+                onAmountChange={({
+                  value,
+                  event,
+                }) => onSourceAmountChange(
+                  'quoteSourceAmount',
+                  value,
+                  event,
+                )}
+                onCurrencyChange={(currency_id) => onSourceCurrencyChange(currency_id)}
+              />
+            </FormRow>
+            <TreeContainer>
+              <TreeContainerInner>
+                <TreeTitle>Fees</TreeTitle>
+                <TreeContainerItem margin="0 0 0 0">
+                  <QuotesFeeBox>
+                    <Fee
+                      c14Fee={c14Fee || '0'}
+                      networkFee={networkFee || '0'}
+                      currencyCode={
                         (sourceOptions
                           .find((o) => o.value === values.sourceCurrency) as CurrencySelectOption).value
                       }
-                    totalFee={totalFee || '0'}
-                  />
-                </QuotesFeeBox>
-              </TreeContainerItem>
-            </TreeContainerInner>
-          </TreeContainer>
-          <FormRow margin="0 0 46px 0">
-            <AmountField
-              readOnly={false}
-              disabled={isQuoteInputDisabled}
-              debounceMs={amountUpdateDebounceMs}
-              label="You Receive"
-              amountFieldName="quoteTargetAmount"
-              currencyFieldName="targetCurrency"
-              currencyOptions={targetOptions}
-              placeholder="You Receive..."
-              hasError={!!errors.quoteTargetAmount && !!touched.quoteTargetAmount}
-              onAmountChange={
-                ({ value, event }) => onTargetAmountChange(
-                  'quoteTargetAmount',
-                  value,
-                  event,
-                )
-              }
-              onCurrencyChange={(currency_id) => onTargetCurrencyChange(currency_id)}
-            />
-          </FormRow>
+                      totalFee={totalFee || '0'}
+                    />
+                  </QuotesFeeBox>
+                </TreeContainerItem>
+              </TreeContainerInner>
+            </TreeContainer>
+            <FormRow margin="0 0 46px 0">
+              <AmountField
+                readOnly={false}
+                disabled={isQuoteInputDisabled}
+                debounceMs={amountUpdateDebounceMs}
+                label="You Receive"
+                amountFieldName="quoteTargetAmount"
+                currencyFieldName="targetCurrency"
+                currencyOptions={targetOptions}
+                placeholder="You Receive..."
+                hasError={!!errors.quoteTargetAmount && !!touched.quoteTargetAmount}
+                onAmountChange={
+                  ({ value, event }) => onTargetAmountChange(
+                    'quoteTargetAmount',
+                    value,
+                    event,
+                  )
+                }
+                onCurrencyChange={(currency_id) => onTargetCurrencyChange(currency_id)}
+              />
+            </FormRow>
+          </Flex>
           <FormRow margin="auto 0 0 0">
             <ButtonBox>
               <Button

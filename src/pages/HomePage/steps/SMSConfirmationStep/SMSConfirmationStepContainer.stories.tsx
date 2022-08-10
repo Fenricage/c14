@@ -1,19 +1,18 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
-
-import { withProvider } from '../../../../utils/storybook';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { createStoreWithMiddlewares, RootState } from '../../../../app/store';
 import { StepperSteps, WidgetSteps } from '../../../../state/applicationSlice';
-import App from '../../../../App';
+import { withProvider } from '../../../../utils/storybook';
 import { NestedPartial } from '../../../../utils/generics';
+import App from '../../../../App';
 
 const initialStore: NestedPartial<RootState> = {
   application: {
     widgetSteps: {
-      currentStep: WidgetSteps.PAYMENT_ADDING,
+      currentStep: WidgetSteps.PHONE_CONFIRMATION,
     },
     stepperSteps: {
-      currentStep: StepperSteps.PAYMENT_DETAILS,
+      currentStep: StepperSteps.PHONE_VERIFICATION,
     },
   },
 };

@@ -15,6 +15,7 @@ import { Button, FormRow } from '../../../../theme/components';
 import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 import { PRIMARY_BORDER_RADIUS } from '../../../../components/inputs/PrimaryInputField/PrimaryInputField';
 import { PhoneFormValues } from './PhoneInputStepContainer';
+import StepIcon from '../../../../components/StepIcon/StepIcon';
 
 interface IPhoneInputStep {
   validate: (values: PhoneFormValues) => Partial<PhoneFormValues>;
@@ -25,6 +26,7 @@ interface IPhoneInputStep {
 const StyledForm = styled(Form)`
   flex: 1;
   flex-direction: column;
+  justify-content: center;
   display: flex;
 `;
 
@@ -69,9 +71,6 @@ const PhoneInputStep: FC<IPhoneInputStep> = ({
 }) => (
   <Flex flexDirection="column" flexWrap="nowrap" flex={1}>
     <WidgetHead text="Verify Your Phone Number" />
-    <Flex marginTop="12px" width="100%" justifyContent="center">
-      <PhoneIcon />
-    </Flex>
     <Flex flex={1}>
       <Formik
         initialValues={initialFormValues}
@@ -84,11 +83,16 @@ const PhoneInputStep: FC<IPhoneInputStep> = ({
           isValid, isSubmitting, errors, touched,
         }) => (
           <StyledForm name="phoneAuthentication">
-            <Flex flexDirection="column" flex={1} justifyContent="center">
-              <PhoneInputBox hasError={!!errors.phone && !!touched.phone}>
-                <PhoneInputField name="phone" />
-                <FormFieldErrorMessage name="phone" />
-              </PhoneInputBox>
+            <Flex flexDirection="column" justifyContent="center" flex={1}>
+              <StepIcon>
+                <PhoneIcon />
+              </StepIcon>
+              <Flex flexDirection="column">
+                <PhoneInputBox hasError={!!errors.phone && !!touched.phone}>
+                  <PhoneInputField name="phone" />
+                  <FormFieldErrorMessage name="phone" />
+                </PhoneInputBox>
+              </Flex>
             </Flex>
             <FormRow margin="auto 0 0 0">
               <Button
@@ -100,6 +104,7 @@ const PhoneInputStep: FC<IPhoneInputStep> = ({
               </Button>
             </FormRow>
           </StyledForm>
+
         )}
       </Formik>
     </Flex>

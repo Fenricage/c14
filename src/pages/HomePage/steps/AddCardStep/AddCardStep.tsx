@@ -14,7 +14,8 @@ const FramesContainer = styled.div<{isVisible: boolean}>`
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin: 40px -12px 0px -12px;
+  //margin: 40px -12px 0px -12px;
+  justify-content: center;
   opacity: ${({ isVisible }) => (isVisible ? '1' : '0')};
   transform: ${({ isVisible }) => (isVisible ? 'scale(1)' : 'scale(.9)')};
   transition: all .5s ease;

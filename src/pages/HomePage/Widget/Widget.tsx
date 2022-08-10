@@ -14,7 +14,7 @@ import OrderReviewStep from '../steps/OrderReviewStep/OrderReviewStep';
 import SMSConfirmationStepContainer from '../steps/SMSConfirmationStep/SMSConfirmationStepContainer';
 import PurchaseInProgressStep from '../steps/PurchaseInProgressStep/PurchaseInProgressStep';
 import CompleteStep from '../steps/CompleteStep/CompleteStep';
-import EmailVerificationStep from '../steps/EmailVerificationStep/EmailVerificationStep';
+import EmailVerificationStepContainer from '../steps/EmailVerificationStep/EmailVerificationStepContainer';
 import DocumentVerificationContainer from '../steps/DocumentVerificationStep/DocumentVerificationContainer';
 // eslint-disable-next-line max-len
 import PersonalInformationStepContainer from '../steps/PersonalInformationStep/PersonalInformationStepContainer';
@@ -88,7 +88,7 @@ const Widget: FC = () => {
         return <PersonalInformationStepContainer />;
       }
       case WidgetSteps.EMAIL_VERIFICATION: {
-        return <EmailVerificationStep />;
+        return <EmailVerificationStepContainer />;
       }
       case WidgetSteps.PAYMENT_ADDING: {
         return <AddCardStepContainer />;

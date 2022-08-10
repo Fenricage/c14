@@ -11,7 +11,7 @@ import App from '../../../../App';
 const initialStore: NestedPartial<RootState> = {
   application: {
     widgetSteps: {
-      currentStep: WidgetSteps.PERSONAL_INFORMATION,
+      currentStep: WidgetSteps.EMAIL_VERIFICATION,
     },
     stepperSteps: {
       currentStep: StepperSteps.PERSONAL_INFORMATION,
