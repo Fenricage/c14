@@ -9,8 +9,8 @@ type ModalProps = {
   title: string;
   isOpen: boolean;
   children: React.ReactNode;
-  parentSelector: () => HTMLElement;
-  handleClickClose: (e: any) => void;
+  parentSelector?: () => HTMLElement;
+  onClickClose?: (e: any) => void;
 }
 
 const StyledCrossIcon = styled(CrossIcon)`
@@ -54,7 +54,7 @@ const Modal: FC<ModalProps> = (props) => {
     isOpen,
     parentSelector,
     children,
-    handleClickClose,
+    onClickClose,
     title,
   } = props;
 
@@ -68,9 +68,11 @@ const Modal: FC<ModalProps> = (props) => {
     >
       <ModalHeader>
         <Title color={theme.alt3}>{title}</Title>
-        <CloseButton type="button" onClick={handleClickClose}>
-          <StyledCrossIcon />
-        </CloseButton>
+        {onClickClose && (
+          <CloseButton type="button" onClick={onClickClose}>
+            <StyledCrossIcon />
+          </CloseButton>
+        )}
       </ModalHeader>
       <ModalBody>
         {children}

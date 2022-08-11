@@ -1,21 +1,27 @@
 import React, { FC } from 'react';
 import { Flex } from 'rebass';
 import ReactLoading from 'react-loading';
-import styled from 'styled-components/macro';
+import styled, { useTheme } from 'styled-components/macro';
 import WidgetHead from '../../Widget/WidgetHead';
-import { DocumentVerificationStatus, logout } from '../../../../state/applicationSlice';
+import { DocumentVerificationStatus } from '../../../../state/applicationSlice';
 import StepIcon from '../../../../components/StepIcon/StepIcon';
 import { ReactComponent as FailedIcon } from '../../../../assets/purchase_failed_icon.svg';
-import { Button, FormRow, Subtitle } from '../../../../theme/components';
-import { useAppDispatch } from '../../../../app/hooks';
+import {
+  Button,
+  FormRow,
+  Subtitle,
+  widgetModalStyles,
+} from '../../../../theme/components';
+import Modal from '../../../../components/Modal/Modal';
 
 interface IDocumentVerificationStep {
   documentVerificationStatus: DocumentVerificationStatus | null;
   onClickNavigateBack: () => void;
+  onClickTryAgain: () => void;
+  onCloseVerificationModal: () => void;
 }
 
 const TruliooOverlay = styled.div`
-  background-color: ${({ theme }) => theme.alt2};
   display: flex;
   position: absolute;
   justify-content: center;
@@ -27,38 +33,62 @@ const TruliooOverlay = styled.div`
   z-index: 2;
 `;
 
+const TruliooBox = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+
 const DocumentVerificationStepInner = styled.div`
   display: flex;
   flex: 1;
+  justify-content: center;
+  align-items: center;
   position: relative;
 `;
 
 const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
   documentVerificationStatus,
   onClickNavigateBack,
+  onClickTryAgain,
+  onCloseVerificationModal,
 }) => {
-  const dispatch = useAppDispatch();
-
-  const handleClickTryAgain = () => {
-    dispatch(logout());
-  };
+  const theme = useTheme();
 
   const renderInnerContent = () => {
     if (documentVerificationStatus === 'NOT_STARTED' || documentVerificationStatus === null) {
       return (
         <DocumentVerificationStepInner>
-          <TruliooOverlay
-            id="loading-overlay"
+          <Modal
+            style={widgetModalStyles}
+            isOpen
+            title="Verify documents"
+            onClickClose={onCloseVerificationModal}
           >
-            <ReactLoading
-              data-testid="PaymentAddingLoader"
-              type="spinningBubbles"
-              color="#fff"
-              height={50}
-              width={50}
-            />
-          </TruliooOverlay>
-          <div id="trulioo-embedid" style={{ zIndex: 1 }} />
+            <TruliooBox>
+              <TruliooOverlay
+                id="loading-overlay"
+              >
+                <ReactLoading
+                  data-testid="PaymentAddingLoader"
+                  type="spinningBubbles"
+                  color={theme.primary1}
+                  height={50}
+                  width={50}
+                />
+              </TruliooOverlay>
+              <div
+                id="trulioo-embedid"
+                style={{
+                  zIndex: 2,
+                  height: '100%',
+                }}
+              />
+            </TruliooBox>
+          </Modal>
         </DocumentVerificationStepInner>
       );
     } if (documentVerificationStatus === 'FAILED') {
@@ -79,7 +109,7 @@ const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
             </Subtitle>
           </Flex>
           <FormRow>
-            <Button onClick={handleClickTryAgain}>Try again</Button>
+            <Button onClick={onClickTryAgain}>Try again</Button>
           </FormRow>
         </Flex>
       );

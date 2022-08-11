@@ -4,7 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import Modal from './Modal';
 import { mockFn, withProvider, mockStore } from '../../utils/storybook';
 import { createStoreWithMiddlewares } from '../../app/store';
-import { selectFieldModalStyles } from '../CurrencySelectField/CurrencySelectField';
+import { widgetModalStyles } from '../../theme/components';
 
 const store = createStoreWithMiddlewares(mockStore);
 
@@ -19,9 +19,9 @@ export const Default = Template.bind({});
 
 Default.args = {
   children: 'This is modal children',
-  handleClickClose: mockFn,
+  onClickClose: mockFn,
   isOpen: true,
   parentSelector: () => document.body,
   title: 'Modal title',
-  style: selectFieldModalStyles,
+  style: widgetModalStyles,
 };

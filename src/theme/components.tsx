@@ -1,6 +1,7 @@
 import styled, { createGlobalStyle } from 'styled-components/macro';
 import React, { ReactNode } from 'react';
 import { Transition, TransitionStatus } from 'react-transition-group';
+import { Styles } from 'react-modal';
 
 export const Title = styled.h1<{margin?: string; color?: string}>`
   font-family: 'Pragmatica Extended',serif;
@@ -212,3 +213,18 @@ select {
   max-width: inherit !important;
 }
 `;
+
+export const widgetModalStyles: Styles = {
+  overlay: {
+    position: 'absolute',
+    background: 'transparent',
+    inset: '0',
+  },
+  content: {
+    borderRadius: 0,
+    border: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    inset: '0',
+  },
+};

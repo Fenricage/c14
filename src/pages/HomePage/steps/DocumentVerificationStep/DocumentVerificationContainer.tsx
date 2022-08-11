@@ -24,7 +24,12 @@ const DocumentVerificationContainer: FC = () => {
   const [triggerLazyGetUser] = useLazyGetUserQuery({ pollingInterval: 5000 });
 
   const { documentVerificationStatus } = useAppSelector(selectUserDetails);
+
   const dispatch = useAppDispatch();
+
+  const handleClickTryAgain = () => {
+    dispatch(logout());
+  };
 
   const {
     isLoading: isInitialUserLoading,
@@ -72,9 +77,7 @@ const DocumentVerificationContainer: FC = () => {
     }
   }, [dispatch, triggerLazyGetUser, triggerVerifyDocuments]);
 
-  // TODO(@ruslan): handle this code with loader
   const onInitialRenderComplete = useCallback(() => {
-    // applyStylesToTruliooIFrame();
     const loadingOverlay = document.getElementById('loading-overlay');
 
     if (loadingOverlay) {
@@ -122,10 +125,16 @@ const DocumentVerificationContainer: FC = () => {
     dispatch(logout());
   };
 
+  const onCloseVerificationModal = () => {
+    dispatch(logout());
+  };
+
   return (
     <DocumentVerificationStep
       documentVerificationStatus={documentVerificationStatus}
       onClickNavigateBack={onClickNavigateBack}
+      onCloseVerificationModal={onCloseVerificationModal}
+      onClickTryAgain={handleClickTryAgain}
     />
   );
 };

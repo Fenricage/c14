@@ -35,7 +35,7 @@ export const Default: ComponentStory<typeof App> = () => (
   <App />
 );
 
-const DefaultResponse: GetUserResponse = {
+export const DefaultGetUserResponse: GetUserResponse = {
   first_names: 'John',
   last_names: 'Doe',
   city: 'New York',
@@ -57,7 +57,7 @@ Default.parameters = {
       rest.get<Record<string, never>, Record<string, never>, GetUserResponse>(
         `${process.env.REACT_APP_SERVER_URL}user-details`,
         (req, res, ctx) => res(
-          ctx.json(DefaultResponse),
+          ctx.json(DefaultGetUserResponse),
         ),
       ),
     ],

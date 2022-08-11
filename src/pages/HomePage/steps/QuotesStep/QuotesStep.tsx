@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik';
 import styled from 'styled-components/macro';
 import WidgetHead from '../../Widget/WidgetHead';
 import { CALCULATOR_FORM_NAME, QuoteInputName } from '../../../../state/applicationSlice';
-import { Button, FormRow } from '../../../../theme/components';
+import { Button, FormRow, widgetModalStyles } from '../../../../theme/components';
 import {
   CurrencySelectOption,
 } from '../../../../components/CurrencySelectField/CurrencySelectField';
@@ -142,6 +142,7 @@ const QuotesStep: FC<IQuotesStep> = ({
               <AmountField
                 readOnly={false}
                 disabled={isQuoteInputDisabled}
+                modalStyle={widgetModalStyles}
                 debounceMs={amountUpdateDebounceMs}
                 label="You Pay"
                 amountFieldName="quoteSourceAmount"
@@ -183,6 +184,7 @@ const QuotesStep: FC<IQuotesStep> = ({
                 readOnly={false}
                 disabled={isQuoteInputDisabled}
                 debounceMs={amountUpdateDebounceMs}
+                modalStyle={widgetModalStyles}
                 label="You Receive"
                 amountFieldName="quoteTargetAmount"
                 currencyFieldName="targetCurrency"

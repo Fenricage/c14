@@ -1,9 +1,7 @@
-import React, {
-  useState, FC, useCallback,
-} from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components/macro';
-import { Styles } from 'react-modal';
 import { FormikContextType, useField, useFormikContext } from 'formik';
+import ReactModal from 'react-modal';
 import { ReactComponent as ArrowIcon } from '../../assets/arrow.svg';
 import { sourceOptions } from '../../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
 import { SHOULD_VALIDATE } from '../../constants';
@@ -26,18 +24,20 @@ export type OnChangeCurrencySelectField = ({
   value: string;
 }) => unknown;
 
-type CurrencySelectFieldHOCProps = {
-  name: string;
-  options: CurrencySelectOption[];
-  onHandleChange: OnChangeCurrencySelectField;
+type CommonSelectFieldProps = {
   disabled?: boolean;
+  options: CurrencySelectOption[];
 }
 
-type CurrencySelectFieldProps = {
+type CurrencySelectFieldHOCProps = CommonSelectFieldProps & {
+  name: string;
+  onHandleChange: OnChangeCurrencySelectField;
+  modalStyle?: ReactModal.Styles;
+}
+
+type CurrencySelectFieldProps = CommonSelectFieldProps & {
   value: Currency;
-  options: CurrencySelectOption[];
   onOpenModalClick?: () => void;
-  disabled?: boolean;
   children?: React.ReactElement;
 }
 
@@ -73,20 +73,6 @@ export const StyledArrowIcon = styled(ArrowIcon)`
   top: calc(50% - 6px);
   right: 6px;
 `;
-
-export const selectFieldModalStyles: Styles = {
-  overlay: {
-    position: 'absolute',
-    background: 'transparent',
-    inset: '0',
-  },
-  content: {
-    border: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    inset: '0',
-  },
-};
 
 const CurrencyItem = styled.div`
   cursor: pointer;
@@ -141,6 +127,7 @@ const CurrencySelectFieldHOC: FC<CurrencySelectFieldHOCProps> = ({
   options,
   onHandleChange,
   disabled = false,
+  modalStyle,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -189,11 +176,11 @@ const CurrencySelectFieldHOC: FC<CurrencySelectFieldHOCProps> = ({
       <>
         <StyledArrowIcon />
         <Modal
-          style={selectFieldModalStyles}
+          style={modalStyle}
           parentSelector={handleModalParentSelector}
           isOpen={isModalOpen}
           title="Select currency"
-          handleClickClose={handleClickClose}
+          onClickClose={handleClickClose}
         >
           {options.map((o) => (
             <CurrencyItem

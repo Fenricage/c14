@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
+import ReactModal from 'react-modal';
 import InputField from '../inputs/InputField/InputField';
 import CurrencySelect, {
   Currency, CurrencySelectContainer,
@@ -25,6 +26,7 @@ interface IAmountField {
   debounceMs?: number;
   onAmountChange?: OnChangeInputField;
   onCurrencyChange?: (currency_id: string) => void;
+  modalStyle?: ReactModal.Styles;
 }
 
 export const AmountFieldRow = styled.div`
@@ -81,6 +83,7 @@ const AmountField: FC<IAmountField> = ({
   onAmountChange,
   onCurrencyChange,
   debounceMs,
+  modalStyle,
 }) => (
   <AmountFieldBox hasError={hasError}>
     <AmountFieldRow data-testid={`${amountFieldName}Container`}>
@@ -97,6 +100,7 @@ const AmountField: FC<IAmountField> = ({
       <CurrencySelect
         disabled={readOnly}
         value={currencyType as Currency}
+        modalStyle={modalStyle}
         name={currencyFieldName}
         options={currencyOptions}
         onHandleChange={(v) => onCurrencyChange && onCurrencyChange(v.value)}

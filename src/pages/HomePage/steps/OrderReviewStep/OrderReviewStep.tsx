@@ -9,7 +9,9 @@ import { PaymentCard } from '../../../../redux/cardsApi';
 import WidgetHead from '../../Widget/WidgetHead';
 import PreviewBadge from './PreviewBadge';
 import Fee from '../QuotesStep/Fee';
-import { Button, FormRow, BorderButton } from '../../../../theme/components';
+import {
+  Button, FormRow, BorderButton, widgetModalStyles,
+} from '../../../../theme/components';
 import { useGetQuoteMutation } from '../../../../redux/quotesApi';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
@@ -35,7 +37,6 @@ import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 import { useGetUserLimitsQuery } from '../../../../redux/limitsApi';
 import { selectLimits } from '../../../../state/limitsSlice';
 import Modal from '../../../../components/Modal/Modal';
-import { selectFieldModalStyles } from '../../../../components/CurrencySelectField/CurrencySelectField';
 import ModalInnerConfirm from './ModalInnerConfirm';
 import ModalInnerTooManyYears from './ModalInnerTooManyYears';
 import { selectPayment } from '../../../../state/paymentSelectSlice';
@@ -303,11 +304,11 @@ const OrderReviewStep: FC = () => {
         </Button>
       </FormRow>
       <Modal
-        style={selectFieldModalStyles}
+        style={widgetModalStyles}
         parentSelector={handleModalParentSelector}
         isOpen={isModalOpen}
         title="Warning"
-        handleClickClose={handleClickClose}
+        onClickClose={handleClickClose}
       >
         {isUserTooManyYearsOld ? (
           <ModalInnerTooManyYears onClose={handleClickClose} />
