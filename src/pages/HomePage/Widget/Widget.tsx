@@ -10,12 +10,12 @@ import QuotesStepContainer from '../steps/QuotesStep/QuotesStepContainer';
 import PhoneInputStepContainer from '../steps/PhoneInputStep/PhoneInputStepContainer';
 import AddCardStepContainer from '../steps/AddCardStep/AddCardStepContainer';
 import PaymentSelectStepContainer from '../steps/PaymentSelectStep/PaymentSelectStepContainer';
-import OrderReviewStep from '../steps/OrderReviewStep/OrderReviewStep';
 import SMSConfirmationStepContainer from '../steps/SMSConfirmationStep/SMSConfirmationStepContainer';
 import PurchaseInProgressStep from '../steps/PurchaseInProgressStep/PurchaseInProgressStep';
 import CompleteStep from '../steps/CompleteStep/CompleteStep';
 import EmailVerificationStepContainer from '../steps/EmailVerificationStep/EmailVerificationStepContainer';
 import DocumentVerificationContainer from '../steps/DocumentVerificationStep/DocumentVerificationContainer';
+import OrderReviewStepContainer from '../steps/OrderReviewStep/OrderReviewStepContainer';
 // eslint-disable-next-line max-len
 import PersonalInformationStepContainer from '../steps/PersonalInformationStep/PersonalInformationStepContainer';
 
@@ -97,7 +97,7 @@ const Widget: FC = () => {
         return <PaymentSelectStepContainer />;
       }
       case WidgetSteps.REVIEW_ORDER: {
-        return <OrderReviewStep />;
+        return <OrderReviewStepContainer />;
       }
       case WidgetSteps.PROCESS: {
         return <PurchaseInProgressStep />;

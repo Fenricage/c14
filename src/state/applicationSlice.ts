@@ -7,6 +7,7 @@ import { RootState } from '../app/store';
 
 import { GetPurchaseDetailsResponse, purchaseApi } from '../redux/purchaseApi';
 import { LoginResponse, userApi } from '../redux/userApi';
+import { AlertType } from '../pages/HomePage/Alert';
 
 export const CALCULATOR_FORM_NAME = 'calculator-form';
 
@@ -164,10 +165,8 @@ const getPrevWidgetStep = (currentStep: WidgetSteps) => {
   }
 };
 
-export type GeneralErrorKind = 'warn' | 'success' | 'error';
-
 export type GeneralError = {
-  type: GeneralErrorKind
+  type: AlertType
   message: string
 } | null
 

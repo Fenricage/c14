@@ -22,6 +22,12 @@ export interface Colors {
   alt4: Color
   alt5: Color
   alt6: Color
+  alertErrorBg: Color
+  alertErrorBorder: Color
+  alertErrorText: Color
+  alertInfoBg: Color
+  alertInfoBorder: Color
+  alertInfoText: Color
 }
 
 export interface Grids {

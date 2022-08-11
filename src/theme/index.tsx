@@ -33,10 +33,19 @@ export const lgray = '#EDEDED';
 export const violet = '#783AFF';
 export const dviolet = '#33334B';
 export const bviolet = '#8047fa';
-export const red = '#E23737';
+export const red = 'hsla(0, 75%, 55%, 1)';
 export const beige = '#ECD2D2';
 export const primary1 = '#fd7f3a';
 export const primary1o = 'rgba(255,128,64,0.2)';
+
+export const alertErrorBg = 'hsla(355, 100%, 97%, 1)';
+export const alertErrorBorder = 'hsla(355, 100%, 89%, 1)';
+export const alertErrorText = 'hsla(355, 61%, 32%, 1)';
+
+export const alertInfoBg = 'hsla(199, 100%, 97%, 1)';
+export const alertInfoBorder = 'hsla(199, 100%, 89%, 1)';
+export const alertInfoText = 'hsla(199, 61%, 32%, 1)';
+
 export const primary2 = '#ffe23c';
 export const alt1 = '#fcb913';
 export const alt2 = '#9cbccd';
@@ -70,6 +79,12 @@ export function colors(): Colors {
     alt3o2,
     alt5,
     alt6,
+    alertErrorBg,
+    alertErrorBorder,
+    alertErrorText,
+    alertInfoBg,
+    alertInfoBorder,
+    alertInfoText,
   };
 }
 

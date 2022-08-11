@@ -6,7 +6,8 @@ import user from '@testing-library/user-event';
 import ReactModal from 'react-modal';
 import differenceInYears from 'date-fns/differenceInYears';
 import { render } from '../../../../utils/test-utils';
-import OrderReviewStep, { YEARS_OLD_CAP } from './OrderReviewStep';
+import { YEARS_OLD_CAP } from './OrderReviewStep';
+import OrderReviewStepContainer from './OrderReviewStepContainer';
 import { setupServerQuoteRequest } from '../../../../testHandlers/quotes/setupServerQuotes';
 import { server } from '../../../../testHandlers/utils';
 import { createStoreWithMiddlewares, RootState } from '../../../../app/store';
@@ -71,7 +72,7 @@ describe('OrderReviewStep tests', () => {
       const {
         getByTestId,
         queryByTestId,
-      } = render(<OrderReviewStep />, { preloadedState: store.getState(), store });
+      } = render(<OrderReviewStepContainer />, { preloadedState: store.getState(), store });
 
       const cardToSelect = {
         last4: '3333',
@@ -171,7 +172,7 @@ describe('OrderReviewStep tests', () => {
       const {
         getByTestId,
         queryByTestId,
-      } = render(<OrderReviewStep />, {
+      } = render(<OrderReviewStepContainer />, {
         preloadedState: undefined,
         store: updatedStore,
       });
@@ -225,7 +226,7 @@ describe('OrderReviewStep tests', () => {
   //     const {
   //       getByTestId,
   //       queryByTestId,
-  //     } = render(<OrderReviewStep />, { preloadedState: store.getState(), store });
+  //     } = render(<OrderReviewStepContainer />, { preloadedState: store.getState(), store });
   //
   //     const cardToSelect = {
   //       last4: '3333',

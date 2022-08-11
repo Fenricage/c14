@@ -41,7 +41,7 @@ export const Default: ComponentStory<typeof App> = () => (
   <App />
 );
 
-const DefaultQuoteResponse: QuoteResponse = {
+export const DefaultQuoteResponse: QuoteResponse = {
   id: 'uuid534-23423423-234234-4343',
   source_currency: 'USD',
   target_crypto_asset_id: 'c00b9be1-9472-44cc-b384-7f549274de3b',
@@ -54,7 +54,7 @@ const DefaultQuoteResponse: QuoteResponse = {
   expires_at: new Date(new Date().getTime() + 3 * 60000).toISOString(),
 };
 
-const DefaultUserLimitsResponse: GetUserLimitsResponse = {
+export const DefaultUserLimitsResponse: GetUserLimitsResponse = {
   weekly_limit_usd: '500',
   remaining_weekly_limit_usd: '500',
 };
