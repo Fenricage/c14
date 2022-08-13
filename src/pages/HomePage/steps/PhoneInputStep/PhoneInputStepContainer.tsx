@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import {
-  isPossiblePhoneNumber,
+  isValidPhoneNumber,
 } from 'react-phone-number-input';
 import { QueryStatus } from '@reduxjs/toolkit/query';
 import { useAppDispatch } from '../../../../app/hooks';
@@ -22,7 +22,7 @@ const validate = (values: PhoneFormValues) => {
     errors.phone = 'Required';
   }
 
-  if (values.phone && !isPossiblePhoneNumber(values.phone)) {
+  if (values.phone && !isValidPhoneNumber(values.phone)) {
     errors.phone = 'Insert a valid phone number';
   }
 
