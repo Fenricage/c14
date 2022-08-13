@@ -104,9 +104,10 @@ const userDetailsSlice = createSlice({
 
     builder.addMatcher(
       userApi.endpoints.updateUser.matchFulfilled,
-      (state) => {
+      (state, { payload }) => {
         state.isUserUpdated = true;
         state.isUserUpdating = false;
+        state.isUserVerified = payload.identity_verified;
       },
     );
     builder.addMatcher(

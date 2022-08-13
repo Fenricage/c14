@@ -63,26 +63,26 @@ const PersonalInformationStepContainer: FC = () => {
 
   /* NAVIGATION */
   useEffect(() => {
-    if (!skipPersonalInfoStep) {
+    if (!skipPersonalInfoStep || !isUserVerified) {
       return;
     }
 
     const isUserNotEmpty = isUserLoaded && user && Object.values(user).length;
 
     // form submitted, user updated and email verified
-    if (isUserUpdated && isUserVerified && isEmailVerified) {
+    if (isUserUpdated && isEmailVerified) {
       dispatch(incrementWidgetStep());
       // form is submitted but user is not verified
-    } else if (isUserUpdated && isUserVerified && !isEmailVerified) {
+    } else if (isUserUpdated && !isEmailVerified) {
       dispatch(goToWidgetStep({
         shouldUpdateStepper: false,
         widgetStep: WidgetSteps.EMAIL_VERIFICATION,
       }));
       // user already exists
-    } else if (isUserNotEmpty && isUserVerified && isEmailVerified) {
+    } else if (isUserNotEmpty && isEmailVerified) {
       dispatch(incrementWidgetStep());
       //  user exists and verified, but email is not confirmed
-    } else if (isUserNotEmpty && !isEmailVerified && isUserVerified) {
+    } else if (isUserNotEmpty && !isEmailVerified) {
       dispatch(goToWidgetStep({
         shouldUpdateStepper: false,
         widgetStep: WidgetSteps.EMAIL_VERIFICATION,
@@ -105,7 +105,7 @@ const PersonalInformationStepContainer: FC = () => {
     lastNames: user?.last_names || '',
     country: 'United States',
     email: user?.email || '',
-    stateCode: stateOptions[0].value || '',
+    stateCode: user?.state_code || stateOptions[0].value,
     dob: user?.date_of_birth || '',
     city: user?.city || '',
     postalCode: user?.postal_code || '',

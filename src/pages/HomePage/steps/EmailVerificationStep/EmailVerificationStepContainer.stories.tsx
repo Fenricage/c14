@@ -1,6 +1,7 @@
 import React from 'react';
 import { rest } from 'msw';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { withQuery } from '@storybook/addon-queryparams';
 import { createStoreWithMiddlewares, RootState } from '../../../../app/store';
 import { StepperSteps, WidgetSteps } from '../../../../state/applicationSlice';
 import { withProvider } from '../../../../utils/storybook';
@@ -25,9 +26,13 @@ export default {
   component: App,
   decorators: [
     withProvider.bind(null, store),
+    withQuery,
   ],
   parameters: {
     layout: 'fullscreen',
+    query: {
+      targetAddress: '0xaisughi23423sdg',
+    },
   },
 } as ComponentMeta<typeof App>;
 
@@ -43,11 +48,11 @@ export const DefaultGetUserResponse: GetUserResponse = {
   date_of_birth: '1992-05-31',
   unit_number: '124412',
   street_name: 'Washington Street',
-  state_code: '4',
+  state_code: 'California',
   postal_code: '434555',
   building: '3',
   email_verified: false,
-  document_verification_status: 'NOT_STARTED',
+  document_verification_status: 'SUCCESS',
   identity_verified: false,
 };
 
