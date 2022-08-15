@@ -68,7 +68,7 @@ const DocumentVerificationContainer: FC = () => {
       } catch {
         dispatch(setGeneralError({
           type: 'error',
-          message: 'Can\'t verify documents',
+          message: 'Can\'t verify Documents',
         }));
         return;
       }

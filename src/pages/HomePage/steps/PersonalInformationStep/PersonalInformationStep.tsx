@@ -105,7 +105,7 @@ const PersonalInformationStep: FC<PersonalInformationStepProps> = ({
       height="100%"
     >
       <WidgetHead
-        text="Enter the Personal Informations"
+        text="Personal Information"
         customBackCallback={onClickNavigateBack}
       />
       <Flex height={[

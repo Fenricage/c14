@@ -97,14 +97,16 @@ const AmountField: FC<IAmountField> = ({
         type="number"
         placeholder={placeholder}
       />
-      <CurrencySelect
-        disabled={readOnly}
-        value={currencyType as Currency}
-        modalStyle={modalStyle}
-        name={currencyFieldName}
-        options={currencyOptions}
-        onHandleChange={(v) => onCurrencyChange && onCurrencyChange(v.value)}
-      />
+      <div data-testid={`${amountFieldName}CurrencySelect`}>
+        <CurrencySelect
+          disabled={readOnly}
+          value={currencyType as Currency}
+          name={currencyFieldName}
+          options={currencyOptions}
+          modalStyle={modalStyle}
+          onHandleChange={(v) => onCurrencyChange && onCurrencyChange(v.value)}
+        />
+      </div>
     </AmountFieldRow>
     {!readOnly && (
     <FormFieldErrorMessage

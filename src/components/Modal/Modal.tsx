@@ -67,7 +67,7 @@ const Modal: FC<ModalProps> = (props) => {
       isOpen={isOpen}
     >
       <ModalHeader>
-        <Title color={theme.alt3}>{title}</Title>
+        <Title data-testid="modal-title" color={theme.alt3}>{title}</Title>
         {onClickClose && (
           <CloseButton type="button" onClick={onClickClose}>
             <StyledCrossIcon />

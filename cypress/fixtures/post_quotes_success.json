@@ -1,0 +1,12 @@
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "source_currency": "USD",
+  "target_crypto_asset_id": "e2e0546e-b51b-4d56-9426-3aff3a2418ba",
+  "source_amount": "100.1",
+  "target_amount": "95.1",
+  "fiat_blockchain_fee": "1.13",
+  "absolute_internal_fee": "2.83",
+  "total_fee": "3.96",
+  "internal_fee_percent": "2.99",
+  "expires_at": "2022-04-25T19:44:43.315Z"
+}

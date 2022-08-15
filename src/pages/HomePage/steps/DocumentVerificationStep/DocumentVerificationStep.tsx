@@ -79,7 +79,7 @@ const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
           <Modal
             style={modalStyles}
             isOpen
-            title="Verify documents"
+            title="Verify Your Documents"
             onClickClose={onCloseVerificationModal}
           >
             <TruliooBox>

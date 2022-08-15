@@ -145,7 +145,7 @@ const Alert: FC<AlertProps> = ({
       return children;
     } if (message) {
       return (
-        <AlertText>{message}</AlertText>
+        <AlertText data-testid="alert-text">{message}</AlertText>
       );
     }
     return null;

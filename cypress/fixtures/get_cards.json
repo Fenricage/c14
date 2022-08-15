@@ -1,0 +1,11 @@
+{
+  "customer_cards": [
+    {
+      "card_id": "src_mlbcjos2g5netluudgozasw56u",
+      "type": "VISA",
+      "last4": "1234",
+      "expiry_month": "4",
+      "expiry_year": "2025"
+    }
+  ]
+}

@@ -56,6 +56,7 @@ const EmailVerificationStep: FC<EmailVerificationStepProps> = ({
       <Flex flexDirection="column">
         <ButtonBox>
           <BorderButton
+            data-testid="modify-email-button"
             onClick={onClickModifyEmail}
           >
             Modify email
@@ -63,6 +64,7 @@ const EmailVerificationStep: FC<EmailVerificationStepProps> = ({
         </ButtonBox>
         <ButtonBox>
           <BorderButton
+            data-testid="resend-email-button"
             disabled={isLoading}
             onClick={onClickResendEmail}
           >
