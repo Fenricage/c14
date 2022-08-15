@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { Flex } from 'rebass';
 import ReactLoading from 'react-loading';
 import styled, { useTheme } from 'styled-components/macro';
+import { Styles } from 'react-modal';
 import WidgetHead from '../../Widget/WidgetHead';
 import { DocumentVerificationStatus } from '../../../../state/applicationSlice';
 import StepIcon from '../../../../components/StepIcon/StepIcon';
@@ -36,6 +37,7 @@ const TruliooOverlay = styled.div`
 const TruliooBox = styled.div`
   position: relative;
   display: flex;
+  overflow: hidden;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -50,6 +52,18 @@ const DocumentVerificationStepInner = styled.div`
   position: relative;
 `;
 
+const modalStyles: Styles = {
+  ...widgetModalStyles,
+  overlay: {
+    ...widgetModalStyles.overlay,
+    background: 'rgba(0, 0, 0, .5)',
+  },
+  content: {
+    ...widgetModalStyles.content,
+    background: 'transparent',
+  },
+};
+
 const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
   documentVerificationStatus,
   onClickNavigateBack,
@@ -63,7 +77,7 @@ const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
       return (
         <DocumentVerificationStepInner>
           <Modal
-            style={widgetModalStyles}
+            style={modalStyles}
             isOpen
             title="Verify documents"
             onClickClose={onCloseVerificationModal}
@@ -75,7 +89,7 @@ const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
                 <ReactLoading
                   data-testid="PaymentAddingLoader"
                   type="spinningBubbles"
-                  color={theme.primary1}
+                  color={theme.white}
                   height={50}
                   width={50}
                 />

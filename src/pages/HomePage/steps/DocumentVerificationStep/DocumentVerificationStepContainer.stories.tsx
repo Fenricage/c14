@@ -1,6 +1,7 @@
 import React from 'react';
 import { rest } from 'msw';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { withQuery } from '@storybook/addon-queryparams';
 import { createStoreWithMiddlewares, RootState } from '../../../../app/store';
 import { StepperSteps, WidgetSteps } from '../../../../state/applicationSlice';
 import { withProvider } from '../../../../utils/storybook';
@@ -26,9 +27,13 @@ export default {
   component: App,
   decorators: [
     withProvider.bind(null, store),
+    withQuery,
   ],
   parameters: {
     layout: 'fullscreen',
+    query: {
+      targetAddress: '0xaisughi23423sdg',
+    },
   },
 } as ComponentMeta<typeof App>;
 
