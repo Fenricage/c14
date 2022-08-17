@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
-import { Currency } from '../CurrencySelectField/CurrencySelectField';
+import { Currency } from '../CurrencySelectModal/CurrencySelectModal';
 import { ReactComponent as USDIcon } from '../../assets/usd_icon.svg';
 import { ReactComponent as EVMOSIcon } from '../../assets/evmos_icon.svg';
 import { ReactComponent as HarmonyIcon } from '../../assets/harmony_icon.svg';

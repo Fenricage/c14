@@ -1,7 +1,7 @@
 describe('SMS confirmation step', () => {
   beforeEach(() => {
     cy.mockRest();
-    cy.visitSmsConfirmationStep();
+    cy.mockedVisitSmsConfirmationStep();
   });
 
   it('invalid code submit disabled', () => {

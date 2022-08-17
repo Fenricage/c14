@@ -1,7 +1,7 @@
 describe('Document Verification', () => {
   beforeEach(() => {
     cy.mockRest();
-    cy.visitDocumentVerificationStep();
+    cy.mockedVisitDocumentVerificationStep();
   });
 
   it('document verification is shown when not started', () => {

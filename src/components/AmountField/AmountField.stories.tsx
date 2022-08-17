@@ -6,7 +6,7 @@ import AmountField from './AmountField';
 import { sourceOptions } from '../../pages/HomePage/steps/QuotesStep/QuotesStepContainer';
 import { createStoreWithMiddlewares } from '../../app/store';
 import { mockFn, withProvider } from '../../utils/storybook';
-import { CurrencySelectOption } from '../CurrencySelectField/CurrencySelectField';
+import { CurrencySelectOption } from '../CurrencySelectModal/CurrencySelectModal';
 
 export default {
   component: AmountField,

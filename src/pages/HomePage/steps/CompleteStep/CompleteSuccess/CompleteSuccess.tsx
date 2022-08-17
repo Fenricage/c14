@@ -70,7 +70,7 @@ const CompleteSuccess: FC<CompleteSuccessProps> = ({
   card,
 }) => (
   <Flex flex={1} flexDirection="column">
-    <Title>Purchase Completed</Title>
+    <Title data-testid="purchase-completed">Purchase Completed</Title>
     <StepIcon>
       <PurchaseCompletedIcon />
     </StepIcon>

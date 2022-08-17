@@ -18,7 +18,7 @@ import ButtonLoader from '../../../../components/ButtonLoader/ButtonLoader';
 import Modal from '../../../../components/Modal/Modal';
 import ModalInnerConfirm from './ModalInnerConfirm';
 import ModalInnerTooManyYears from './ModalInnerTooManyYears';
-import { Currency } from '../../../../components/CurrencySelectField/CurrencySelectField';
+import { Currency } from '../../../../components/CurrencySelectModal/CurrencySelectModal';
 import { UserDetails } from '../../../../redux/userApi';
 
 type OrderReviewStepProps = {
@@ -163,12 +163,14 @@ const OrderReviewStep: FC<OrderReviewStepProps> = ({
                     <BorderButton
                       type="button"
                       onClick={onClickChangePayment}
+                      data-testid="select-card"
                     >
                       Change
                     </BorderButton>
                     <BorderButton
                       type="button"
                       onClick={onClickChangePersonalInfo}
+                      data-testid="modify-personal-information"
                     >
                       Change
                     </BorderButton>

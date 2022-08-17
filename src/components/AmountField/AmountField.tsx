@@ -5,7 +5,7 @@ import InputField from '../inputs/InputField/InputField';
 import CurrencySelect, {
   Currency, CurrencySelectContainer,
   CurrencySelectOption,
-} from '../CurrencySelectField/CurrencySelectField';
+} from '../CurrencySelectModal/CurrencySelectModal';
 import FormFieldErrorMessage, {
   FormFieldErrorMessageText,
   FormFieldErrorMessageWrapper,

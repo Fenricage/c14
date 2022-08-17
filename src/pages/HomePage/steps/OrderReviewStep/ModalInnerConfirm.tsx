@@ -123,20 +123,20 @@ const ModalInnerConfirm: FC<ModalInnerConfirmProps> = ({ onConfirm }) => {
           <StyledForm>
             {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label>
-              <Field type="checkbox" name="confirmYouAreOwner" />
+              <Field data-testid="terms-free-will-checkbox" type="checkbox" name="confirmYouAreOwner" />
               Please check this box to confirm you are making this
               transaction of your own free will
             </label>
             {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label>
-              <Field type="checkbox" name="confirmYouAreNotBroker" />
+              <Field data-testid="terms-no-broker" type="checkbox" name="confirmYouAreNotBroker" />
               Please check this box to confirm you are not
               working with or being guided through this
               transaction by a broker/advisor
             </label>
             {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label>
-              <Field type="checkbox" name="agreeToTerms" />
+              <Field data-testid="terms-agree-service" type="checkbox" name="agreeToTerms" />
               I agree to the
               {' '}
               <TermsLink
@@ -185,13 +185,13 @@ const ModalInnerConfirm: FC<ModalInnerConfirmProps> = ({ onConfirm }) => {
             <FormRow margin="auto 0 0 0">
               <Button
                 disabled={!isValid || isSubmitting}
-                data-testid="submitButton"
+                data-testid="confirm-transaction"
                 type="submit"
               >
                 {
                   isSubmitting
                     ? <ButtonLoader />
-                    : 'Continue'
+                    : 'Buy Now'
                 }
               </Button>
             </FormRow>

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components/macro';
 import CurrencySelectIcon, { CurrencySelectIconContainer } from '../CurrencySelectIcon/CurrencySelectIcon';
-import { Currency } from '../CurrencySelectField/CurrencySelectField';
+import { Currency } from '../CurrencySelectModal/CurrencySelectModal';
 
 type CurrencySelectProps = {
   type: Currency;
@@ -45,7 +45,7 @@ const CurrencySelect: FC<CurrencySelectProps> = ({
   text,
 }) => (
   <CurrencySelectContainer>
-    <Name>{text}</Name>
+    <Name data-testid="currency-symbol">{text}</Name>
     <CurrencySelectIcon optionValue={type} />
   </CurrencySelectContainer>
 );

@@ -4,7 +4,7 @@ import 'cypress-iframe';
 describe('Add New Card', () => {
   beforeEach(() => {
     cy.mockRest();
-    cy.visitAddCardStep();
+    cy.mockedVisitAddCardStep();
   });
 
   it('Submit button enabled only when all fields are populated correctly', () => {

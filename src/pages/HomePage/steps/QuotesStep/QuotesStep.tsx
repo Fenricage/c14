@@ -7,7 +7,7 @@ import { CALCULATOR_FORM_NAME, QuoteInputName } from '../../../../state/applicat
 import { Button, FormRow, widgetModalStyles } from '../../../../theme/components';
 import {
   CurrencySelectOption,
-} from '../../../../components/CurrencySelectField/CurrencySelectField';
+} from '../../../../components/CurrencySelectModal/CurrencySelectModal';
 import Fee from './Fee';
 import {
   QuoteFormValues, sourceOptions, targetOptions,

@@ -1,7 +1,7 @@
 describe('Personal information', () => {
   beforeEach(() => {
     cy.mockRest();
-    cy.visitPersonalInformationStep();
+    cy.mockedVisitPersonalInformationStep();
   });
 
   describe('Personal information fields pre-filled and required', () => {

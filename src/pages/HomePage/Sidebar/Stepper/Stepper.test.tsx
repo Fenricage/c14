@@ -12,10 +12,10 @@ import { render } from '../../../../utils/test-utils';
 describe('Stepper tests', () => {
   it('check initial Stepper active color style', () => {
     const { getByTestId } = render(<Stepper />);
-    expect(getByTestId('ItemTitle-0')).toHaveStyle({ color: colors().alt3 });
+    expect(getByTestId('ItemTitle-Select Amount-Active-true')).toHaveStyle({ color: colors().alt3 });
     expect(getByTestId('ItemText-0')).toHaveStyle({ color: colors().alt3 });
 
-    expect(getByTestId('ItemTitle-1')).toHaveStyle({ color: colors().alt3o1 });
+    expect(getByTestId('ItemTitle-Verify Your Phone Number-Active-false')).toHaveStyle({ color: colors().alt3o1 });
     expect(getByTestId('ItemText-1')).toHaveStyle({ color: colors().alt3o2 });
   });
 
@@ -35,7 +35,7 @@ describe('Stepper tests', () => {
       },
     });
 
-    expect(getByTestId('ItemTitle-1')).toHaveStyle({ color: colors().alt3 });
+    expect(getByTestId('ItemTitle-Select Amount-Active-true')).toHaveStyle({ color: colors().alt3 });
     expect(getByTestId('ItemText-1')).toHaveStyle({ color: colors().alt3 });
   });
 });

@@ -78,7 +78,7 @@ const PurchaseInProgressStep: FC = () => {
       alignItems="center"
       flex={1}
     >
-      <Title margin="0">We’re Processing Your Payment</Title>
+      <Title data-testid="processing-transaction-title" margin="0">We are Processing Your Payment</Title>
       <Subtitle margin="10px 0 40px 0">Please do not refresh or close this window</Subtitle>
       <ReactLoading
         type="spinningBubbles"

@@ -1,7 +1,7 @@
 describe('Email confirmation step', () => {
   beforeEach(() => {
     cy.mockRest();
-    cy.visitEmailConfirmationStep();
+    cy.mockedVisitEmailConfirmationStep();
   });
 
   it('confirmation is shown when email not validated', () => {

@@ -1,7 +1,7 @@
 describe('Phone verification', () => {
   beforeEach(() => {
     cy.mockRest();
-    cy.visitPhoneInputStep();
+    cy.mockedVisitPhoneInputStep();
   });
 
   describe('validate number', () => {

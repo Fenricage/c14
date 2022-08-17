@@ -106,7 +106,7 @@ const Card: FC<ICardRadioField> = ({
 
   return (
     <CardRadioFieldLabel
-      data-testid="CardRadioFieldLabel"
+      data-testid={`CardRadioFieldLabel-${cardId}`}
       htmlFor={value}
     >
       <Flex alignItems="center">
@@ -114,13 +114,14 @@ const Card: FC<ICardRadioField> = ({
           <CardRadioFieldInput
             type="radio"
             checked={isChecked}
-            data-testid="CardRadioFieldInput"
+            data-testid={`CardRadioFieldInput-${cardId}`}
             onChange={handleCardClick}
             name={name}
             value={value}
             id={value}
           />
           <CardRadioPoint
+            data-testid={`CardRadioPoint-${cardId}-isChecked-${isChecked}`}
             checked={isChecked}
           />
         </Flex>
@@ -130,14 +131,14 @@ const Card: FC<ICardRadioField> = ({
           <StyledMasterCardIcon />
           <Flex flexDirection="column" justifyContent="center">
             <Flex>
-              <PaymentMethodName data-testid="CardPaymentMethod">
+              <PaymentMethodName data-testid={`CardPaymentMethod-${cardId}`}>
                 {paymentMethod}
               </PaymentMethodName>
               <LastNumbersContainer>
                 <LastNumbersText>
                   ending in
                 </LastNumbersText>
-                <LastNumbers data-testid="CardLastNumbers">
+                <LastNumbers data-testid={`CardLastNumbers-${cardId}`}>
                   {lastNumbers}
                 </LastNumbers>
               </LastNumbersContainer>
@@ -146,7 +147,7 @@ const Card: FC<ICardRadioField> = ({
               <OwnerContainer>
                 Expires on
                 {' '}
-                <ExpiredBox data-testid="CardExpiry">
+                <ExpiredBox data-testid={`CardExpiry-${cardId}`}>
                   {expired}
                 </ExpiredBox>
               </OwnerContainer>
@@ -155,7 +156,7 @@ const Card: FC<ICardRadioField> = ({
         </Flex>
       </Flex>
       <RemoveButton
-        data-testid="CardRadioFieldRemove"
+        data-testid={`CardRadioFieldRemove-${cardId}`}
         type="button"
         onClick={handleClickDelete}
       >

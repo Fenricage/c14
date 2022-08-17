@@ -201,7 +201,7 @@ const Stepper: FC = () => {
               {/* {index === 0 && <Line/>} */}
               <ItemPoint />
               <ItemBox>
-                <ItemTitle data-testid={`ItemTitle-${index}`}>{item.title}</ItemTitle>
+                <ItemTitle data-testid={`ItemTitle-${item.title}-Active-${isActive}`}>{item.title}</ItemTitle>
                 <ItemText data-testid={`ItemText-${index}`}>{item.text}</ItemText>
               </ItemBox>
               <ItemIconBox>

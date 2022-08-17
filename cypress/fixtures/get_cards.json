@@ -6,6 +6,13 @@
       "last4": "1234",
       "expiry_month": "4",
       "expiry_year": "2025"
+    },
+    {
+      "card_id": "src_mlbcjos2g5netluudgozasw56z",
+      "type": "MasterCard",
+      "last4": "7777",
+      "expiry_month": "7",
+      "expiry_year": "2026"
     }
   ]
 }

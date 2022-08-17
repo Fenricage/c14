@@ -15,7 +15,7 @@ const CompleteFailed: FC = () => {
 
   return (
     <Flex flex={1} flexDirection="column" justifyContent="center">
-      <Title>Purchase Failed</Title>
+      <Title data-testid="purchase-failed">Purchase Failed</Title>
       <StepIcon>
         <PurchaseFailedIcon />
       </StepIcon>

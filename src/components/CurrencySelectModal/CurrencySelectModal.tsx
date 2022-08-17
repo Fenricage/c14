@@ -92,12 +92,12 @@ const CurrencyItem = styled.div`
 
 const CurrencySelectFieldItem: FC<CurrencySelectFieldItemProps> = ({ name, icon }) => (
   <>
-    <Name>{name}</Name>
+    <Name data-testid="currency-name">{name}</Name>
     {icon}
   </>
 );
 
-export const CurrencySelectField: FC<CurrencySelectFieldProps> = ({
+export const CurrencySelectModal: FC<CurrencySelectFieldProps> = ({
   options,
   disabled,
   onOpenModalClick,
@@ -167,7 +167,7 @@ const CurrencySelectFieldHOC: FC<CurrencySelectFieldHOCProps> = ({
   }, []);
 
   return (
-    <CurrencySelectField
+    <CurrencySelectModal
       value={value as Currency}
       disabled={disabled}
       options={options}
@@ -209,14 +209,14 @@ const CurrencySelectFieldHOC: FC<CurrencySelectFieldHOCProps> = ({
 
         </Modal>
       </>
-    </CurrencySelectField>
+    </CurrencySelectModal>
   );
 };
 
 export const CurrencySelect: FC<CurrencySelectFieldProps | CurrencySelectFieldHOCProps> = (props) => (
   // eslint-disable-next-line react/destructuring-assignment
   props.disabled
-    ? <CurrencySelectField {...props as CurrencySelectFieldProps} />
+    ? <CurrencySelectModal {...props as CurrencySelectFieldProps} />
     : <CurrencySelectFieldHOC {...props as CurrencySelectFieldHOCProps} />
 );
 

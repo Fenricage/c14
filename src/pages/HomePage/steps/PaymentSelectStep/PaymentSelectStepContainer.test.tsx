@@ -107,20 +107,20 @@ describe('PaymentSelectStepContainer tests', () => {
         expect(queryByTestId('RadioGroupItem-0')).toBeInTheDocument();
       });
 
-      const firstRadioInput = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldInput');
+      const firstRadioInput = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldInput-id1');
 
       await waitFor(() => {
         expect(firstRadioInput as HTMLInputElement).toBeChecked();
       });
 
-      const secondRadioLabel = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldLabel');
+      const secondRadioLabel = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldLabel-id2');
 
       await act(async () => {
         await user.click(secondRadioLabel);
       });
 
       await waitFor(() => {
-        const secondRadioInput = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldInput');
+        const secondRadioInput = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldInput-id2');
         expect(secondRadioInput as HTMLInputElement).toBeChecked();
       });
     },
@@ -147,22 +147,22 @@ describe('PaymentSelectStepContainer tests', () => {
         expect(queryByTestId('RadioGroupItem-0')).toBeInTheDocument();
       });
 
-      const firstRadioInput = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldInput');
+      const firstRadioInput = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldInput-id1');
 
       await waitFor(() => {
         expect(firstRadioInput as HTMLInputElement).toBeChecked();
       });
 
-      const secondRadioLabel = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldLabel');
+      const secondRadioLabel = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldLabel-id2');
 
       await act(async () => {
         await user.click(secondRadioLabel);
       });
 
-      const secondDeleteButton = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldRemove');
+      const secondDeleteButton = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldRemove-id2');
 
       await waitFor(() => {
-        const secondRadioInput = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldInput');
+        const secondRadioInput = within(getByTestId('RadioGroupItem-1')).getByTestId('CardRadioFieldInput-id2');
         expect(secondRadioInput as HTMLInputElement).toBeChecked();
       });
 
@@ -262,13 +262,13 @@ describe('PaymentSelectStepContainer tests', () => {
         expect(getByTestId('RadioGroupItem-0')).toBeInTheDocument();
       });
 
-      const radioInput = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldInput');
+      const radioInput = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldInput-id1');
 
       await waitFor(() => {
         expect(radioInput as HTMLInputElement).toBeChecked();
       });
 
-      const deleteButton = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldRemove');
+      const deleteButton = within(getByTestId('RadioGroupItem-0')).getByTestId('CardRadioFieldRemove-id1');
 
       await act(async () => {
         await user.click(deleteButton);

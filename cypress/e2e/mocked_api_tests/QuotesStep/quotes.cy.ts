@@ -3,7 +3,7 @@ describe('Quote step tests', () => {
     // cy.intercept('POST', '**/quotes').as('getQuotes');
     // cy.intercept('GET', '**/user-limits').as('getLimits');
     cy.mockRest();
-    cy.visitHome();
+    cy.mockedVisitHome();
 
     // cy.wait('@getQuotes');
     // cy.wait('@getLimits');

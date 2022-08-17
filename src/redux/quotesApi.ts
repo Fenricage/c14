@@ -2,7 +2,7 @@ import {
   createApi,
 } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from './utils';
-import { Currency } from '../components/CurrencySelectField/CurrencySelectField';
+import { Currency } from '../components/CurrencySelectModal/CurrencySelectModal';
 
 export type QuoteRequestBody = {
   source_currency: Currency;

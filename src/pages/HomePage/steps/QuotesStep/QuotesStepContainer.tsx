@@ -5,7 +5,7 @@ import React, {
 import {
   Currency,
   CurrencySelectOption,
-} from '../../../../components/CurrencySelectField/CurrencySelectField';
+} from '../../../../components/CurrencySelectModal/CurrencySelectModal';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import {
   QuoteInputName,

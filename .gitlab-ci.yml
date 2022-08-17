@@ -9,13 +9,14 @@ stages:
   - deploy_prod
 
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .cache/*
-    - cache/Cypress
-    - node_modules
-    - build
+#cache:
+#  key: ${CI_COMMIT_REF_SLUG}
+#  paths:
+#    - /root/.cache/Cypress
+#    - .cache/*
+#    - cache/Cypress
+#    - node_modules
+#    - build
 
 
 quality_check:

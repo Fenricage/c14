@@ -1,0 +1,17 @@
+{
+  "source_amount": "100",
+  "target_amount": "95",
+  "source_currency": "USD",
+  "target_crypto_asset": {
+    "id": "b2384bf2-b14d-4916-aa97-85633ef05742",
+    "name": "Tether",
+    "symbol": "USDT",
+    "blockchain_name": "Evmos"
+  },
+  "target_blockchain_address": "0x404E42CE508aCcE59D4137681D11e799465c2f84",
+  "fiat_blockchain_fee": "2.5",
+  "absolute_internal_fee": "2.5",
+  "card_type": "VISA",
+  "card_last4": "1234",
+  "status": "PENDING"
+}
