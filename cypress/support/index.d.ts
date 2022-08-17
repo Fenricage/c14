@@ -17,8 +17,9 @@ declare namespace Cypress {
 
 declare namespace Cypress {
   interface Chainable<Subject = any> {
-
-    login(): Chainable<Element>;
+    spyRest(): Chainable<Element>;
+    generateQuote(sourceAmount: number, targetCurrency: string): Chainable<Element>;
+    login(countryCode: string, phoneNumber: string, verificationCode: string): Chainable<Element>;
     clickSubmitButton(): Chainable<Element>;
     clickConfirmTransaction(): Chainable<Element>;
 
