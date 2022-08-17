@@ -105,17 +105,27 @@ const DocumentVerificationContainer: FC = () => {
   ]);
 
   useEffect(() => {
+    if (documentVerificationStatus === 'SUCCESS' || documentVerificationStatus === null) {
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = 'https://js.trulioo.com/latest/main.js';
     script.async = true;
-    script.onload = () => truliooScriptLoaded();
-
+    script.onload = () => {
+      truliooScriptLoaded();
+    };
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
-  }, [truliooScriptLoaded]);
+  }, [
+    documentVerificationStatus,
+    truliooScriptLoaded,
+  ]);
 
   if (isUserFetchUninitialized || isInitialUserLoading) {
     return null;
