@@ -5,7 +5,7 @@ declare namespace Cypress {
     mockedVisitHome(): Chainable<Element>;
     mockedVisitPhoneInputStep(): Chainable<Element>;
     mockedVisitSmsConfirmationStep(): Chainable<Element>;
-    mockedVisitDocumentVerificationStep(): Chainable<Element>;
+    mockedVisitDocumentVerificationStep(document_verification_status?: string): Chainable<Element>;
     mockedVisitPersonalInformationStep(): Chainable<Element>;
     mockedVisitEmailConfirmationStep(): Chainable<Element>;
     mockedVisitAddCardStep(): Chainable<Element>;
@@ -24,7 +24,7 @@ declare namespace Cypress {
     clickConfirmTransaction(): Chainable<Element>;
 
     checkSubmitButtonState(buttonState: string): Chainable<Element>;
-    checkStepTitle(title: string): Chainable<Element>;
+    checkStepTitle(title: string, timeout?: number): Chainable<Element>;
     checkGeneralErrorHasText(text: string): Chainable<Element>;
 
   }

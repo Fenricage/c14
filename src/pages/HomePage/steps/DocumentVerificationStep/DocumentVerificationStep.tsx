@@ -144,7 +144,7 @@ const DocumentVerificationStep: FC<IDocumentVerificationStep> = ({
             width={50}
           />
         </Flex>
-        <Subtitle>
+        <Subtitle data-testid="document-verification-in-progress-title">
           We are processing your request. It should take no more than 10 minutes.
         </Subtitle>
       </Flex>

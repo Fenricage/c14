@@ -32,15 +32,18 @@ Cypress.Commands.add('mockedVisitSmsConfirmationStep', () => {
   cy.clickSubmitButton();
 });
 
-Cypress.Commands.add('mockedVisitDocumentVerificationStep', () => {
-  cy.mockedVisitSmsConfirmationStep();
-  cy.get('[data-testid="code"]').type('111111');
-  cy.fixture('get_user-details.json').then((userDetails) => {
-    userDetails.document_verification_status = 'NOT_STARTED';
-    cy.intercept('GET', '**/user-details', { body: userDetails }).as('mockedUserDetails');
-    cy.clickSubmitButton();
-  });
-});
+Cypress.Commands.add(
+  'mockedVisitDocumentVerificationStep',
+  (document_verification_status = 'NOT_STARTED') => {
+    cy.mockedVisitSmsConfirmationStep();
+    cy.get('[data-testid="code"]').type('111111');
+    cy.fixture('get_user-details.json').then((userDetails) => {
+      userDetails.document_verification_status = document_verification_status;
+      cy.intercept('GET', '**/user-details', { body: userDetails }).as('mockedUserDetails');
+      cy.clickSubmitButton();
+    });
+  },
+);
 
 Cypress.Commands.add('mockedVisitPersonalInformationStep', () => {
   cy.mockedVisitSmsConfirmationStep();
@@ -94,8 +97,8 @@ Cypress.Commands.add('checkSubmitButtonState', (buttonState:string) => {
   cy.get('[data-testid="submitButton"]').should(buttonState);
 });
 
-Cypress.Commands.add('checkStepTitle', (title:string) => {
-  cy.get('[data-testid="WidgetHeadTitle"]').should('have.text', title);
+Cypress.Commands.add('checkStepTitle', (title:string, timeout = 4000) => {
+  cy.get('[data-testid="WidgetHeadTitle"]', { timeout }).should('have.text', title);
 });
 
 Cypress.Commands.add('checkGeneralErrorHasText', (text:string) => {

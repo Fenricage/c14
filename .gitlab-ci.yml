@@ -3,7 +3,7 @@ image: node:latest
 stages:
   - manual_deploy_dev
   - manual_deploy_prod
-  - e2e_dev
+#  - e2e_dev
   - quality_check
   - deploy_dev
   - deploy_prod
@@ -27,20 +27,20 @@ quality_check:
     - yarn test
 
 
-e2e_dev:
-  stage: e2e_dev
-  environment: dev
-  extends: .e2e
+#e2e_dev:
+#  stage: e2e_dev
+#  environment: dev
+#  extends: .e2e
 
 
-.e2e:
-  image: cypress/browsers:node14.17.6-chrome100-ff98
-  stage: e2e
-  script:
-    - yarn
-    - yarn start:$CI_ENVIRONMENT_NAME &
-    - ./wait-for-server.sh
-    - npx cypress run --record --key 08ccf44d-e082-4aa7-a534-616f7aa33e1d --parallel --browser chrome --group "e2e - Chrome"
+#.e2e:
+#  image: cypress/browsers:node14.17.6-chrome100-ff98
+#  stage: e2e
+#  script:
+#    - yarn
+#    - yarn start:$CI_ENVIRONMENT_NAME &
+#    - ./wait-for-server.sh
+#    - npx cypress run --record --key 08ccf44d-e082-4aa7-a534-616f7aa33e1d --parallel --browser chrome --group "e2e - Chrome"
 
 
 deploy_dev:
